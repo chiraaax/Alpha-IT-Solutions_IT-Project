@@ -51,10 +51,10 @@ const Footer = () => {
           {/* Left side with logo and description */}
           <div className="md:w-1/3">
             <Link to="/" className="text-2xl font-bold mb-4 inline-block">
-              <span className="text-blue-500">CodeTutor</span> UI
+              <span className="text-blue-500">ALPHA IT SOLUTIONS</span> .
             </Link>
             <p className="text-gray-400 md:w-2/3">
-              The first-ever website experience platform that lets you create, manage and optimize your digital presence.
+            Get the latest IT products and expert services, all in one place. Fast, reliable, and built for your needs!
             </p>
           </div>
 
