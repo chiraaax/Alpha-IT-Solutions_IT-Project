@@ -21,7 +21,7 @@ const sidebarItems = [
   { label: 'Monitors' },
   { label: 'Speakers, Headsets & Ear-Buds' },
   { label: 'Keyboard, Mouse & Gamepad' },
-  // Additional items for scrolling
+  // ------------------------------------------
   { label: 'Gaming Chairs' },
   { label: 'Smartphones' },
   { label: 'Cameras' },
