@@ -14,7 +14,7 @@ const sidebarItems = [
   { label: 'Motherboards' },
   { label: 'Memory (RAM)' },
   { label: 'Graphics Card' },
-  { label: 'Power Supply, UPS & Surge Protectors' },
+  { label: 'Power Supply, UPS' },
   { label: 'Cooling & Lighting' },
   { label: 'Storage & NAS' },
   { label: 'Casings' },
@@ -40,14 +40,14 @@ const Hero = () => {
   return (
     <div className="bg-black text-white min-h-screen flex">
       {/* Sidebar */}
-      <aside className=" bg-blue-800 text-white p-8 h-screen overflow-y-auto custom-scrollbar">
-        <nav className="flex flex-col space-y-4">
+      <aside className="bg-black p-2 h-screen overflow-y-auto custom-scrollbar">
+        <nav className="flex flex-col space-y-2">
           {sidebarItems.map((item, index) => (
             <div
               key={index}
-              className="flex flex-col items-center p-2 text-sm hover:bg-gray-900 rounded-md cursor-pointer"
+              className="bg-gray-900 min-w-90 text-white flex flex-col items p-3 text-sm hover:bg-blue-700  cursor-pointer"
             >
-              <div className="mt-1">{item.label}</div>
+              <div className="mt-2 text-xl">{item.label}</div>
             </div>
           ))}
         </nav>
@@ -55,7 +55,7 @@ const Hero = () => {
 
       {/* Main Hero Content */}
       <div className="flex-1">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-32 pb-16 relative">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-10 pb-16 relative">
           {/* Subtitle */}
           <div className="mb-6">
             <span className="text-[#999999] uppercase tracking-[0.2em] text-sm font-medium">

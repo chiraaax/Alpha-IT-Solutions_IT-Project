@@ -5,7 +5,7 @@ import { MdSearch, MdShoppingCart, MdAccountCircle, MdKeyboardArrowDown, MdMenu,
 const Navbar = () => {
   return (
     <header className='fixed-nav-bar w-nav'>
-      <nav className='max-w-screen-2xl mx-auto px-4 flex justify-between items-center'>
+      <nav className='max-w-screen-xl mx-auto px-4 flex justify-between items-center'>
         <ul className='nav__links'>
           <li className='link'><Link to="/about">About</Link></li>
           <li className='link'><Link to="/shop">Services</Link></li>
