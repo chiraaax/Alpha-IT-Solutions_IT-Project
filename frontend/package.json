@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  
   "dependencies": {
     "@tailwindcss/vite": "^4.0.6",
     "react": "^19.0.0",
