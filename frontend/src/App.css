@@ -1,4 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Poppins:wght@400;500;600;700&display=swap");
+@import url('https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css');
+
 
 @keyframes marquee {
     from { transform: translateX(0%); }
@@ -74,22 +76,116 @@
   .nav__icons span a:hover {
     color: var(--primary-color);
   }
+
+  .section__container {
+    max-width: var(--max-width-1400);
+    margin: 20px 20px 20px 20px;
+    padding: 5rem 1rem;
+    border-radius: 0 0 1rem 1rem;
+  }
+  
+  .section__header {
+    margin-bottom: 1rem;
+    font-size: 4.5rem;
+    font-weight: 700;
+    /* font-family: var(--header-font); */
+    color: var(--extra-light);
+    text-align: center;
+  }
+  
+  .section__subheader {
+    max-width: 500px;
+    margin: auto;
+    color: var(--text-light);
+    text-align: center;
+    font-weight: 700;
+  }
+  
+  .btn {
+    padding: 0.75rem 1.5rem;
+    outline: none;
+    border: none;
+    font-size: 1rem;
+    color: var(--white);
+    background-color: var(--primary-color);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    /* center the button */
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .btn:hover {
+    background-color: var(--primary-color-dark);
+  }
   
   /* Custom scrollbar styling */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px;                  /* scrollbar width */
-  background-color: #000;      /* background color behind the scrollbar track */
-}
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;                  /* scrollbar width */
+    background-color: #000;      /* background color behind the scrollbar track */
+  }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background-color: #222;      /* track color */
-}
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background-color: #222;      /* track color */
+  }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #444;      /* scrollbar thumb color */
-  border-radius: 9999px;       /* fully rounded ends */
-}
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #444;      /* scrollbar thumb color */
+    border-radius: 9999px;       /* fully rounded ends */
+  }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #555;      /* hover effect on thumb */
-}
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #555;      /* hover effect on thumb */
+  }
+
+  .product__grid {
+    max-width: var(--max-width-900);
+    margin: 4rem auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+  }
+
+  .product__card__content {
+    text-align: center;
+    /* border: var(--primary-color) solid 0.1px; */
+    border-radius: 0 0 15px 15px;
+    padding: 20px 0 20px 0;
+    margin: 30px 20px 40px 0;
+    background: linear-gradient(to top right, hsl(210, 5%, 92%) 50%, white 50%);
+    height: 410px;
+  }
+
+  .product__container{
+    background: linear-gradient(to bottom, #070000, #0e375f, #ffffff);
+    padding: 40px 32px 20px 50px;
+    margin: 0.9px auto 2px auto;
+    max-width: 1500px;
+  }
+
+  .product__card__content h4 {
+    margin-bottom: 5px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    font-family: var(--header-font);
+  }
+
+  .product__card__content p {
+    font-weight: 500;
+    color: var(--text-dark);
+  }
+
+  .product__card__content p s {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--text-light);
+  }
+
+  .product__btn {
+    text-align: center;
+    padding: 30px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+  }

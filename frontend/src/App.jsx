@@ -1,30 +1,19 @@
-
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import './App.css'
-import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import CompanyLogo from './components/CompanyLogo'
-import FeaturesSection from './components/FeaturesSection'
-import DesignSection from './components/DesignSection'
-import CustomerSection from './components/CustomerSection'
-import About from './components/About'
-import TryNow from './components/TryNow'
-import Footer from './components/Footer'
-function App() {
-  
 
+function App() {
   return (
     <>
-     <Navbar />
-     <Hero />
-     <CompanyLogo />
-     <FeaturesSection />
-     <DesignSection />
-     <CustomerSection />
-     <About />
-     <TryNow />
-     <Footer />
+      <Navbar />
+      <Outlet />  {/* This is where page content (e.g., Home) will render */}
+      <Footer />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
+
+
