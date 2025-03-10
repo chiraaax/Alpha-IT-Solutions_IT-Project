@@ -1,0 +1,108 @@
+[
+  {
+    "_id": 1,
+    "name": "MSI laptop",
+    "category": "accessories",
+    "description": "Stylish leather handbag with ample storage space.",
+    "price": 79.99,
+    "oldPrice": 99.99,
+    "image": "https://i.dell.com/is/image/DellContent/content/dam/ss2/product-images/dell-client-products/notebooks/g-series/g16-7630/media-gallery/white/notebook-g16-7630-nt-white-gallery-1.psd?fmt=png-alpha&pscan=auto&scl=1&hei=320&wid=427&qlt=100,1&resMode=sharp2&size=427,320&chrss=full",
+    "color": "black",
+    "rating": 4.5,
+    "author":"admin"
+  },
+  {
+    "_id": 2,
+    "name": "Evening Gown",
+    "category": "dress",
+    "description": "Elegant evening gown for special occasions.",
+    "price": 149.99,
+    "oldPrice": 199.99,
+    "image": "https://www.boat-lifestyle.com/cdn/shop/products/main2_b66dce6b-710d-49cb-9d1c-2bc8c9c0ab15_600x.png?v=1645698328",
+    "color": "red",
+    "rating": 4.0
+  },
+  {
+    "_id": 3,
+    "name": "Gold Necklace",
+    "category": "jewellery",
+    "description": "Exquisite gold necklace with intricate design.",
+    "price": 199.99,
+    "image": "https://i0.wp.com/www.redlinetech.lk/wp-content/uploads/2024/03/alcatroz-asic-9-rgb-fx-usb-optical-mouse-sri-lanka-price-removebg-preview.webp",
+    "color": "gold",
+    "rating": 4.7
+  },
+  {
+    "_id": 4,
+    "name": "Matte Lipstick",
+    "category": "cosmetics",
+    "description": "Long-lasting matte lipstick in various shades.",
+    "price": 19.99,
+    "image": "https://resource.logitech.com/content/dam/gaming/en/products/pro-x60-wireless-keyboard/gallery/pro-x-60-keyboard-black-gallery-1-us.png",
+    "color": "red",
+    "rating": 4.2
+  },
+  {
+    "_id": 5,
+    "name": "Silk Scarf",
+    "category": "accessories",
+    "description": "Luxurious silk scarf with vibrant colors.",
+    "price": 29.99,
+    "oldPrice": 39.99,
+    "image": "https://www.jouleperformance.com/media/.renditions/JoulePerformance/LandingPages/Professional/pro-ram-modules.png",
+    "color": "blue",
+    "rating": 4.3
+  },
+  {
+    "_id": 6,
+    "name": "Cocktail Dress",
+    "category": "dress",
+    "description": "Chic cocktail dress for parties and events.",
+    "price": 89.99,
+    "image": "https://sltechie.lk/wp-content/uploads/2021/06/236-20180920134337-1tb.png",
+    "color": "black",
+    "rating": 4.4
+  },
+  {
+    "_id": 7,
+    "name": "Diamond Earrings",
+    "category": "jewellery",
+    "description": "Sparkling diamond earrings that add elegance to any outfit.",
+    "price": 299.99,
+    "oldPrice": 349.99,
+    "image": "https://www.asus.com/media/global/gallery/c0fgpdhpjyf8ajft_setting_xxx_0_90_end_2000.png",
+    "color": "silver",
+    "rating": 4.8
+  },
+  {
+    "_id": 8,
+    "name": "Foundation",
+    "category": "cosmetics",
+    "description": "High-coverage foundation for a flawless finish.",
+    "price": 39.99,
+    "image": "https://ctl.net/cdn/shop/files/Checking_1_1200x.png?v=1694109146",
+    "color": "beige",
+    "rating": 4.1
+  },
+  {
+    "_id": 9,
+    "name": "Sunglasses",
+    "category": "accessories",
+    "description": "Trendy sunglasses with UV protection.",
+    "price": 49.99,
+    "image": "https://ssl-product-images.www8-hp.com/digmedialib/prodimg/lowres/c08195065.png",
+    "color": "black",
+    "rating": 4.6
+  },
+  {
+    "_id": 10,
+    "name": "Casual Pants",
+    "category": "dress",
+    "description": "Comfortable maxi dress for casual outings.",
+    "price": 59.99,
+    "oldPrice": 79.99,
+    "image": "https://uk.jbl.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dwf8ed6b34/JBL_PARTYBOX_STAGE_320_HERO_2_47988_x3.png?sw=300&sh=300",
+    "color": "green",
+    "rating": 3
+  }
+]
