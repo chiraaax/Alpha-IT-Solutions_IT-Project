@@ -1,0 +1,90 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: white; /* Changed background to white */
+    margin: 0;
+    padding: 0;
+    color: black; /* Text color changed to black */
+  }
+  
+  .dashboard-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: black; /* Card is now black */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    color: white; /* Ensure text inside the card is white */
+  }
+  
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+  }
+  
+  /* Move buttons to top-right */
+  .action-buttons {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    gap: 10px;
+  }
+  
+  /* Appointment table */
+  .appointment-details {
+    margin-top: 50px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: #222; /* Darker background for table */
+    color: white; /* White text */
+  }
+  
+  th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #555;
+  }
+  
+  th {
+    background-color: #444;
+    font-weight: bold;
+  }
+  
+  tr:hover {
+    background-color: #555;
+  }
+  
+  /* Buttons */
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    color: white;
+  }
+  
+  .drafted-reports {
+    background-color: #007bff;
+  }
+  
+  .make-appointment {
+    background-color: #28a745;
+  }
+  
+  .self-diagnosis {
+    background-color: #dc3545;
+  }
+  
+  .btn:hover {
+    opacity: 0.9;
+  }
+  

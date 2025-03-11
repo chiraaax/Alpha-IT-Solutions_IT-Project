@@ -3,6 +3,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from '../App';
 import Home from '../pages/Home';
 import GamingConsoles from '../pages/sidebarProducts/GamingConsoles';
+import AppointmentDashboard from '../components/Appointment_Dashboard'; 
+import AppointmentForm from '../components/Appointment_form'; // Import Appointment Form
 
 // Define the router object
 const router = createBrowserRouter([
@@ -12,6 +14,8 @@ const router = createBrowserRouter([
     children: [
       { path: '', element: <Home /> },
       { path: 'gaming-consoles', element: <GamingConsoles /> },
+      { path: 'appointment', element: <AppointmentDashboard /> }, // Appointment Dashboard
+      { path: 'appointment-form', element: <AppointmentForm /> }, // Appointment Form Route
       // { path: 'laptops', element: <Laptops /> },
       // { path: 'processors', element: <Processors /> },
       // Add other routes here...
@@ -19,4 +23,4 @@ const router = createBrowserRouter([
   }
 ]);
 
-export default router; 
+export default router;
