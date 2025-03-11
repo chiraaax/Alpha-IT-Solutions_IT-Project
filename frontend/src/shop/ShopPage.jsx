@@ -1,12 +1,9 @@
 //shop page relevant to filtering page
-
 import React from 'react'
 import { useState } from 'react'
 import ProductCards from './ProductCards'
 import ShopFiltering from './ShopFiltering'
 import { useFetchAllProductsQuery } from '../redux/features/products/productsApi'
-
-
 
 const filter = {
     categories: ['all', 'accessories', 'dress', 'jewelry', 'cosmetics'],
@@ -75,9 +72,12 @@ const ShopPage = () => {
     return (
         <>
             <section className='section__container bg-primary-light'>
-                <h2 className='section__header capitalize'>Shop Page</h2>
-                <p className="text-gray-600 text-center text-xl">Discover the hottest picks: Elevate your style with our curated collection of trending women's fashion products.</p>
+                <h2 className='section__header capitalize'>Exclusive Offers</h2>
+                <p className="text-gray-600 text-center text-xl">
+                    Upgrade your tech with unbeatable deals on laptops, gaming accessories, and cutting-edge hardware—only at Alpha IT Solutions!
+                </p>
             </section>
+
         
             <section className='section__container'>
                 <div className='flex flex-col md:flex-row md:gap-12 gap-8'>

@@ -3,7 +3,7 @@ import {useState} from 'react'
 import ProductCards from './ProductCards'
 import products from '../data/products'
 
-const TrendingProducts = () => {
+const OfferedProducts = () => {
     // this is used to limit the number of products displayed on the page
     const [visibleProducts, setVisibleProducts] = useState(8);
     const loadMoreProducts =() => {
@@ -13,7 +13,7 @@ const TrendingProducts = () => {
     <div className='bg-black pb-3 '>
     <section className='section__container product__container'>
         <h2 className='section__header'>Special offers</h2>
-        <p className='section__subheader mb-12'>Discover the latest and most popular products, from innovative gadgets to stylish accessories, all in one place at ezyShopper!</p>
+        <p className='section__subheader mb-12'>Get the best deals on high-performance laptops, gaming accessories, and essential tech upgrades—only at Alpha IT Solutions!</p>
     
         {/* products card */}
         <ProductCards products
@@ -32,4 +32,4 @@ const TrendingProducts = () => {
   )
 }
 
-export default TrendingProducts;
+export default OfferedProducts;
