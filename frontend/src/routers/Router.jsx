@@ -5,6 +5,7 @@ import Home from '../pages/Home';
 import GamingConsoles from '../pages/sidebarProducts/GamingConsoles';
 import AppointmentDashboard from '../components/Appointment_Dashboard'; 
 import AppointmentForm from '../components/Appointment_form'; // Import Appointment Form
+import DraftedTechniciansReports from '../components/DraftedTechniciansReports';
 
 // Define the router object
 const router = createBrowserRouter([
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
       { path: 'gaming-consoles', element: <GamingConsoles /> },
       { path: 'appointment', element: <AppointmentDashboard /> }, // Appointment Dashboard
       { path: 'appointment-form', element: <AppointmentForm /> }, // Appointment Form Route
+      { path: 'draftedTechnicianReport', element: <DraftedTechniciansReports/> }, // Appointment Form Route
       // { path: 'laptops', element: <Laptops /> },
       // { path: 'processors', element: <Processors /> },
       // Add other routes here...
