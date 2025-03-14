@@ -18,7 +18,9 @@ const CompanyLogo = () => {
     ];
   
     return (
-      <div className="relative bg-black overflow-hidden md:py-16 py-8">
+      <div className="relative bg-gradient-to-r from-red-900 via-gray-900 to-blue-700 overflow-hidden md:py-8 py-8">
+
+
         {/* Marquee animation container */}
         <div className="flex animate-marquee">
           {/* Double the logos array for seamless looping */}

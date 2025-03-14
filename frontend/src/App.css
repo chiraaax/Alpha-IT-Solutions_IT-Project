@@ -18,15 +18,16 @@
     --text-light: #64748b;
     --extra-light: #f8fafc;
     --white: #ffffff;
-    --max-width-1400: 1400px;
+    --max-width-1350: 1300;
     --max-width-1200: 1200px;
     --max-width-900: 900px;
   }
 
   nav {
-    max-width: var(--max-width-1400);
+    max-width: var(--max-width-1300);
     margin: auto;
-    padding: 1.5rem 1rem;
+    padding: 1rem 1rem;
+    padding-right: 40px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -37,28 +38,55 @@
     list-style: none;
     display: flex;
     align-items: center;
-    gap: 2rem;
-  }
-  
-  .link a {
-    font-weight: 500;
-    color: var(--text-dark);
-  }
-  
-  .link a:hover {
-    color: var(--primary-color);
-  }
+    gap: 2.4rem;
+    font-size: 1.2rem;
+}
+
+.nav__links a {
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: linear-gradient(to right, #d12222, #0245ff);
+    -webkit-background-clip: text;
+    color: transparent;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+}
+
+.nav__links a:hover {
+    background: linear-gradient(to right, #0245ff, #d12222);
+    -webkit-background-clip: text;
+    color: transparent;
+    transform: scale(1.1);
+}
+
+.nav__links a::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(to right, #d12222, #0245ff);
+    transition: all 0.3s ease-in-out;
+}
+
+.nav__links a:hover::after {
+    width: 100%;
+    left: 0;
+}
+
 
   .nav__logo a {
     font-size: 2rem;
-    font-weight: 800;
-    font-family: var(--header-font);
+    font-weight: 1000;
+    font-family: 'Poppins', sans-serif;
     align-items: center;
     color: var(--text-dark);
   }
   
   .nav__logo a span {
-    color: var(--primary-color);
+    color: #A1191D;
   }
   .nav__icons {
     flex: 1;
@@ -123,7 +151,7 @@
   
   /* Custom scrollbar styling */
   .custom-scrollbar::-webkit-scrollbar {
-    width: 8px;                  /* scrollbar width */
+    width: 7px;                /* scrollbar width */
     background-color: #000;      /* background color behind the scrollbar track */
   }
 
@@ -132,7 +160,7 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #444;      /* scrollbar thumb color */
+    background: linear-gradient(to bottom, #7f1d1d, #1e3a8a);     /* scrollbar thumb color */
     border-radius: 9999px;       /* fully rounded ends */
   }
 
@@ -188,4 +216,9 @@
     padding: 30px;
     margin-top: 20px;
     margin-bottom: 30px;
+  }
+
+  .button_sidebar{
+    font-size: 16px;
+    font-weight: 400;
   }
