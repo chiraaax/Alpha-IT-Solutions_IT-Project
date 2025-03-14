@@ -6,7 +6,7 @@ import DesignSection from '../components/DesignSection'
 import CustomerSection from '../components/CustomerSection'
 import About from '../components/About'
 import TryNow from '../components/TryNow'
-import TrendingProducts from '../shop/TrendingProducts'
+import OfferedProducts from '../shop/OfferedProducts'
 
 const Home = () => {
   return (
@@ -14,7 +14,7 @@ const Home = () => {
      <Hero />
      <CompanyLogo />
      <FeaturesSection />
-     <TrendingProducts/>
+     <OfferedProducts/>
      <DesignSection />
      <CustomerSection />
      <About />

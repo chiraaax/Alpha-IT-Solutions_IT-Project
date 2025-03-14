@@ -1,128 +1,124 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { HiArrowRight } from 'react-icons/hi';
-import video from '../assets/banner-video.mp4';
-import bannerLeft from '../assets/banner-left.avif';
-import bannerRight from '../assets/banner-right.png';
+import { useNavigate } from 'react-router-dom';
+import home4 from '../assets/home1.png';
 
-/** Sidebar product list */
+// Import icons from react-icons
+import { MdLaptop, MdMonitor, MdKeyboard, MdMouse, MdStorage } from 'react-icons/md';
+import { FaMicrochip, FaVolumeUp, FaHdd, FaPlug, FaFan } from 'react-icons/fa';
+import { GiCircuitry, GiBatteryPack } from 'react-icons/gi';
+import { BsFillMotherboardFill } from "react-icons/bs";
+import { RiRamLine } from "react-icons/ri";
+import { LuPcCase } from "react-icons/lu";
+
 const sidebarItems = [
-    { label: 'Console & Handheld Gaming', path: '/gaming-consoles' },
-    { label: 'Graphics Tablets', path: '/graphics-tablets' },
-    { label: 'Laptop', path: '/laptops' },
-    { label: 'Processor', path: '/processors' },
-    { label: 'Motherboards', path: '/motherboards' },
-    { label: 'Memory (RAM)', path: '/memory-ram' },
-    { label: 'Graphics Card', path: '/graphics-cards' },
-    { label: 'Power Supply, UPS', path: '/power-supply' },
-    { label: 'Cooling & Lighting', path: '/cooling-lighting' },
-    { label: 'Storage & NAS', path: '/storage' },
-    { label: 'Casings', path: '/casings' },
-    { label: 'Monitors', path: '/monitors' },
-    { label: 'Speakers, Headsets & Ear-Buds', path: '/audio-devices' },
-    { label: 'Keyboard, Mouse & Gamepad', path: '/input-devices' },
-    { label: 'Gaming Chairs', path: '/gaming-chairs' },
-    { label: 'Smartphones', path: '/smartphones' },
-    { label: 'Cameras', path: '/cameras' },
-    { label: 'Home Appliances', path: '/home-appliances' },
-    { label: 'Software & Licenses', path: '/software' },
-    { label: 'Networking', path: '/networking' },
-    { label: 'Printers & Scanners', path: '/printers-scanners' },
-    { label: 'Projectors', path: '/projectors' },
-    { label: 'Routers', path: '/routers' },
-    { label: 'VR Headsets', path: '/vr-headsets' },
-    { label: '3D Printers', path: '/3d-printers' },
-    { label: 'E-Book Readers', path: '/ebook-readers' },
+  { label: 'Laptop', path: 'laptop', icon: <MdLaptop className="text-4xl" /> },
+  { label: 'Motherboard', path: 'jewellery' ,icon: <BsFillMotherboardFill className="text-4xl" />},
+  { label: 'Processor', path: 'cosmetics', icon: <FaMicrochip className="text-4xl" /> },
+  { label: 'RAM', path: 'gaming-consoles',icon: <RiRamLine className="text-4xl" />},
+  { label: 'Graphic cards', path: 'monitors', icon: <GiCircuitry className="text-4xl" /> },
+  { label: 'Power supply units', path: 'monitors', icon: <FaPlug className="text-4xl" /> },
+  { label: 'Ups', path: 'monitors', icon: <GiBatteryPack className="text-4xl" /> },
+  { label: 'Casings', path: 'monitors', icon: <LuPcCase className="text-4xl" /> },
+  { label: 'Monitors', path: 'monitors', icon: <MdMonitor className="text-4xl" /> },
+  { label: 'CPU coolers / AIO', path: 'monitors', icon: <FaFan className="text-4xl" /> },
+  { label: 'Keyboard', path: 'monitors', icon: <MdKeyboard className="text-4xl" /> },
+  { label: 'Mouse', path: 'monitors', icon: <MdMouse className="text-4xl" /> },
+  { label: 'Sound systems', path: 'monitors', icon: <FaVolumeUp className="text-4xl" /> },
+  { label: 'Cables & connectors', path: 'monitors', icon: <FaPlug className="text-4xl" /> },
+  { label: 'Storage', path: 'monitors', icon: <MdStorage className="text-4xl" /> },
+  { label: 'External storage', path: 'monitors', icon: <FaHdd className="text-4xl" /> },
 ];
 
-
 const Hero = () => {
-  return (
-    // Products sidebar
-    <div className="bg-black text-white min-h-screen flex">
-      {/* Sidebar */}
-      <aside className="bg-black p-2 h-screen overflow-y-auto custom-scrollbar">
-  <nav className="flex flex-col space-y-2">
-    {sidebarItems.map((item, index) => (
-      <Link
-        key={index}
-        to={item.path} // Use the path dynamically
-        className="bg-gray-900 min-w-90 text-white flex flex-col items p-3 text-sm hover:bg-blue-700 cursor-pointer"
-      >
-        <div className="mt-2 text-xl">{item.label}</div>
-      </Link>
-      ))}
-    </nav>
-  </aside>
+  const navigate = useNavigate();
 
+  const handleCategoryClick = (category) => {
+    navigate(`/products/${category}`);
+  };
+
+  return (
+    <div
+      className="bg-black text-white min-h-screen flex mb-auto"
+    //   style={{
+    //     borderImage: 'linear-gradient(to right, #7f1d1d, blue) 1',
+    //   }}
+    >
+      {/* Sidebar */}
+      <aside className="bg-black p-3 h-screen max-h-[80vh] overflow-y-auto custom-scrollbar">
+        <nav className="flex flex-col space-y-2">
+          <button
+            onClick={() => navigate('/AI-Engine')}
+            className="bg-gradient-to-r from-red-900 to-blue-700 min-w-90 text-white flex flex-col p-3 text-sm hover:bg-gradient-to-r hover:from-blue-700 hover:to-red-900 cursor-pointer"
+            style={{
+              border: '2px solid',
+              borderImage: 'linear-gradient(to right, red, navy) 1',
+              borderRadius: '0px',
+              transition: 'all 0.3s ease-in-out',
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+            onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+          >
+            <div
+              className="mt-2 text-3xl"
+              style={{
+                background: 'white',
+                WebkitBackgroundClip: 'text',
+                color: 'transparent',
+                fontStyle: 'italic',
+                fontWeight: 'bold',
+              }}
+            >
+              <div className="mt-2 uppercase">The AI Engine</div>
+            </div>
+          </button>
+
+          <br />
+
+          {sidebarItems.map((item, index) => (
+            <button
+                key={index}
+                onClick={() => handleCategoryClick(item.path)}
+                className="group button_sidebar bg-gray-900 min-w-90 text-white flex items-center justify-start p-4 hover:bg-gray-700 cursor-pointer"
+                style={{ position: 'relative' }}
+            >
+                <div className="relative mt-2 uppercase flex items-center gap-2">
+                <span className="transition-all duration-700 opacity-100 group-hover:opacity-0">
+                    {item.label}
+                </span>
+                <span className="absolute left-0 transition-all duration-700 opacity-0 group-hover:opacity-100">
+                    {item.icon}
+                </span>
+                </div>
+            </button>
+        ))}
+
+
+          <br />
+
+          <button
+            className="bg-gradient-to-r from-gray-900 via-blue-500 to-blue-1000 min-w-90 text-gray-100 flex flex-col p-3 text-sm hover:bg-gradient-to-r hover:from-gray-900 hover:via-blue-500 hover:to-blue-1000 cursor-pointer"
+            style={{
+              borderRadius: '0px',
+            }}
+          >
+            <div
+              className="mt-2 text-3xl"
+              style={{
+                fontStyle: 'italic',
+                fontWeight: 'bold',
+              }}
+            >
+              Custom Pre-builds
+            </div>
+            <p className="text-gray-200">- Build your dream PC -</p>
+          </button>
+        </nav>
+      </aside>
 
       {/* Main Hero Content */}
       <div className="flex-1">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-10 pb-16 relative">
-          {/* Subtitle */}
-          {/* <div className="mb-6">
-            <span className="text-[#999999] uppercase tracking-[0.2em] text-sm font-medium">
-              MORE THAN A WEBSITE BUILDER
-            </span>
-          </div> */}
-
-          {/* Main Heading */}
-          <h1 className="text-4xl sm:text-5xl lg:text-8xl font-bold mb-8 md:mb-16 leading-[1.1] tracking-[-0.02em]">
-            Your site should do <br className="md:block hidden" /> more than look good
-          </h1>
-
-          <div className="flex md:flex-row items-center flex-col justify-between gap-8">
-            {/* Description */}
-            {/* <p className="text-[#999999] md:text-xl mb-8 md:mb-0 leading-relaxed max-w-xl">
-              As the first-ever website experience platform, CodeTutor lets marketers, designers, and developers
-              come together to build, manage, and optimize web experiences that get results.
-            </p> */}
-
-            {/* CTA Buttons */}
-            <div className="flex sm:flex-row flex-wrap gap-8 shrink-0">
-              <Link
-                to="/start-building"
-                className="bg-[#4353FF] hover:bg-[#3544CC] text-white px-8 py-4 rounded text-lg font-medium transition-colors duration-200"
-              >
-                Start building
-              </Link>
-              <Link
-                to="/contact-sales"
-                className="group flex items-center text-white hover:text-[#999999] transition-colors duration-200 text-lg font-medium"
-              >
-                Contact sales
-                <HiArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
-              </Link>
-            </div>
-          </div>
-
-          {/* Video Section */}
-          <div className="w-full h-full mt-16 relative">
-            <video
-              src={video}
-              autoPlay
-              muted
-              loop
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute top-1/2 xl:-left-20 md:-left-0 z-20 xl:block hidden">
-              <img
-                src={bannerLeft}
-                alt=""
-                className="lg:h-32 md:h-24 h-20 w-full object-cover"
-              />
-            </div>
-            <div className="absolute bottom-1/5 xl:-right-20 md:-right-0 z-20 xl:block hidden">
-              <img
-                src={bannerRight}
-                alt=""
-                className="lg:h-44 md:h-32 h-28 w-full object-cover"
-              />
-            </div>
-          </div>
-
-          {/* Overlay */}
-          <div className="absolute bottom-0 left-0 right-0 h-1/2 z-10 bg-gradient-to-t from-black to-transparent hidden md:block"></div>
+        <div className="container mx-auto px-10 pt-9 pb-auto relative">
+          <img src={home4} alt="" />
         </div>
       </div>
     </div>
