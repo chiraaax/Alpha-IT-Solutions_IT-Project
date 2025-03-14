@@ -1,90 +1,356 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: white; /* Changed background to white */
-    margin: 0;
-    padding: 0;
-    color: black; /* Text color changed to black */
-  }
-  
+  font-family: Arial, sans-serif;
+  background-color: white; /* Changed background to white */
+  margin: 0;
+  padding: 0;
+  color: black; /* Text color changed to black */
+}
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: black; /* Card is now black */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  color: white; /* Ensure text inside the card is white */
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+/* Move buttons to top-right */
+.action-buttons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: 10px;
+}
+
+/* Appointment table */
+.appointment-details {
+  margin-top: 50px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background-color: #222; /* Darker background for table */
+  color: white; /* White text */
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #555;
+}
+
+th {
+  background-color: #444;
+  font-weight: bold;
+}
+
+tr:hover {
+  background-color: #555;
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  color: white;
+}
+
+.drafted-reports {
+  background-color: #007bff;
+}
+
+.make-appointment {
+  background-color: #28a745;
+}
+
+.self-diagnosis {
+  background-color: #dc3545;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
   .dashboard-container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: black; /* Card is now black */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    color: white; /* Ensure text inside the card is white */
+    padding: 15px;
+    margin: 10px auto;
   }
-  
-  /* Header */
+
   .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
+    flex-direction: column;
+    align-items: flex-start;
   }
-  
-  /* Move buttons to top-right */
+
   .action-buttons {
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: flex;
-    gap: 10px;
-  }
-  
-  /* Appointment table */
-  .appointment-details {
-    margin-top: 50px;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
+    position: static; /* Reset position for smaller screens */
     margin-top: 10px;
-    background-color: #222; /* Darker background for table */
-    color: white; /* White text */
+    justify-content: flex-start;
   }
-  
-  th, td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #555;
-  }
-  
-  th {
-    background-color: #444;
-    font-weight: bold;
-  }
-  
-  tr:hover {
-    background-color: #555;
-  }
-  
-  /* Buttons */
+
   .btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    width: 100%; /* Full-width buttons on smaller screens */
+    margin-bottom: 10px; /* Add spacing between stacked buttons */
+  }
+
+  table {
+    display: block;
+    overflow-x: auto; /* Allow horizontal scrolling for tables */
+  }
+
+  th, td {
+    padding: 8px; /* Reduce padding for smaller screens */
+    font-size: 14px; /* Smaller font size for better fit */
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 10px;
+    margin: 5px auto;
+  }
+
+  .header h1 {
+    font-size: 24px; /* Smaller heading for very small screens */
+  }
+
+  .btn {
+    font-size: 14px; /* Smaller font size for buttons */
+    padding: 8px 16px;
+  }
+
+  th, td {
+    padding: 6px; /* Further reduce padding for very small screens */
+    font-size: 12px; /* Smaller font size */
+  }
+}
+/* Header Styles */
+.header h1 {
+  font-size: 36px; /* Larger heading */
+  margin: 0;
+  color: white;
+}
+
+.reports-list h2 {
+  font-size: 28px; /* Larger subheading */
+  margin: 20px 0;
+  color: white;
+}
+
+/* Reports List Styles */
+.reports-list {
+  margin-top: 20px;
+}
+
+.report-item {
+  background-color: #333;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+
+.report-item:hover {
+  background-color: #444;
+}
+
+.report-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  cursor: pointer;
+}
+
+.report-summary h3 {
+  margin: 0;
+  font-size: 18px;
+  color: white;
+}
+
+.report-summary .arrow {
+  font-size: 16px;
+  color: white;
+}
+
+.report-details {
+  padding: 10px 20px;
+  background-color: #444;
+  border-top: 1px solid #555;
+}
+
+.report-details p {
+  margin: 0;
+  color: white;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.report-details pre {
+  white-space: pre-wrap; /* Preserve formatting but wrap text */
+  font-family: Arial, sans-serif;
+  margin: 10px 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 28px; /* Slightly smaller for mobile */
+  }
+
+  .reports-list h2 {
+    font-size: 24px; /* Slightly smaller for mobile */
+  }
+
+  .report-summary h3 {
     font-size: 16px;
-    transition: background-color 0.3s ease;
-    color: white;
   }
-  
-  .drafted-reports {
-    background-color: #007bff;
+
+  .report-details p {
+    font-size: 12px;
   }
-  
-  .make-appointment {
-    background-color: #28a745;
+}
+/* Modal Overlay Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9); /* Dark semi-transparent black background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's on top of everything */
+}
+
+.modal {
+  background-color: black; /* Black background for the modal */
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px; /* Limit the width for better readability */
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.3s ease-in-out; /* Smooth fade-in animation */
+  border: 1px solid #1e90ff; /* Blue border for accent */
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: white; /* White text for the header */
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: white; /* White close button */
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: #1e90ff; /* Blue color on hover for accent */
+}
+
+.modal-body {
+  max-height: 70vh; /* Limit height to prevent overflow */
+  overflow-y: auto; /* Add scroll if content is too long */
+  padding-right: 10px; /* Add space for scrollbar */
+}
+
+.modal-body label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: white; /* White text for labels */
+}
+
+.modal-body input,
+.modal-body textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #1e90ff; /* Blue border for inputs */
+  border-radius: 6px;
+  background-color: black; /* Black background for inputs */
+  color: white; /* White text for inputs */
+  font-size: 14px;
+}
+
+.modal-body textarea {
+  resize: vertical; /* Allow vertical resizing */
+  min-height: 100px;
+}
+
+.modal-body input[type="checkbox"] {
+  width: auto;
+  margin-right: 10px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-footer .btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+  color: white; /* White text for buttons */
+}
+
+.modal-footer .update-btn {
+  background-color: #28a745; /* Green for update button */
+}
+
+.modal-footer .delete-btn {
+  background-color: #dc3545; /* Red for delete button */
+}
+
+.modal-footer .btn:hover {
+  opacity: 0.9;
+}
+
+/* Fade-in animation for modal */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
   }
-  
-  .self-diagnosis {
-    background-color: #dc3545;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .btn:hover {
-    opacity: 0.9;
-  }
-  
+}
