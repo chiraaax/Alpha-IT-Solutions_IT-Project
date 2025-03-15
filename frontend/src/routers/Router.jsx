@@ -1,9 +1,9 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import App from '../App';
-import Home from '../pages/Home';import AppointmentDashboard from '../components/Appointment_Dashboard'; 
-import ProductCategory from '../shop/ProductCategory';
-import AppointmentForm from '../components/Appointment_form';
+import Home from '../pages/Home';
+import AppointmentDashboard from '../components/Appointment/Appointment_Dashboard';
+import AppointmentForm from '../components/Appointment/Appointment_Form';
 import DraftedTechniciansReports from '../components/DraftedTechniciansReports';
 import Login from '../components/Register/Login';
 import Register from '../components/Register/Register';
@@ -14,6 +14,8 @@ import Profile from '../components/Register/Profile';
 import FAQManage from '../components/Register/FAQManage';
 import AdminNav from '../components/Register/AdminNav';
 import FAQ from '../components/Register/FAQ';
+import ProductCategory from '../components/shop/ProductCategory';
+
 
 
 // Define the router object
