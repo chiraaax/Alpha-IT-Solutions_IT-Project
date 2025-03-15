@@ -5,7 +5,7 @@ import Home from '../pages/Home';
 import AppointmentDashboard from '../components/Appointment/Appointment_Dashboard'; 
 import AppointmentForm from '../components/Appointment/Appointment_form';
 import ProductCategory from '../shop/ProductCategory';
-
+import AppointmenentAI from "../components/Appointment/AppointmentAi"
 import DraftedTechniciansReports from '../components/DraftedTechniciansReports';
 
 
@@ -18,6 +18,7 @@ const router = createBrowserRouter([
       { path: '', element: <Home /> },
       { path: 'products/:category', element: <ProductCategory /> }, // Dynamic route for all categories
       { path: 'appointment', element: <AppointmentDashboard /> }, // Appointment Dashboard
+      {path: 'AppointmenentAI', element:<AppointmenentAI/>},
       { path: 'appointment-form', element: <AppointmentForm /> }, // Appointment Form Route
       { path: 'draftedTechnicianReport', element: <DraftedTechniciansReports/> }, // Appointment Form Route
       // { path: 'laptops', element: <Laptops /> },

@@ -4,6 +4,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import appointmentRoutes from "./routes/appointmentroutes.js"
+import aiRoutes from "./routes/appointmentairoutes.js";
 
 
 
@@ -24,6 +25,7 @@ app.use(cookieParser()); // Parse cookies
 
 
 app.use("/api/appointments", appointmentRoutes);
+app.use("/api/ai", aiRoutes); 
 
 // Connect to MongoDB
 mongoose
