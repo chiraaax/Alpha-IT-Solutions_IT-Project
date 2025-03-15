@@ -34,7 +34,7 @@ const router = createBrowserRouter([
       { path: '/faq', element: <FAQ /> },
     ],
   },
-  { path: '/login', element: <Login /> },
+      { path: '/login', element: <Login /> },
       { path: '/register', element: <Register /> },
       { path: '/forgot-password', element: <ForgotPassword /> },
       { path: '/verify-otp', element: <VerifyOTP /> },
@@ -46,8 +46,6 @@ const router = createBrowserRouter([
     children: [
       // User Dashboard Routes
       { path: '', element: <div>d</div> },
-      { path: 'orders', element:<div>f</div> },
-      { path: 'payments', element: <div>g</div> },
       { path: 'profile', element: <div>de</div> },
       { path: 'reviews', element:<div>sfs</div> },
 
@@ -70,10 +68,6 @@ const router = createBrowserRouter([
       },        
       {
         path : 'users', 
-        element : <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute>
-      },
-      {
-        path : 'manage-orders',
         element : <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute>
       },
     ],

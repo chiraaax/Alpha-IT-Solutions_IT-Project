@@ -14,7 +14,7 @@ const DashboardLayout = () => {
     switch (user?.role) {
       case 'admin':      
         return <AdminDashboard/>
-      case 'user': 
+      case 'customer': 
         return <UserDashboard/>
     
       default:
@@ -22,14 +22,12 @@ const DashboardLayout = () => {
     }
   }
 
-
-
   return (
     <div className='container mx-auto flex flex-col md:flex-row gap-4 items-start justify-start'>
-      <header className='lg:w-1/5 sm:w-2/5 w-full border'>
+      <header className='lg:w-1/5 sm:w-2/5 w-full border-1 border-gray-200'>
         {renderDashboard()}
       </header>
-      <main className='p-8 bg-white w-full border mt-5'>
+      <main className='p-8 bg-white w-full border-1 border-gray-200 mt-5'>
         <Outlet />
       </main>
 

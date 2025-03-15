@@ -10,8 +10,6 @@ const loadUserFromLocalStorage = () => {
         return {user : null};
     }
 }
-
-
 //initial state
 const initialState = loadUserFromLocalStorage();
 

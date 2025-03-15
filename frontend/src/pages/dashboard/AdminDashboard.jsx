@@ -30,10 +30,10 @@ const AdminDashboard = () => {
     <div className='space-y-5 bg-white p-8 md:h-screen flex flex-col justify-between'>
             <div>
                 <div className='nav__logo'>
-                    <Link to="/">EzyShopper<span>.</span></Link>
-                    <p className='text-xs italic'>Admin dashboard</p>
+                    <Link to="/">Alpha IT Solutions<span>.</span></Link>
+                    <p className='italic mt-4 text-gray-500'>Admin dashboard</p>
                 </div>
-                <hr className='mt-5' />
+                <hr className='mt-5  text-gray-300' />
                 <ul className='space-y-5 pt-5'>
                     {
                         navItems.map((item) =>(
@@ -53,10 +53,21 @@ const AdminDashboard = () => {
             </div>
 
             <div className='mb-3'>
-                <hr  className='mb-3'/>
-                <button 
-                onClick={handleLogout}
-                className='text-white bg-primary font-medium px-5 py-1 rounded-sm'>Logout</button>
+                <hr  className='mb-3  text-gray-300'/>
+                <button
+                    onClick={handleLogout}
+                    className="text-white font-medium px-5 py-2 rounded-md shadow-md transition duration-300 transform hover:scale-105"
+                    style={{
+                        textAlign: "center",
+                        background: "linear-gradient(to right, #d12222, #0245ff)",
+                        border: "none",
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                    }}
+                    >
+                    Logout
+                </button>
+
             </div>
         </div>
   )
