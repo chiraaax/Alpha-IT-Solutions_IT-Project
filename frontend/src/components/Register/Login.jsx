@@ -16,7 +16,8 @@ const Login = () => {
         setLoading(false);
     
         if (user) {
-            user.role === "admin" ? navigate("/adminHome") : navigate("/");
+            // Navigate to home page for both admin and user
+            navigate("/");
         }
     };
 

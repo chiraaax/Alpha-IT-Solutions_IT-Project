@@ -14,8 +14,8 @@ import VerifyOTP from '../components/Register/VerifyOTP';
 import FAQManage from '../components/Register/FAQManage';
 import FAQ from '../components/Register/FAQ';
 import ProductCategory from '../components/shop/ProductCategory';
-import ProtectedRoute from "../routers/ProtectedRoute"; 
-
+import ProtectedRoute from "../routers/ProtectedRoute";  
+import DashboardLayout from "../pages/dashboard/DashboardLayout";
 
 
 // Define the router object
@@ -31,20 +31,58 @@ const router = createBrowserRouter([
       { path: 'appointment', element: <AppointmentDashboard /> }, // Appointment Dashboard
       {path: 'AppointmenentAI', element:<AppointmenentAI/>},
       { path: 'appointment-form', element: <AppointmentForm /> }, // Appointment Form Route
-      { path: 'draftedTechnicianReport', element: <DraftedTechniciansReports/> }, // Appointment Form Route
+      { path: 'draftedTechnicianReport', element: <DraftedTechniciansReports/> }, // Drafted Technician Report
       
-      //login routes
-      { path: '/login', element: <Login /> },
-      { path: '/Register', element: <Register /> },
-      { path: '/ForgotPassword', element: <ForgotPassword /> },
-      { path: '/VerifyOTP', element: <VerifyOTP /> },
-      { path: "FAQManage", element: <ProtectedRoute element={<FAQManage />} allowedRoles={["admin"]} /> },
-      { path: '/FAQ', element: <FAQ /> },
+      // Login & Registration routes
+      
+      { path: '/faq-manage', element: <ProtectedRoute element={<FAQManage />} allowedRoles={["admin"]} /> },
+      { path: '/faq', element: <FAQ /> },
+    ],
+  },
+  { path: '/login', element: <Login /> },
+      { path: '/register', element: <Register /> },
+      { path: '/forgot-password', element: <ForgotPassword /> },
+      { path: '/verify-otp', element: <VerifyOTP /> },
+  
+  //dashboard routes
+  {
+    path: "/dashboard",
+    element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>, // Use PrivateRoute for authentication
+    children: [
+      // User Dashboard Routes
+      { path: '', element: <div>d</div> },
+      { path: 'orders', element:<div>f</div> },
+      { path: 'payments', element: <div>g</div> },
+      { path: 'profile', element: <div>de</div> },
+      { path: 'reviews', element:<div>sfs</div> },
 
-      { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
-
-    ]
-  }
+      //admin routes (only accessible to admin) //TODO: use private route
+      {
+        path : 'admin', 
+        element : <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> 
+      },
+      {
+        path : 'add-new-product', 
+        element : <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> 
+      },
+      {
+        path : 'manage-products',
+        element : <ProtectedRoute role="admin"> <div>dg</div></ProtectedRoute>
+      },
+      {
+        path : 'update-product/:id',
+        element : <ProtectedRoute role="admin"> <div>dg</div></ProtectedRoute>
+      },        
+      {
+        path : 'users', 
+        element : <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute>
+      },
+      {
+        path : 'manage-orders',
+        element : <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute>
+      },
+    ],
+  },
 ]);
 
 export default router;
