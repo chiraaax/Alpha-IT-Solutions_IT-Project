@@ -1,14 +1,18 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
-import store from './redux/store.js';
-import { Provider } from 'react-redux';
-import { RouterProvider } from 'react-router-dom';
-import router from './routers/Router.jsx';
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import store from "./redux/store"; 
+import { RouterProvider } from "react-router-dom";
+import './index.css'
+import { AuthProvider } from "./context/authContext";
+import router from "./routers/Router";
 
-createRoot(document.getElementById('root')).render(
-  <Provider store={store}> {/* Wrap App with Provider and pass the store */}
-    <RouterProvider router={router}/>
-  </Provider>
+createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <AuthProvider> {/* AuthProvider wraps everything */}
+        <RouterProvider router={router} /> 
+      </AuthProvider>
+    </Provider>
+  </React.StrictMode>
 );
-

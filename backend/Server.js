@@ -4,8 +4,9 @@ import cors from "cors";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import appointmentRoutes from "./routes/appointmentroutes.js"
-
-
+import authRoutes from "./routes/authRoute.js";
+import userRoutes from "./routes/userRoute.js";
+import faqRoutes from "./routes/faqRoute.js";
 
 dotenv.config();
 const app = express();
@@ -24,6 +25,9 @@ app.use(cookieParser()); // Parse cookies
 
 
 app.use("/api/appointments", appointmentRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/profile", userRoutes);
+app.use("/api/faq", faqRoutes);
 
 // Connect to MongoDB
 mongoose
@@ -34,9 +38,6 @@ mongoose
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log("MongoDB Connection Error:", err));
 
-// Routes
-// app.use("/api/users", authRoutes);
-// app.use("/api/products", productRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");

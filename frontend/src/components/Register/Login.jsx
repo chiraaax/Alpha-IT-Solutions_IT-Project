@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
-import { AuthContext } from "../../context/authContext"; 
 import { useNavigate, Link } from "react-router-dom";
+import { AuthContext } from "../../context/authContext";
 
 const Login = () => {
     const { login } = useContext(AuthContext);
@@ -16,7 +16,7 @@ const Login = () => {
         setLoading(false);
     
         if (user) {
-            user.role === "admin" ? navigate("/AdminDashboard") : navigate("/UserHome");
+            user.role === "admin" ? navigate("/adminHome") : navigate("/");
         }
     };
 
@@ -28,7 +28,7 @@ const Login = () => {
                     <h2 className="text-3xl font-semibold mb-6 text-blue-400">Welcome Back !</h2>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-gray-300">USERNAME</label>
+                            <label className="block text-gray-300">EMAIL</label>
                             <input 
                                 type="email" 
                                 value={email} 

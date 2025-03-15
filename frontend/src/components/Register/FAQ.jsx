@@ -1,6 +1,5 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import UserNav from './UserNav';
 
 function FAQ() { 
     const [faqs, setFaqs] = useState([]);
@@ -19,6 +18,7 @@ function FAQ() {
         }
     };
 
+    
     const handleFAQClick = async (index, id) => {
         if (openIndex === index) {
             setOpenIndex(null); // Close the answer
@@ -44,7 +44,6 @@ function FAQ() {
 
   return (
     <div>
-      <UserNav/>
         <div className="max-w-3xl mx-auto my-10 p-6 bg-gray-900 text-white shadow-lg rounded-lg">
         <h1 className="text-3xl font-bold text-center mb-6 text-cyan-400">Need Help? Find Answers Below</h1>
         <ul className="space-y-4">

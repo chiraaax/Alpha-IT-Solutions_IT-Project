@@ -62,7 +62,7 @@ const Navbar = () => {
           </Link>
           
           {/* User Profile Icon */}
-          <Link to="/profile">
+          <Link to="/Login">
             <MdAccountCircle size={24} />
           </Link>
         </div>
