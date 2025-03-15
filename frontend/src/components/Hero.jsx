@@ -12,22 +12,22 @@ import { LuPcCase } from "react-icons/lu";
 
 const sidebarItems = [
   { label: 'Laptop', path: 'laptop', icon: <MdLaptop className="text-4xl" /> },
-  { label: 'Motherboard', path: 'jewellery' ,icon: <BsFillMotherboardFill className="text-4xl" />},
-  { label: 'Processor', path: 'cosmetics', icon: <FaMicrochip className="text-4xl" /> },
-  { label: 'RAM', path: 'gaming-consoles',icon: <RiRamLine className="text-4xl" />},
-  { label: 'Graphic cards', path: 'monitors', icon: <GiCircuitry className="text-4xl" /> },
-  { label: 'Power supply units', path: 'monitors', icon: <FaPlug className="text-4xl" /> },
-  { label: 'Ups', path: 'monitors', icon: <GiBatteryPack className="text-4xl" /> },
-  { label: 'Casings', path: 'monitors', icon: <LuPcCase className="text-4xl" /> },
+  { label: 'Motherboard', path: 'motherboards', icon: <BsFillMotherboardFill className="text-4xl" /> },
+  { label: 'Processor', path: 'processor', icon: <FaMicrochip className="text-4xl" /> },
+  { label: 'RAM', path: 'ram', icon: <RiRamLine className="text-4xl" /> },
+  { label: 'Graphic Cards', path: 'gpu', icon: <GiCircuitry className="text-4xl" /> },
+  { label: 'Power Supply Units', path: 'powerSupply', icon: <FaPlug className="text-4xl" /> },
+  { label: 'Casings', path: 'casings', icon: <LuPcCase className="text-4xl" /> },
   { label: 'Monitors', path: 'monitors', icon: <MdMonitor className="text-4xl" /> },
-  { label: 'CPU coolers / AIO', path: 'monitors', icon: <FaFan className="text-4xl" /> },
-  { label: 'Keyboard', path: 'monitors', icon: <MdKeyboard className="text-4xl" /> },
-  { label: 'Mouse', path: 'monitors', icon: <MdMouse className="text-4xl" /> },
-  { label: 'Sound systems', path: 'monitors', icon: <FaVolumeUp className="text-4xl" /> },
-  { label: 'Cables & connectors', path: 'monitors', icon: <FaPlug className="text-4xl" /> },
-  { label: 'Storage', path: 'monitors', icon: <MdStorage className="text-4xl" /> },
-  { label: 'External storage', path: 'monitors', icon: <FaHdd className="text-4xl" /> },
+  { label: 'CPU Coolers / AIO', path: 'cpu coolers', icon: <FaFan className="text-4xl" /> },
+  { label: 'Keyboard', path: 'keyboard', icon: <MdKeyboard className="text-4xl" /> },
+  { label: 'Mouse', path: 'mouse', icon: <MdMouse className="text-4xl" /> },
+  { label: 'Sound Systems', path: 'sound systems', icon: <FaVolumeUp className="text-4xl" /> },
+  { label: 'Cables & Connectors', path: 'cables and connectors', icon: <FaPlug className="text-4xl" /> },
+  { label: 'Storage', path: 'storage', icon: <MdStorage className="text-4xl" /> },
+  { label: 'External Storage', path: 'external storage', icon: <FaHdd className="text-4xl" /> },
 ];
+
 
 const Hero = () => {
   const navigate = useNavigate();

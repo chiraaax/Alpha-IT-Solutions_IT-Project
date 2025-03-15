@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { addToCart } from '../redux/features/cart/cartSlice'
+import { addToCart } from '../../redux/features/cart/cartSlice'
 
 const ProductCards = ({ products = [] }) => { // Provide default empty array
     const dispatch = useDispatch();
@@ -17,7 +17,7 @@ const ProductCards = ({ products = [] }) => { // Provide default empty array
                     <div key={index} className='product__card__content'>
                         <div className='relative'>
                             <Link to={`/shop/${product._id}`}>
-                                <img src={product.image} alt="Product Image" className='max-h-96 md:h-64 w-full object-cover hover:scale-105 transition-all duration-300  p-7'/>
+                                <img src={product.image} alt="Product Image" className='max-h-96 md:h-64 w-full object-cover hover:scale-105 transition-all duration-300  p-6'/>
                             </Link>
                         </div>
                         {/* product description */}

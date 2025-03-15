@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HiSearch, HiTag } from 'react-icons/hi';
 import axios from 'axios';
-import productsData from '../data/products.json';
+import productsData from '../../data/products.json';
 
 const SearchPage = () => {
     const navigate = useNavigate();
