@@ -18,6 +18,7 @@ function FAQ() {
         }
     };
 
+    
     const handleFAQClick = async (index, id) => {
         if (openIndex === index) {
             setOpenIndex(null); // Close the answer
