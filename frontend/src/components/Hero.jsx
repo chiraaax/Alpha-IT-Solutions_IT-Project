@@ -96,6 +96,7 @@ const Hero = () => {
           <br />
 
           <button
+          onClick={() => navigate('/custom-prebuilds')}
             className="bg-gradient-to-r from-gray-900 via-blue-500 to-blue-1000 min-w-90 text-gray-100 flex flex-col p-3 text-sm hover:bg-gradient-to-r hover:from-gray-900 hover:via-blue-500 hover:to-blue-1000 cursor-pointer"
             style={{
               borderRadius: '0px',
