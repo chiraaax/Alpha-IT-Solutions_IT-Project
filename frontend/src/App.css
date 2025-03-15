@@ -18,13 +18,13 @@
     --text-light: #64748b;
     --extra-light: #f8fafc;
     --white: #ffffff;
-    --max-width-1350: 1300;
+    --max-width-1400: 1400;
     --max-width-1200: 1200px;
     --max-width-900: 900px;
   }
 
   nav {
-    max-width: var(--max-width-1300);
+    max-width: var(--max-width-1400);
     margin: auto;
     padding: 1rem 1rem;
     padding-right: 40px;

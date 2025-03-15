@@ -43,6 +43,7 @@ const Navbar = () => {
         <ul className='nav__links flex gap-6'>
           <li className='link'><Link to="/about">About</Link></li>
           <li className='link'><Link to="/appointment">Services</Link></li>
+          <li className='link'><Link to="/custom-prebuilds">Custom Pre-Builds</Link></li>
           <li className='link'><Link to="/">Reviews</Link></li>
           <li className='link'><Link to="/contact">Contact</Link></li>
         </ul>

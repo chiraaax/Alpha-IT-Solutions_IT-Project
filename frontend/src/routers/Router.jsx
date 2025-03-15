@@ -2,6 +2,7 @@ import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import App from '../App';
 import Home from '../pages/Home';
+import CustomPreBuilds from '../components/CustomBuilds/CustomPreBuilds';
 import AppointmentDashboard from '../components/Appointment/Appointment_Dashboard'; 
 import AppointmentForm from '../components/Appointment/Appointment_form';
 import AppointmenentAI from "../components/Appointment/AppointmentAi"
@@ -16,6 +17,7 @@ import ProductCategory from '../components/shop/ProductCategory';
 import ProtectedRoute from "../routers/ProtectedRoute"; 
 
 
+
 // Define the router object
 const router = createBrowserRouter([
   {
@@ -24,6 +26,8 @@ const router = createBrowserRouter([
     children: [
       { path: '', element: <Home /> },
       { path: 'products/:category', element: <ProductCategory /> }, // Dynamic route for all categories
+
+
       { path: 'appointment', element: <AppointmentDashboard /> }, // Appointment Dashboard
       {path: 'AppointmenentAI', element:<AppointmenentAI/>},
       { path: 'appointment-form', element: <AppointmentForm /> }, // Appointment Form Route
@@ -36,6 +40,8 @@ const router = createBrowserRouter([
       { path: '/VerifyOTP', element: <VerifyOTP /> },
       { path: "FAQManage", element: <ProtectedRoute element={<FAQManage />} allowedRoles={["admin"]} /> },
       { path: '/FAQ', element: <FAQ /> },
+
+      { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
 
     ]
   }
