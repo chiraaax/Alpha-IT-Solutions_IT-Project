@@ -3,10 +3,11 @@ import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
-import appointmentRoutes from "./routes/appointmentroutes.js";
+// import appointmentRoutes from "./routes/appointmentroutes.js";
 
 //order
 import OrderRoutes from "./routes/OrderManagement/orderRoutes.js";
+import pickuporderRoutes from "./routes/OrderManagement/pickuporderRoutes.js"
 
 // import productRoutes from "./src/products/products.route.js"; 
 // import authRoutes from "./src/users/user.route.js";
@@ -40,6 +41,7 @@ app.use("/api/faq", faqRoutes);
 app.use("/api/ai", aiRoutes); 
 
 app.use("/api/orders", OrderRoutes); // Order Routes
+app.use("/api/pickup_orders", pickuporderRoutes); //pickuporderRoutes
 
 // Connect to MongoDB
 mongoose

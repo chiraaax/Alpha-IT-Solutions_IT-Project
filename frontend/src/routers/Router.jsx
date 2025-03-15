@@ -3,17 +3,18 @@ import { createBrowserRouter } from 'react-router-dom';
 import App from '../App';
 import Home from '../pages/Home';
 
-import AppointmentDashboard from '../components/Appointment_Dashboard'; 
+// import AppointmentDashboard from '../components/Appointment_Dashboard'; 
 
-import AppointmentForm from '../components/Appointment_form';
-import ProductCategory from '../shop/ProductCategory';
-import SearchPage from '../shop/SearchPage';
+// import AppointmentForm from '../components/Appointment_form';
+// import ProductCategory from '../shop/ProductCategory';
+// import SearchPage from '../shop/SearchPage';
 
 // import AppointmentForm from '../components/Appointment_form'; // Import Appointment Form
-import DraftedTechniciansReports from '../components/DraftedTechniciansReports';
+// import DraftedTechniciansReports from '../components/DraftedTechniciansReports';
 //order management
 import ShoppingCart from '../pages/OrderManagement/shoppingCart';
 import CheckoutForm from '../components/OrderManagement/CheckoutForm';
+import PickupForm from '../components/OrderManagement/pickupForm';
 
 import CustomPreBuilds from '../components/CustomBuilds/CustomPreBuilds';
 import AppointmentDashboard from '../components/Appointment/Appointment_Dashboard'; 
@@ -56,9 +57,10 @@ const router = createBrowserRouter([
       { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
 
       //order management
-      { path : 'ShoppingCart', element : <ShoppingCart />},  //shopping cart route
-      { path : 'CheckoutForm', element : <CheckoutForm />},
-
+      { path : '/ShoppingCart', element : <ShoppingCart />},  //shopping cart route
+      { path : '/CheckoutForm', element : <CheckoutForm />},
+      { path : '/PickupForm', element : <PickupForm />}
+      
     ]
   }
 ]);

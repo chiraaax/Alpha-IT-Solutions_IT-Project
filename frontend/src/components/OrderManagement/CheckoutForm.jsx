@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import "../../styles/OrderManagement/CheckoutForm.css";
+import PickupForm from "./pickupForm";
 
 const CheckoutForm = () => {
   const [formData, setFormData] = useState({
@@ -62,6 +63,9 @@ const CheckoutForm = () => {
           />
           Pick-Up (Self Collect)
         </label>
+
+        {formData.paymentMethod === "Pick-Up(Self Collect)" && <PickupForm />}
+
 
         <button type="submit" class="order">Save and Place Order</button>
       </form>
