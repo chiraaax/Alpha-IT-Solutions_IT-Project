@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import App from '../App';
 import Home from '../pages/Home';import AppointmentDashboard from '../components/Appointment_Dashboard'; 
 import ProductCategory from '../shop/ProductCategory';
-import AppointmentForm from '../components/Appointment_form'; // Import Appointment Form
+import AppointmentForm from '../components/Appointment_form';
 import DraftedTechniciansReports from '../components/DraftedTechniciansReports';
 import Login from '../components/Register/Login';
 import Register from '../components/Register/Register';
