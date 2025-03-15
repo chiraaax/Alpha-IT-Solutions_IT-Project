@@ -1,10 +1,9 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import App from '../App';
-import Home from '../pages/Home';
-import AppointmentDashboard from '../components/Appointment_Dashboard'; 
-import AppointmentForm from '../components/Appointment_form';
-import ProductCategory from '../components/shop/ProductCategory';
+import Home from '../pages/Home';import AppointmentDashboard from '../components/Appointment_Dashboard'; 
+import ProductCategory from '../shop/ProductCategory';
+import AppointmentForm from '../components/Appointment_form'; // Import Appointment Form
 import DraftedTechniciansReports from '../components/DraftedTechniciansReports';
 import Login from '../components/Register/Login';
 import Register from '../components/Register/Register';
@@ -27,7 +26,6 @@ const router = createBrowserRouter([
       { path: 'products/:category', element: <ProductCategory /> }, // Dynamic route for all categories
       { path: 'appointment', element: <AppointmentDashboard /> }, // Appointment Dashboard
       { path: 'appointment-form', element: <AppointmentForm /> }, // Appointment Form Route
-
       { path: 'draftedTechnicianReport', element: <DraftedTechniciansReports/> }, // Appointment Form Route
       
       //login routes
