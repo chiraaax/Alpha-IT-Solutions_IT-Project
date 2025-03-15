@@ -2,15 +2,10 @@ import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import App from '../App';
 import Home from '../pages/Home';
-<<<<<<< HEAD
-import AppointmentDashboard from '../components/Appointment_Dashboard'; 
 
-import AppointmentForm from '../components/Appointment_form';
-import ProductCategory from '../shop/ProductCategory';
-import DraftedTechniciansReports from '../components/DraftedTechniciansReports';
 import CustomPreBuilds from '../components/CustomBuilds/CustomPreBuilds';
 
-=======
+
 import AppointmentDashboard from '../components/Appointment/Appointment_Dashboard'; 
 import AppointmentForm from '../components/Appointment/Appointment_form';
 import AppointmenentAI from "../components/Appointment/AppointmentAi"
@@ -23,7 +18,6 @@ import FAQManage from '../components/Register/FAQManage';
 import FAQ from '../components/Register/FAQ';
 import ProductCategory from '../components/shop/ProductCategory';
 import ProtectedRoute from "../routers/ProtectedRoute"; 
->>>>>>> 54af226e6697d29e87af9302ab913e9a93e95367
 
 
 // Define the router object
@@ -34,10 +28,7 @@ const router = createBrowserRouter([
     children: [
       { path: '', element: <Home /> },
       { path: 'products/:category', element: <ProductCategory /> }, // Dynamic route for all categories
-<<<<<<< HEAD
 
-=======
->>>>>>> 54af226e6697d29e87af9302ab913e9a93e95367
       { path: 'appointment', element: <AppointmentDashboard /> }, // Appointment Dashboard
       {path: 'AppointmenentAI', element:<AppointmenentAI/>},
       { path: 'appointment-form', element: <AppointmentForm /> }, // Appointment Form Route
