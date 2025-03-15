@@ -8,10 +8,10 @@ import AppointmentForm from '../components/Appointment_form';
 import ProductCategory from '../shop/ProductCategory';
 import SearchPage from '../shop/SearchPage';
 
-import AppointmentForm from '../components/Appointment_form'; // Import Appointment Form
+// import AppointmentForm from '../components/Appointment_form'; // Import Appointment Form
 import DraftedTechniciansReports from '../components/DraftedTechniciansReports';
 
-
+import ShoppingCart from '../pages/OrderManagement/shoppingCart';
 // Define the router object
 const router = createBrowserRouter([
   {
@@ -28,6 +28,9 @@ const router = createBrowserRouter([
       // { path: 'laptops', element: <Laptops /> },
       // { path: 'processors', element: <Processors /> },
       // Add other routes here...
+
+      //order management
+      { path : 'ShoppingCart', element : <ShoppingCart />},  //shopping cart route
 
     ]
   }
