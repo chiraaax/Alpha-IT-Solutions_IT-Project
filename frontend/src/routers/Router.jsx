@@ -4,7 +4,6 @@ import App from '../App';
 import Home from '../pages/Home';
 import AppointmentDashboard from '../components/Appointment/Appointment_Dashboard'; 
 import AppointmentForm from '../components/Appointment/Appointment_form';
-import ProductCategory from '../shop/ProductCategory';
 import AppointmenentAI from "../components/Appointment/AppointmentAi"
 import DraftedTechniciansReports from '../components/DraftedTechniciansReports';
 import Login from '../components/Register/Login';
