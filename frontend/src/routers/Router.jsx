@@ -10,8 +10,10 @@ import SearchPage from '../shop/SearchPage';
 
 // import AppointmentForm from '../components/Appointment_form'; // Import Appointment Form
 import DraftedTechniciansReports from '../components/DraftedTechniciansReports';
-
+//order management
 import ShoppingCart from '../pages/OrderManagement/shoppingCart';
+import CheckoutForm from '../components/OrderManagement/CheckoutForm';
+
 // Define the router object
 const router = createBrowserRouter([
   {
@@ -31,6 +33,7 @@ const router = createBrowserRouter([
 
       //order management
       { path : 'ShoppingCart', element : <ShoppingCart />},  //shopping cart route
+      { path : 'CheckoutForm', element : <CheckoutForm />},
 
     ]
   }

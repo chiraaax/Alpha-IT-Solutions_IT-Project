@@ -3,7 +3,10 @@ import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
-import appointmentRoutes from "./routes/appointmentroutes.js"
+import appointmentRoutes from "./routes/appointmentroutes.js";
+
+//order
+import OrderRoutes from "./routes/OrderManagement/orderRoutes.js";
 
 // import productRoutes from "./src/products/products.route.js"; 
 // import authRoutes from "./src/users/user.route.js";
@@ -25,6 +28,8 @@ app.use(cookieParser()); // Parse cookies
 
 
 app.use("/api/appointments", appointmentRoutes);
+
+app.use("/api/orders", OrderRoutes); // Order Routes
 
 // Connect to MongoDB
 mongoose
