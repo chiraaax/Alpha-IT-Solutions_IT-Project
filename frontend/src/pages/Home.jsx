@@ -6,7 +6,7 @@ import DesignSection from '../components/DesignSection'
 import CustomerSection from '../components/CustomerSection'
 import About from '../components/About'
 import TryNow from '../components/TryNow'
-import OfferedProducts from '../shop/OfferedProducts'
+import OfferedProducts from '../components/shop/OfferedProducts'
 
 const Home = () => {
   return (
