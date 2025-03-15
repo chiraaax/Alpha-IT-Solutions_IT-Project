@@ -16,6 +16,12 @@ import FAQ from '../components/Register/FAQ';
 import ProductCategory from '../components/shop/ProductCategory';
 import ProtectedRoute from "../routers/ProtectedRoute"; 
 
+//CustomBuilds Components
+import GamingBuilds from '../components/CustomBuilds/GamingBuilds'; // Import GamingBuilds
+import BudgetBuilds from '../components/CustomBuilds/BudgetBuilds'; // Import BudgetBuilds
+import BuildDetail from '../components/CustomBuilds/BuildDetail'; // Import BuildDetail
+import CustomBuildForm from '../components/CustomBuilds/CustomBuildForm'; // Import CustomBuildForm
+
 
 
 // Define the router object
@@ -25,15 +31,13 @@ const router = createBrowserRouter([
     element: <App />,  // App is the layout (Navbar + Outlet + Footer)
     children: [
       { path: '', element: <Home /> },
-      { path: 'products/:category', element: <ProductCategory /> }, // Dynamic route for all categories
+      { path: 'products/:category', element: <ProductCategory /> },
+      { path: 'appointment', element: <AppointmentDashboard /> },
+      { path: 'AppointmenentAI', element: <AppointmenentAI /> },
+      { path: 'appointment-form', element: <AppointmentForm /> },
+      { path: 'draftedTechnicianReport', element: <DraftedTechniciansReports /> },
 
-
-      { path: 'appointment', element: <AppointmentDashboard /> }, // Appointment Dashboard
-      {path: 'AppointmenentAI', element:<AppointmenentAI/>},
-      { path: 'appointment-form', element: <AppointmentForm /> }, // Appointment Form Route
-      { path: 'draftedTechnicianReport', element: <DraftedTechniciansReports/> }, // Appointment Form Route
-      
-      //login routes
+      // Register, Login, ForgotPassword, VerifyOTP routes
       { path: '/login', element: <Login /> },
       { path: '/Register', element: <Register /> },
       { path: '/ForgotPassword', element: <ForgotPassword /> },
@@ -41,8 +45,13 @@ const router = createBrowserRouter([
       { path: "FAQManage", element: <ProtectedRoute element={<FAQManage />} allowedRoles={["admin"]} /> },
       { path: '/FAQ', element: <FAQ /> },
 
+      // CustomBuilds routes
       { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
-
+      { path: 'gaming-builds', element: <GamingBuilds /> }, // New route for Gaming Builds
+      { path: 'budget-builds', element: <BudgetBuilds /> }, // New route for Budget Builds     
+      { path: 'gaming-builds/:id', element: <BuildDetail type="gaming" /> }, // Route for Gaming Build Detail
+      { path: 'budget-builds/:id', element: <BuildDetail type="budget" /> }, // Route for Budget Build Detail
+      { path: 'custom-build-form', element: <CustomBuildForm /> }, // Route for Custom Build Form
     ]
   }
 ]);

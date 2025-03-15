@@ -20,4 +20,3 @@ const CustomPreBuilds = () => {
 
 export default CustomPreBuilds;
 
-// background: linear-gradient(to bottom, #070000, #0e375f, #ffffff);
