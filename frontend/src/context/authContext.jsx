@@ -1,7 +1,9 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
+
 import { toast } from "react-toastify";
-import * as jwtDecode from "jwt-decode";
+
+import { jwtDecode } from "jwt-decode"; 
 
 
 export const AuthContext = createContext();
