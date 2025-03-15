@@ -43,7 +43,7 @@ function ForgotPassword() {
             const response = await axios.post("http://localhost:5000/api/auth/forgot-password", { email, newPassword, confirmPassword });
             setMessage(response.data.message);
             setTimeout(() => {
-                navigate("/");
+                navigate("/Login");
             }, 3000);
         } catch (err) {
             setError(err.response?.data?.message || "Something went wrong");
@@ -89,7 +89,7 @@ function ForgotPassword() {
             <p className="text-center text-gray-500 text-sm mt-4">
               Remembered your password?{" "}
               <span
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/Login")}
                 className="text-blue-500 hover:underline cursor-pointer"
               >
                 Back to Login
@@ -130,7 +130,7 @@ function ForgotPassword() {
             <p className="text-center text-gray-500 text-sm mt-4">
               Changed your mind?{" "}
               <span
-                onClick={() => navigate("/login")}
+                onClick={() => navigate("/Login")}
                 className="text-blue-500 hover:underline cursor-pointer"
               >
                 Back to Login

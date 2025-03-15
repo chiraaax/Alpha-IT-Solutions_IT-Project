@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';  
 import axios from 'axios';
+import { toast } from "react-toastify";
 
 const Register = () => {
     const [name, setName] = useState('');
@@ -24,13 +25,13 @@ const Register = () => {
             await axios.post('http://localhost:5000/api/auth/register', { name, email, password, contactNumber, address });
             
             localStorage.setItem('email', email);
-            
-            alert('Check your email for OTP verification.');
+
+            toast.success("Check your email for OTP verification!", { position: "top-right" });
             
             navigate('/VerifyOTP');
         } catch (error) {
             console.error('Registration failed:', error);
-            alert('Registration failed. Please try again.');
+            toast.error("Registration failed. Please try again.", { position: "top-right" });
         }
     };
 

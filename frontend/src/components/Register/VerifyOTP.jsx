@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 function VerifyOTP() {
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -32,7 +33,7 @@ function VerifyOTP() {
         const enteredOTP = otp.join(""); // Combine OTP digits into a single string
 
         if (enteredOTP.length !== 6) {
-            alert("Please enter a 6-digit OTP.");
+            toast.error("Please enter a 6-digit OTP.", { position: "top-right" });
             return;
         }
 
@@ -42,17 +43,19 @@ function VerifyOTP() {
                 otp: enteredOTP
             });
 
-            alert("OTP Verified Successfully!");
-            navigate("/");
+            toast.success("OTP Verified Successfully!", { position: "top-right" });
+            navigate("/Login");
         } catch (error) {
             console.error("Error verifying OTP:", error);
-            alert(error.response?.data?.message || "Something went wrong. Please try again.");
+            toast.error(error.response?.data?.message || "Something went wrong. Please try again.", {
+                position: "top-right",
+            });
         }
     };
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600">
-            <div className="bg-white p-8 rounded-xl shadow-xl w-96">
+            <div className="bg-white p-8 rounded-xl shadow-xl w-[450px]">
                 <h2 className="text-3xl font-bold text-center text-gray-700">Verify OTP</h2>
                 <p className="text-gray-500 text-center mt-2">Enter the 6-digit code sent to your email</p>
 
