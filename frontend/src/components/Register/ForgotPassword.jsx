@@ -53,7 +53,7 @@ function ForgotPassword() {
     };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-900 to-red-900">
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
         <h2 className="text-3xl font-bold text-center text-gray-700">
           {step === 1 ? "Forgot Password?" : "Reset Your Password"}
@@ -74,14 +74,14 @@ function ForgotPassword() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-3 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
               placeholder="Enter your email"
             />
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-4 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition font-semibold"
+              className="w-full px-4 py-2 mt-4 text-white bg-gradient-to-r from-blue-900 to-red-900 rounded-lg hover:bg-blue-700 transition font-semibold cursor-pointer"
             >
               {loading ? "Checking..." : "Verify Email"}
             </button>
@@ -105,7 +105,7 @@ function ForgotPassword() {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-3 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
               placeholder="New Password"
             />
 
@@ -115,14 +115,14 @@ function ForgotPassword() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-3 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
               placeholder="Confirm Password"
             />
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-4 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition font-semibold"
+              className="w-full px-4 py-2 mt-4 text-white bg-gradient-to-r from-blue-900 to-red-900 rounded-lg hover:bg-blue-900 transition font-semibold cursor-pointer"
             >
               {loading ? "Updating..." : "Reset Password"}
             </button>
@@ -131,7 +131,7 @@ function ForgotPassword() {
               Changed your mind?{" "}
               <span
                 onClick={() => navigate("/Login")}
-                className="text-blue-500 hover:underline cursor-pointer"
+                className="text-blue-900 hover:underline cursor-pointer"
               >
                 Back to Login
               </span>
