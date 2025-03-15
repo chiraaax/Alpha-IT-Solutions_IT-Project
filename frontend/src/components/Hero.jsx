@@ -48,7 +48,7 @@ const Hero = () => {
         <nav className="flex flex-col space-y-2">
           <button
             onClick={() => navigate('/AI-Engine')}
-            className="bg-gradient-to-r from-red-900 to-blue-700 min-w-90 text-white flex flex-col p-3 text-sm hover:bg-gradient-to-r hover:from-blue-700 hover:to-red-900 cursor-pointer"
+            className="bg-gradient-to-r from-red-900 to-blue-700 min-w-90 text-white flex flex-col p-3 text-sm cursor-pointer"
             style={{
               border: '2px solid',
               borderImage: 'linear-gradient(to right, red, navy) 1',

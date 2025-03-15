@@ -42,14 +42,14 @@ const router = createBrowserRouter([
   //dashboard routes
   {
     path: "/dashboard",
-    element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>, // Use PrivateRoute for authentication
+    element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
     children: [
       // User Dashboard Routes
       { path: '', element: <div>d</div> },
       { path: 'profile', element: <div>de</div> },
       { path: 'reviews', element:<div>sfs</div> },
 
-      //admin routes (only accessible to admin) //TODO: use private route
+      //admin routes (only accessible to admin) 
       {
         path : 'admin', 
         element : <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> 
