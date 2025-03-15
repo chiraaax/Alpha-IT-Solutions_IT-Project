@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import { toast } from "react-toastify";
 
 function VerifyOTP() {
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
