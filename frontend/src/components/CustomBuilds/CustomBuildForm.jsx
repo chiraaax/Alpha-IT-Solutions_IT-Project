@@ -1,70 +1,149 @@
-// client/src/components/CustomBuilds/CustomBuildForm.jsx
 import React, { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { FaSun, FaMoon } from 'react-icons/fa'; // Import FontAwesome sun and moon icons
+import { useTheme } from './ThemeContext'; // Import the useTheme hook
 
 const CustomBuildForm = () => {
-  const [selectedComponents, setSelectedComponents] = useState({
-    cpu: '',
-    gpu: '',
-    ram: '',
-    storage: '',
+  const { isDark, toggleTheme } = useTheme(); // Get dark mode state and toggle function
+
+  const [formData, setFormData] = useState({
+    cpu: 'Intel i9',
+    gpu: 'RTX 3080',
+    ram: '16GB',
+    storage: '512GB SSD',
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setSelectedComponents({ ...selectedComponents, [name]: value });
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Here you can handle the submission of the selected components
-    console.log('Selected Components:', selectedComponents);
-    // You can also send this data to your backend if needed
+
+    if (Object.values(formData).includes('')) {
+      toast.error('Please complete all fields!');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    setTimeout(() => {
+      setSubmitted(true);
+      setIsSubmitting(false);
+      toast.success('Custom Build Created Successfully!');
+    }, 1000);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-4">Customize Your Build</h2>
-      <div className="mb-4">
-        <label className="block mb-2">CPU:</label>
-        <select name="cpu" value={selectedComponents.cpu} onChange={handleChange} className="border rounded p-2 w-full">
-          <option value="">Select CPU</option>
-          <option value="Intel i5">Intel i5</option>
-          <option value="Intel i7">Intel i7</option>
-          <option value="AMD Ryzen 5">AMD Ryzen 5</option>
-          <option value="AMD Ryzen 7">AMD Ryzen 7</option>
-        </select>
-      </div>
-      <div className="mb-4">
-        <label className="block mb-2">GPU:</label>
-        <select name="gpu" value={selectedComponents.gpu} onChange={handleChange} className="border rounded p-2 w-full">
-          <option value="">Select GPU</option>
-          <option value="NVIDIA RTX 3060">NVIDIA RTX 3060</option>
-          <option value="NVIDIA RTX 3070">NVIDIA RTX 3070</option>
-          <option value="AMD RX 6700 XT">AMD RX 6700 XT</option>
-        </select>
-      </div>
-      <div className="mb-4">
-        <label className="block mb-2">RAM:</label>
-        <select name="ram" value={selectedComponents.ram} onChange={handleChange} className="border rounded p-2 w-full">
-          <option value="">Select RAM</option>
-          <option value="8GB">8GB</option>
-          <option value="16GB">16GB</option>
-          <option value="32GB">32GB</option>
-        </select>
-      </div>
-      <div className="mb-4">
-        <label className="block mb-2">Storage:</label>
-        <select name="storage" value={selectedComponents.storage} onChange={handleChange} className="border rounded p-2 w-full">
-          <option value="">Select Storage</option>
-          <option value="256GB SSD">256GB SSD</option>
-          <option value="512GB SSD">512GB SSD</option>
-          <option value="1TB HDD">1TB HDD</option>
-        </select>
-      </div>
-      <button type="submit" className="bg-blue-600 text-white rounded p-2 hover:bg-blue-700 transition duration-200">
-        Create Build
+    <div className={`min-h-screen flex flex-col items-center p-6 ${isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'}`}>
+      <ToastContainer />
+
+      {/* Dark/Light Mode Toggle Button */}
+      <button
+        onClick={toggleTheme}
+        className="fixed top-4 right-4 bg-gray-800 text-white p-3 rounded-full shadow-lg transition-all hover:bg-gray-700 focus:outline-none"
+      >
+        {isDark ? <FaSun className="text-yellow-500" /> : <FaMoon className="text-blue-400" />}
       </button>
-    </form>
+
+      {submitted ? (
+        <div className="text-xl font-semibold text-green-600">
+          Build saved successfully! 🎉
+        </div>
+      ) : (
+        <>
+          <h1 className="text-4xl font-bold mb-4">Customize Your Build</h1>
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div>
+              <label className="block text-lg">CPU</label>
+              <select
+                name="cpu"
+                value={formData.cpu}
+                onChange={handleChange}
+                className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-label="Choose your CPU"
+              >
+                <option>Intel i9</option>
+                <option>Intel i7</option>
+                <option>AMD Ryzen 5</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-lg">GPU</label>
+              <select
+                name="gpu"
+                value={formData.gpu}
+                onChange={handleChange}
+                className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-label="Choose your GPU"
+              >
+                <option>RTX 3080</option>
+                <option>RTX 3070</option>
+                <option>AMD RX 6700 XT</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-lg">RAM</label>
+              <select
+                name="ram"
+                value={formData.ram}
+                onChange={handleChange}
+                className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-label="Choose your RAM"
+              >
+                <option>16GB</option>
+                <option>32GB</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-lg">Storage</label>
+              <select
+                name="storage"
+                value={formData.storage}
+                onChange={handleChange}
+                className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-label="Choose your Storage"
+              >
+                <option>512GB SSD</option>
+                <option>1TB HDD</option>
+              </select>
+            </div>
+
+            <h2 className="text-lg font-semibold mt-4">Your Selected Build:</h2>
+            <div
+              className={`p-4 rounded-lg shadow ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}
+            >
+              {Object.entries(formData).map(([key, value]) => (
+                <p key={key} className="text-lg">
+                  <strong>{key.toUpperCase()}:</strong> {value}
+                </p>
+              ))}
+            </div>
+
+            <button
+              type="submit"
+              className={`mt-4 bg-green-600 text-white rounded p-2 transition duration-200 ${
+                isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-700'
+              }`}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Saving...' : 'Save Custom Build'}
+            </button>
+          </form>
+        </>
+      )}
+    </div>
   );
 };
 

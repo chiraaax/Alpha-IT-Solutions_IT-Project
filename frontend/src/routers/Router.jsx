@@ -41,8 +41,10 @@ const router = createBrowserRouter([
       { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
       { path: 'gaming-builds', element: <GamingBuilds /> }, // New route for Gaming Builds
       { path: 'budget-builds', element: <BudgetBuilds /> }, // New route for Budget Builds
-      { path: 'gaming-builds/:id', element: <BuildDetail type="gaming" /> }, // Route for Gaming Build Detail
-      { path: 'budget-builds/:id', element: <BuildDetail type="budget" /> }, // Route for Budget Build Detail
+      // Modify these two routes to include the 'type' and 'id' dynamic params
+      { path: 'gaming-builds/:type/:id', element: <BuildDetail /> }, // Route for Gaming Build Detail
+      { path: 'budget-builds/:type/:id', element: <BuildDetail /> }, // Route for Budget Build Detail
+
       { path: 'custom-build-form', element: <CustomBuildForm /> }, // Route for Custom Build Form
     ]
   },
