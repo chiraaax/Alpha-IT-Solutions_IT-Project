@@ -190,3 +190,24 @@
   .ai-chat-response-text p {
     margin-bottom: 15px;
   }
+
+ /* Styles for the "Book Appointment" button */
+.btn-appointment {
+  background: linear-gradient(45deg, #3498db, #e74c3c); /* Blue to red gradient */
+  color: black; /* White text */
+  border: none; /* Remove border */
+  padding: 10px 20px; /* Padding */
+  border-radius: 5px; /* Rounded corners */
+  font-size: 16px; /* Font size */
+  cursor: pointer; /* Pointer cursor on hover */
+  margin-top: 20px; /* Space above the button */
+  transition: background 0.3s ease; /* Smooth transition */
+}
+
+.btn-appointment:hover {
+  background: linear-gradient(45deg, #2980b9, #c0392b); /* Darker gradient on hover */
+}
+
+.btn-appointment:active {
+  background: linear-gradient(45deg, #1c5980, #a3291e); /* Even darker gradient on click */
+}

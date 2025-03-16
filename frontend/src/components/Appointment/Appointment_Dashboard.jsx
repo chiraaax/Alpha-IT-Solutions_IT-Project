@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../../styles/appointment_dashboard.css"
+import "../../styles/appointment_dashboard.css";
 
 const AppointmentDashboard = () => {
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentStage, setCurrentStage] = useState(-1); // Initial stage is empty
   const navigate = useNavigate();
+
+  // Progress stages
+  const progressStages = [
+    "Device Handover",
+    "Diagnosis",
+    "Repair",
+    "Testing",
+    "Device Ready to Pick",
+  ];
 
   // Fetch appointments from the backend
   useEffect(() => {
@@ -30,6 +40,7 @@ const AppointmentDashboard = () => {
   const handleRowClick = (appointment) => {
     setSelectedAppointment(appointment);
     setIsModalOpen(true);
+    setCurrentStage(-1); // Reset progress to empty when opening modal
   };
 
   // Handle input change in modal
@@ -64,6 +75,10 @@ const AppointmentDashboard = () => {
 
   // Handle delete appointment
   const handleDelete = async () => {
+    // Show confirmation dialog
+    const isConfirmed = window.confirm("Are you sure you want to delete this appointment?");
+    if (!isConfirmed) return; // Exit if the user cancels
+
     try {
       const response = await fetch(`http://localhost:5000/api/appointments/${selectedAppointment._id}`, {
         method: "DELETE",
@@ -92,7 +107,9 @@ const AppointmentDashboard = () => {
           <button className="btn drafted-reports" onClick={() => navigate("/draftedTechnicianReport")}>
             Drafted Technicians Reports
           </button>
-          <button className="btn self-diagnosis"  onClick={() => navigate("/AppointmenentAI")}>Self Diagnosis</button>
+          <button className="btn self-diagnosis" onClick={() => navigate("/AppointmenentAI")}>
+            Self Diagnosis
+          </button>
         </div>
       </div>
 
@@ -142,6 +159,7 @@ const AppointmentDashboard = () => {
               </button>
             </div>
             <div className="modal-body">
+              {/* Input Fields */}
               <label>Name:</label>
               <input type="text" name="name" value={selectedAppointment.name} onChange={handleInputChange} />
 
@@ -180,6 +198,22 @@ const AppointmentDashboard = () => {
 
               <label>Backup Data:</label>
               <input type="checkbox" name="backupData" checked={selectedAppointment.backupData} onChange={(e) => setSelectedAppointment({ ...selectedAppointment, backupData: e.target.checked })} />
+
+              {/* Progress Bar */}
+              <div className="progress-bar">
+                <h3>Progress</h3>
+                <div className="progress-stages">
+                  {progressStages.map((stage, index) => (
+                    <div
+                      key={index}
+                      className={`progress-stage ${index <= currentStage ? "active" : ""} ${index === progressStages.length - 1 ? "final-stage" : ""}`}
+                    >
+                      <div className="circle"></div>
+                      <span>{stage}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
             <div className="modal-footer">
               <button className="btn update-btn" onClick={handleUpdate}>
@@ -197,7 +231,3 @@ const AppointmentDashboard = () => {
 };
 
 export default AppointmentDashboard;
-
-
-
-
