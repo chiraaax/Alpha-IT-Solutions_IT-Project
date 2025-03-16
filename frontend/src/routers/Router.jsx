@@ -16,6 +16,7 @@ import FAQ from '../components/Register/FAQ';
 import ProductCategory from '../components/shop/ProductCategory';
 import ProtectedRoute from "../routers/ProtectedRoute";  
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
+import AddProduct from '../pages/dashboard/admin/addProduct/AddProduct';
 
 const router = createBrowserRouter([
   {
@@ -42,11 +43,15 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
     children: [
+
+      //customer routes
       { path: '', element: <div>d</div> },
       { path: 'profile', element: <div>de</div> },
       { path: 'reviews', element: <div>sfs</div> },
+
+      //admin routes
       { path: 'admin', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
-      { path: 'add-new-product', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
+      { path: 'add-new-product', element: <ProtectedRoute role="admin"><AddProduct/></ProtectedRoute> },
       { path: 'manage-products', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
       { path: 'update-product/:id', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
       { path: 'users', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },

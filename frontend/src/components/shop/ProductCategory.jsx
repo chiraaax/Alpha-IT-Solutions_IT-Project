@@ -1,13 +1,15 @@
 import React, { useState, useEffect , useMemo} from 'react';
 import { useParams } from 'react-router-dom';
 import ProductCards from './ProductCards';
-import products from '../../data/products.json';
+import axios from "axios";
+
 
 // Define a configuration object for each category’s filters.
 const filtersConfig = {
   laptop: {
     priceRange: { min: 0, max: 2790000 },
-    availability: ['out of stock', 'in stock', 'pre-order'],
+    availability: ['out of stock', 'in stock', 'pre-order'],    
+    state : ['new', 'used', 'refurbished'],
     brand: ['msi', 'asus', 'lenovo', 'hp', 'acer'],
     cpu: [
       'intel core i7',
@@ -47,6 +49,7 @@ const filtersConfig = {
   motherboards: {
     priceRange: { min: 0, max: 2990000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
+    state : ['new', 'used', 'refurbished'],
     chipset: [
       'amd a520',
       'amd b550',
@@ -76,6 +79,7 @@ const filtersConfig = {
   processor: {
     priceRange: { min: 0, max: 2320000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
+    state : ['new', 'used', 'refurbished'],
     cpuManufacture: ['amd', 'intel'],
     numberOfCores: [
       '16 cores',
@@ -100,6 +104,7 @@ const filtersConfig = {
   ram: {
     priceRange: { min: 0, max: 108000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
+    state : ['new', 'used', 'refurbished'],
     brand: ['corsair', 'team', 'g skill', 'adata', 'transcend'],
     capacity: [
       '64gb (32gb x 2)',
@@ -124,6 +129,7 @@ const filtersConfig = {
   gpu: {
     priceRange: { min: 0, max: 999000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
+    state : ['new', 'used', 'refurbished'],
     chipset: [
       'rtx 4060',
       'rtx 4060ti',
@@ -155,6 +161,7 @@ const filtersConfig = {
   powerSupply: {
     priceRange: { min: 0, max: 245000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
+    state : ['new', 'used', 'refurbished'],
     brands: ['asus', 'corsair', 'antec', 'thermal take', 'prolink', 'seasonic'],
     modularType: ['full modular', 'non modular', 'semi modular'],
     powerEfficiency: ['80+ titanium', '80+ gold', '80+ platinum', '80+ bronze', 'non rated'],
@@ -171,6 +178,7 @@ const filtersConfig = {
   monitors: {
     priceRange: { min: 0, max: 782000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
+    state : ['new', 'used', 'refurbished'],
     manufacturer: ['msi', 'asus', 'corsair', 'lenovo', 'acer', 'viewsonic', 'hp', 'lg', 'dell'],
     monitorType: ['gaming monitor', 'personal monitor', 'professional monitor'],
     panelType: ['oled', 'va', 'ips', 'tn'],
@@ -224,6 +232,7 @@ const filtersConfig = {
   'cpu coolers': {
     priceRange: { min: 0, max: 159500 },
     availability: ['out of stock', 'in stock', 'pre-order'],
+    state : ['new', 'used', 'refurbished'],
     coolerManufacturer: [
       'gamdias',
       'corsair',
@@ -243,6 +252,7 @@ const filtersConfig = {
   keyboard: {
     priceRange: { min: 0, max: 145000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
+    state : ['new', 'used', 'refurbished'],
     connectivity: ['wireless', 'wired'],
     manufacturer: [
       'asus',
@@ -264,6 +274,7 @@ const filtersConfig = {
   mouse: {
     priceRange: { min: 0, max: 145000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
+    state : ['new', 'used', 'refurbished'],
     connectivity: ['wireless', 'wired'],
     manufacturer: [
       'asus',
@@ -285,6 +296,7 @@ const filtersConfig = {
   'sound systems': {
     priceRange: { min: 0, max: 132500 },
     availability: ['out of stock', 'in stock', 'pre-order'],
+    state : ['new', 'used', 'refurbished'],
     soundConnectivity: ['wired', 'wireless'],
     soundManufacturer: [
       'corsair',
@@ -308,6 +320,7 @@ const filtersConfig = {
   'cables and connectors': {
     priceRange: { min: 0, max: 15000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
+    state : ['new', 'used', 'refurbished'],
     cableLength: ['2m', '1.5m', '1m', '3m', '0.8m'],
     productType: [
       'dp/hdmi',
@@ -327,6 +340,7 @@ const filtersConfig = {
   storage: {
     priceRange: { min: 0, max: 276000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
+    state : ['new', 'used', 'refurbished'],
     storageCapacity: [
       '2tb',
       '1tb',
@@ -365,6 +379,7 @@ const filtersConfig = {
   'external storage': {
     priceRange: { min: 0, max: 138000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
+    state : ['new', 'used', 'refurbished'],
     externalStorageBrand: [
       'western digital',
       'corsair',
@@ -396,137 +411,200 @@ const filtersConfig = {
   }
 };
 
+export const categoryMapping = {
+  laptop: "laptop",
+  motherboards: "motherboard",
+  processor: "processor",
+  ram: "ram",
+  gpu: "gpu",
+  powerSupply: "powerSupply",
+  casings: "casings",
+  monitors: "monitors",
+  "cpu coolers": "coolers",
+  keyboard: "keyboard",
+  mouse: "mouse",
+  "sound systems": "soundSystems",
+  "cables and connectors": "cables",
+  storage: "storage",
+  "external storage": "externalStorage"
+};
+
 const ProductCategory = () => {
-    const { category } = useParams();
-    const categoryFilters = filtersConfig[category] || {};
+  const { category } = useParams();
+  const categoryFilters = filtersConfig[category] || {};
+
+  const initialPriceRange = useMemo(() => {
+    return categoryFilters.priceRange
+      ? [categoryFilters.priceRange.min, categoryFilters.priceRange.max]
+      : [0, 1000];
+  }, [categoryFilters.priceRange]);
+
+  const [priceRange, setPriceRange] = useState(initialPriceRange);
+  const [selectedFilters, setSelectedFilters] = useState({});
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   
-    // Memoize initialPriceRange so its reference doesn't change on every render.
-    const initialPriceRange = useMemo(() => {
-      return categoryFilters.priceRange
-        ? [categoryFilters.priceRange.min, categoryFilters.priceRange.max]
-        : [0, 1000];
-    }, [categoryFilters.priceRange]);
+  const [page, setPage] = useState(1);
+  const limit = 12; // 12 products per page
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      setError(null);
   
-    const [priceRange, setPriceRange] = useState(initialPriceRange);
+      try {
+        const response = await axios.get(`http://localhost:5000/api/products`, {
+          params: { 
+            category, 
+            page, 
+            limit,
+            minPrice: priceRange[0],
+            maxPrice: priceRange[1],
+            ...selectedFilters,
+          },
+        });
   
-    // For non-price filters, store selected options in an object (each key holds an array)
-    const [selectedFilters, setSelectedFilters] = useState({});
+        setProducts(response.data);
   
-    // Reset filters when the category changes.
-    useEffect(() => {
-      setPriceRange(initialPriceRange);
-      setSelectedFilters({});
-    }, [category, initialPriceRange]);
-  
-    // Toggle filter option for multiple selections.
-    const toggleFilter = (filterKey, option) => {
-      setSelectedFilters((prev) => {
-        const current = prev[filterKey] || [];
-        if (current.includes(option)) {
-          // Remove option
-          return { ...prev, [filterKey]: current.filter((v) => v !== option) };
-        } else {
-          // Add option
-          return { ...prev, [filterKey]: [...current, option] };
+        // Read total count from the header and calculate total pages
+        const totalCount = parseInt(response.headers["x-total-count"], 10);
+        if (!isNaN(totalCount)) {
+          setTotalPages(Math.ceil(totalCount / limit));
         }
-      });
+      } catch (err) {
+        console.error("❌ Error fetching products:", err);
+        setError("Failed to fetch products. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
     };
   
-    // Filter products based on category, price range, and selected filter options.
-    const filteredProducts = products.filter((product) => {
-      if (product.category !== category) return false;
-      if (product.price < priceRange[0] || product.price > priceRange[1])
-        return false;
-      for (const filterKey in selectedFilters) {
-        const selectedOptions = selectedFilters[filterKey];
-        if (selectedOptions && selectedOptions.length > 0) {
-          // Ensure product attribute matches at least one selected option.
-          if (!selectedOptions.includes(product[filterKey])) return false;
-        }
-      }
-      return true;
+    fetchProducts();
+  }, [category, page, priceRange, selectedFilters]);
+  
+
+  useEffect(() => {
+    setPriceRange(initialPriceRange);
+    setSelectedFilters({});
+    setPage(1); // Reset page when category or filters change
+  }, [category, initialPriceRange]);
+
+  const toggleFilter = (filterKey, option) => {
+    setSelectedFilters((prev) => {
+      const current = prev[filterKey] || [];
+      return current.includes(option)
+        ? { ...prev, [filterKey]: current.filter((v) => v !== option) }
+        : { ...prev, [filterKey]: [...current, option] };
     });
-  
-    return (
-      <div className="bg-gray-900 pb-6 min-h-screen">
-        <section className="container mx-auto py-8 px-4">
-          <h2 className="text-3xl font-bold text-white capitalize mb-6">
-            {category} Products
-          </h2>
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Left: Filters Sidebar */}
-            <aside className="md:w-1/4 bg-gray-800 p-4 rounded-lg">
-              {/* Price Range Filter */}
-              {categoryFilters.priceRange && (
-                <div className="mb-6">
-                  <h4 className="text-lg font-semibold text-white mb-2">
-                    Price Range
-                  </h4>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-white">{priceRange[0]} LKR</span>
-                    <input
-                      type="range"
-                      min={categoryFilters.priceRange.min}
-                      max={categoryFilters.priceRange.max}
-                      value={priceRange[1]}
-                      onChange={(e) =>
-                        setPriceRange([priceRange[0], Number(e.target.value)])
-                      }
-                      className="w-full h-2 bg-gray-600 rounded-lg cursor-pointer accent-blue-500"
-                    />
-                    <span className="text-white">
-                      Up to {priceRange[1]} LKR
-                    </span>
-                  </div>
+  };
+
+  return (
+    <div className="bg-gray-900 pb-6 min-h-screen">
+      <section className="container mx-auto py-8 px-4">
+        <h2 className="text-3xl font-bold text-white capitalize mb-6">
+          {category} Products
+        </h2>
+
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Filters Sidebar */}
+          <aside className="md:w-1/4 bg-gray-800 p-4 rounded-lg">
+            {categoryFilters.priceRange && (
+              <div className="mb-6">
+                <h4 className="text-lg font-semibold text-white mb-2">
+                  Price Range
+                </h4>
+                <div className="flex items-center space-x-2">
+                  <span className="text-white">{priceRange[0]} LKR</span>
+                  <input
+                    type="range"
+                    min={categoryFilters.priceRange.min}
+                    max={categoryFilters.priceRange.max}
+                    value={priceRange[1]}
+                    onChange={(e) =>
+                      setPriceRange([priceRange[0], Number(e.target.value)])
+                    }
+                    className="w-full h-2 bg-gray-600 rounded-lg cursor-pointer accent-blue-500"
+                  />
+                  <span className="text-white">
+                    Up to {priceRange[1]} LKR
+                  </span>
                 </div>
-              )}
-  
-              {/* Other Filters */}
-              <div className="space-y-4">
-                {Object.keys(categoryFilters).map((filterKey) => {
-                  if (filterKey === 'priceRange') return null;
-                  const options = categoryFilters[filterKey];
-                  return (
-                    <div key={filterKey} className="bg-gray-700 p-3 rounded-lg">
-                      <h4 className="text-lg font-semibold text-white mb-2">
-                        {filterKey.charAt(0).toUpperCase() + filterKey.slice(1)}
-                      </h4>
-                      <div className="space-y-2">
-                        {options.map((option) => (
-                          <label
-                            key={option}
-                            className="flex items-center gap-2 text-white cursor-pointer"
-                          >
-                            <input
-                              type="checkbox"
-                              name={filterKey}
-                              value={option}
-                              checked={
-                                selectedFilters[filterKey]
-                                  ? selectedFilters[filterKey].includes(option)
-                                  : false
-                              }
-                              onChange={() => toggleFilter(filterKey, option)}
-                              className="cursor-pointer accent-blue-500"
-                            />
-                            {option}
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
               </div>
-            </aside>
-  
-            {/* Right: Product Cards */}
-            <div className="md:w-3/4">
-              <ProductCards products={filteredProducts} />
+            )}
+
+            <div className="space-y-4">
+              {Object.keys(categoryFilters).map((filterKey) => {
+                if (filterKey === "priceRange") return null;
+                const options = categoryFilters[filterKey];
+                return (
+                  <div key={filterKey} className="bg-gray-700 p-3 rounded-lg">
+                    <h4 className="text-lg font-semibold text-white mb-2">
+                      {filterKey.charAt(0).toUpperCase() + filterKey.slice(1)}
+                    </h4>
+                    <div className="space-y-2">
+                      {options.map((option) => (
+                        <label
+                          key={option}
+                          className="flex items-center gap-2 text-white cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            name={filterKey}
+                            value={option}
+                            checked={
+                              selectedFilters[filterKey]
+                                ? selectedFilters[filterKey].includes(option)
+                                : false
+                            }
+                            onChange={() => toggleFilter(filterKey, option)}
+                            className="cursor-pointer accent-blue-500"
+                          />
+                          {option}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </aside>
+
+          {/* Product Cards Section */}
+          <div className="md:w-3/4">
+            {loading && <p className="text-white">Loading products...</p>}
+            {error && <p className="text-red-500">{error}</p>}
+            {!loading && !error && products.length === 0 && (
+              <p className="text-white">No products found.</p>
+            )}
+            {!loading && !error && <ProductCards products={products} />}
+
+            {/* Pagination Controls */}
+            <div className="flex justify-center mt-6">
+              <button
+                className="px-4 py-2 mx-2 bg-gray-700 text-white rounded"
+                disabled={page === 1}
+                onClick={() => setPage((prev) => prev - 1)}
+              >
+                Previous
+              </button>
+              <span className="text-white px-4 py-2">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                className="px-4 py-2 mx-2 bg-gray-700 text-white rounded"
+                disabled={page === totalPages}
+                onClick={() => setPage((prev) => prev + 1)}
+              >
+                Next
+              </button>
             </div>
           </div>
-        </section>
-      </div>
-    );
-  };
+        </div>
+      </section>
+    </div>
+  );
+};
 
 export default ProductCategory;
