@@ -7,6 +7,7 @@ const navItems = [
   { path: '/dashboard/add-new-product', label: 'Add Product' },
   { path: '/dashboard/manage-products', label: 'Manage Products' },
   { path: '/dashboard/users', label: 'Users' },
+  { path: '/dashboard/expensePage', label: 'Expense' },
 ];
 
 const AdminDashboard = () => {

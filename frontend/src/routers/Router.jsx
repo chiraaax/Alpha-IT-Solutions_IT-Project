@@ -16,6 +16,7 @@ import FAQ from '../components/Register/FAQ';
 import ProductCategory from '../components/shop/ProductCategory';
 import ProtectedRoute from "../routers/ProtectedRoute";  
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
+import ExpensePage from "../pages/dashboard/Finance/ExpensePage";
 
 const router = createBrowserRouter([
   {
@@ -50,6 +51,7 @@ const router = createBrowserRouter([
       { path: 'manage-products', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
       { path: 'update-product/:id', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
       { path: 'users', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
+      { path: 'expensePage', element: <ExpensePage /> },
     ],
   },
 ]);
