@@ -15,6 +15,7 @@ import Home from '../pages/Home';
 import ShoppingCart from '../pages/OrderManagement/shoppingCart';
 import CheckoutForm from '../components/OrderManagement/CheckoutForm';
 import PickupForm from '../components/OrderManagement/pickupForm';
+import codForm from '../components/OrderManagement/codForm';
 
 import CustomPreBuilds from '../components/CustomBuilds/CustomPreBuilds';
 import AppointmentDashboard from '../components/Appointment/Appointment_Dashboard'; 
@@ -48,13 +49,15 @@ const router = createBrowserRouter([
       { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
 
       //order management
-      { path : '/ShoppingCart', element : <ShoppingCart />},  //shopping cart route
-      { path : '/CheckoutForm', element : <CheckoutForm />},
-      { path : '/PickupForm', element : <PickupForm />}
+      { path : 'ShoppingCart', element : <ShoppingCart />},  //shopping cart route
+      { path : 'CheckoutForm', element : <CheckoutForm />},
+      { path : 'PickupForm', element : <PickupForm />},
+      { path : 'codForm', element : <codForm />}
       
     ],
-    
-    { path: '/login', element: <Login /> },
+  }, 
+
+  { path: '/login', element: <Login /> },
   { path: '/register', element: <Register /> },
   { path: '/forgot-password', element: <ForgotPassword /> },
   { path: '/verify-otp', element: <VerifyOTP /> },
@@ -74,6 +77,6 @@ const router = createBrowserRouter([
     ],
   },
    
-);
+]);
 
 export default router;

@@ -2,28 +2,57 @@ import { useState } from "react";
 import axios from "axios";
 import "../../styles/OrderManagement/CheckoutForm.css";
 import PickupForm from "./pickupForm";
+import CodForm from "./CodForm";
 
 const CheckoutForm = () => {
   const [formData, setFormData] = useState({
-    fullName: "",
-    phoneNumber: "",
+    name: "", // Changed from fullName to match backend schema
+    phoneNo: "", // Changed from phoneNumber
     email: "",
-    paymentMethod: "Cash On Delivery",
+    paymentMethod: "COD", // Adjusted to match backend enum ("COD" instead of "Cash On Delivery")
+  });
+
+  const [codData, setCodData] = useState({
+    address: "",
+    date: "",
+    time: "",
+    saveAddress: false, // Included optional saveAddress field
+  });
+
+  const [pickupData, setPickupData] = useState({
+    date: "",
+    time: "",
   });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleCodChange = (e) => {
+    setCodData({ ...codData, [e.target.name]: e.target.value });
+  };
+
+  const handlePickupChange = (e) => {
+    setPickupData({ ...pickupData, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post("http://localhost:5000/api/orders", formData);
+
+    const orderData = {
+      ...formData,
+      ...(formData.paymentMethod === "COD" ? codData : pickupData),
+    };
+
+    console.log("Order data being sent to backend:", orderData);
+
+    try {                                       
+      const response = await axios.post("http://localhost:5000/api/orders", orderData);
       alert("Order placed successfully!");
       console.log(response.data);
     } catch (error) {
-      console.error("Error placing order:", error);
-      alert("Failed to place order.");
+      console.error("Error placing order:", error.response?.data || error.message);
+      alert("Failed to place order. Please check your details and try again.");
     }
   };
 
@@ -32,10 +61,10 @@ const CheckoutForm = () => {
       <h2>Checkout</h2>
       <form onSubmit={handleSubmit}>
         <label>Full Name</label>
-        <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required />
+        <input type="text" name="name" value={formData.name} onChange={handleChange} required />
 
         <label>Phone Number</label>
-        <input type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required />
+        <input type="text" name="phoneNo" value={formData.phoneNo} onChange={handleChange} required />
 
         <label>Email Address</label>
         <input type="email" name="email" value={formData.email} onChange={handleChange} required />
@@ -45,9 +74,8 @@ const CheckoutForm = () => {
           <input
             type="radio"
             name="paymentMethod"
-            value="Cash On Delivery"
-            id="cod-option"
-            checked={formData.paymentMethod === "Cash On Delivery"}
+            value="COD"
+            checked={formData.paymentMethod === "COD"}
             onChange={handleChange}
           />
           Cash On Delivery
@@ -56,18 +84,21 @@ const CheckoutForm = () => {
           <input
             type="radio"
             name="paymentMethod"
-            value="Pick-Up(Self Collect)"
-            id="pickup-option"
-            checked={formData.paymentMethod === "Pick-Up(Self Collect)"}
+            value="Pickup"
+            checked={formData.paymentMethod === "Pickup"}
             onChange={handleChange}
           />
           Pick-Up (Self Collect)
         </label>
 
-        {formData.paymentMethod === "Pick-Up(Self Collect)" && <PickupForm />}
+        {formData.paymentMethod === "Pickup" && (
+          <PickupForm pickupData={pickupData} handlePickupChange={handlePickupChange} />
+        )}
+        {formData.paymentMethod === "COD" && (
+          <CodForm codData={codData} handleCodChange={handleCodChange} />
+        )}
 
-
-        <button type="submit" class="order">Save and Place Order</button>
+        <button type="submit" className="order">Save and Place Order</button>
       </form>
     </div>
   );
