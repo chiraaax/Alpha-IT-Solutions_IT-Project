@@ -34,13 +34,14 @@ const productSchema = new Schema({
     required: true,
     enum: ['new', 'used', 'refurbished']
   },
-  specs: {
-    type: Map,
-    of: Schema.Types.Mixed,
-    default: {}
-  },
+  specs: [
+    {
+      key: { type: String, required: true }, 
+      value: { type: String, required: true } 
+    }
+  ],
   image: { type: String, required: false },
-  description: { type: String, required: true } 
+  description: { type: String, required: true }
 }, { timestamps: true });
 
 export default mongoose.model('Product', productSchema);

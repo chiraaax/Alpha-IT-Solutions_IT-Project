@@ -6,35 +6,96 @@ const router = express.Router();
 // GET /api/products - Fetch all products with optional filters (category, price range, etc.)
 router.get('/', async (req, res) => {
   try {
-    const { category, minPrice, maxPrice, page = 1, limit = 12 } = req.query;
-    const query = {};
+    const {
+      category,
+      minPrice,
+      maxPrice,
+      availability,
+      state,
+      brand,
+      page = 1,
+      limit = 12,
+      ...extraFilters
+    } = req.query;
 
-    if (category) query.category = category;
+    const filterQuery = {};
 
+    // Apply category filter
+    if (category) filterQuery.category = category;
+
+    // Apply price filter
     if (minPrice || maxPrice) {
-      query.price = {};
-      if (minPrice) query.price.$gte = parseFloat(minPrice);
-      if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+      filterQuery.price = {};
+      if (minPrice) filterQuery.price.$gte = parseFloat(minPrice);
+      if (maxPrice) filterQuery.price.$lte = parseFloat(maxPrice);
     }
 
-    // Count total matching products
-    const totalCount = await Product.countDocuments(query);
+    // Apply availability and state filters
+    if (availability) filterQuery.availability = availability;
+    if (state) filterQuery.state = state;
 
-    // Fetch products for the current page
-    const products = await Product.find(query)
-      .skip((page - 1) * Number(limit))
-      .limit(Number(limit));
+    // Instead of a top-level "brand", map it to a specs filter.
+    // For example, if category is 'laptop', the corresponding spec key might be 'laptopBrand'.
+    if (brand && category) {
+      const brandArray = Array.isArray(brand) ? brand : [brand];
+      // Initialize $and if not already present
+      filterQuery.$and = filterQuery.$and || [];
+      // This assumes that the spec key is the category name with "Brand" appended.
+      const brandKey = `${category}Brand`;
+      filterQuery.$and.push({
+        specs: { $elemMatch: { key: brandKey, value: { $in: brandArray } } }
+      });
+    }
 
-    // Expose the custom header so the client can read it
-    res.setHeader('Access-Control-Expose-Headers', 'x-total-count');
-    res.setHeader('x-total-count', totalCount);
+    // Prepare an array to collect specs-related filter conditions.
+    const specsFilters = [];
 
-    res.status(200).json(products);
-  } catch (error) {
-    console.error("❌ Error fetching products:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    // Loop though extraFilters. Assume extraFilters keys that start with 'specs.' should be applied.
+    for (const key in extraFilters) {
+      if (extraFilters.hasOwnProperty(key) && extraFilters[key]) {
+        let value = extraFilters[key];
+
+        // Convert to array if needed (supports comma-separated strings).
+        if (typeof value === 'string') {
+          value = value.split(',');
+        }
+        if (!Array.isArray(value)) {
+          value = [value];
+        }
+
+        if (key.startsWith('specs.')) {
+          // Extract the actual spec key (e.g., if key is "specs.laptopCPU", use "laptopCPU")
+          const specKey = key.split('.')[1];
+          specsFilters.push({
+            specs: { $elemMatch: { key: specKey, value: { $in: value } } }
+          });
+        } else {
+          // For any other top-level keys, apply them directly.
+          filterQuery[key] = { $in: value };
+        }
+      }
+    }
+    // Append any specsFilters to the $and array.
+    if (specsFilters.length > 0) {
+      filterQuery.$and = filterQuery.$and ? filterQuery.$and.concat(specsFilters) : specsFilters;
+    }
+
+    console.log('Final MongoDB Query:', JSON.stringify(filterQuery, null, 2));
+
+    // Query the database using the filter
+    const products = await Product.find(filterQuery)
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    // Send the response with products
+    res.json(products);
+  } catch (err) {
+    console.error('Error fetching products:', err);
+    res.status(500).json({ message: 'Error fetching products' });
   }
 });
+
+
 
 // GET /api/products/:id - Fetch a single product by ID
 router.get('/:id', async (req, res) => {

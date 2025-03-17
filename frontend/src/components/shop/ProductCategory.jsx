@@ -1,8 +1,9 @@
 import React, { useState, useEffect , useMemo} from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import ProductCards from './ProductCards';
 import axios from "axios";
-
+import qs from 'qs';
 
 // Define a configuration object for each category’s filters.
 const filtersConfig = {
@@ -46,7 +47,7 @@ const filtersConfig = {
     ],
     screenSize: ['15 inches', '14 inches', '16 inches', '17 inches', '18 inches']
   },
-  motherboards: {
+  motherboard: {
     priceRange: { min: 0, max: 2990000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
     state : ['new', 'used', 'refurbished'],
@@ -229,7 +230,7 @@ const filtersConfig = {
       '20 inch'
     ]
   },
-  'cpu coolers': {
+  'cpuCoolers': {
     priceRange: { min: 0, max: 159500 },
     availability: ['out of stock', 'in stock', 'pre-order'],
     state : ['new', 'used', 'refurbished'],
@@ -293,7 +294,7 @@ const filtersConfig = {
     ],
     mechanical: ['yes', 'no']
   },
-  'sound systems': {
+  'soundSystems': {
     priceRange: { min: 0, max: 132500 },
     availability: ['out of stock', 'in stock', 'pre-order'],
     state : ['new', 'used', 'refurbished'],
@@ -317,7 +318,7 @@ const filtersConfig = {
     ],
     soundType: ['headset', 'buds', 'speakers', 'headset']
   },
-  'cables and connectors': {
+  'cables&Connectors': {
     priceRange: { min: 0, max: 15000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
     state : ['new', 'used', 'refurbished'],
@@ -376,7 +377,7 @@ const filtersConfig = {
       'nas drive'
     ]
   },
-  'external storage': {
+  'externalStorage': {
     priceRange: { min: 0, max: 138000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
     state : ['new', 'used', 'refurbished'],
@@ -411,26 +412,9 @@ const filtersConfig = {
   }
 };
 
-export const categoryMapping = {
-  laptop: "laptop",
-  motherboards: "motherboard",
-  processor: "processor",
-  ram: "ram",
-  gpu: "gpu",
-  powerSupply: "powerSupply",
-  casings: "casings",
-  monitors: "monitors",
-  "cpu coolers": "coolers",
-  keyboard: "keyboard",
-  mouse: "mouse",
-  "sound systems": "soundSystems",
-  "cables and connectors": "cables",
-  storage: "storage",
-  "external storage": "externalStorage"
-};
-
 const ProductCategory = () => {
   const { category } = useParams();
+  const navigate = useNavigate();
   const categoryFilters = filtersConfig[category] || {};
 
   const initialPriceRange = useMemo(() => {
@@ -453,23 +437,36 @@ const ProductCategory = () => {
     const fetchProducts = async () => {
       setLoading(true);
       setError(null);
-  
+    
+      const params = {
+        category,
+        page,
+        limit,
+        minPrice: priceRange[0],
+        maxPrice: priceRange[1],
+        ...Object.fromEntries(
+          Object.entries(selectedFilters).map(([key, value]) => [
+            key,
+            Array.isArray(value) ? value.join(",") : value,
+          ])
+        ),
+      };
+    
+      console.log("Serialized Params:", qs.stringify(params, { arrayFormat: "repeat" }));
+      console.log("Final API Request Params:", params);
+    
       try {
         const response = await axios.get(`http://localhost:5000/api/products`, {
-          params: { 
-            category, 
-            page, 
-            limit,
-            minPrice: priceRange[0],
-            maxPrice: priceRange[1],
-            ...selectedFilters,
-          },
+          params,
+          paramsSerializer: (params) => qs.stringify(params, { arrayFormat: "repeat" }),
         });
-  
+    
+        console.log("API Response:", response.data);
+    
         setProducts(response.data);
-  
-        // Read total count from the header and calculate total pages
-        const totalCount = parseInt(response.headers["x-total-count"], 10);
+    
+        // Read total count from headers
+        const totalCount = parseInt(response.headers["x-total-count"], 12);
         if (!isNaN(totalCount)) {
           setTotalPages(Math.ceil(totalCount / limit));
         }
@@ -480,10 +477,9 @@ const ProductCategory = () => {
         setLoading(false);
       }
     };
-  
+    
     fetchProducts();
   }, [category, page, priceRange, selectedFilters]);
-  
 
   useEffect(() => {
     setPriceRange(initialPriceRange);
@@ -491,20 +487,37 @@ const ProductCategory = () => {
     setPage(1); // Reset page when category or filters change
   }, [category, initialPriceRange]);
 
-  const toggleFilter = (filterKey, option) => {
-    setSelectedFilters((prev) => {
-      const current = prev[filterKey] || [];
-      return current.includes(option)
-        ? { ...prev, [filterKey]: current.filter((v) => v !== option) }
-        : { ...prev, [filterKey]: [...current, option] };
-    });
+  // For radio inputs: deselect if already chosen.
+  const handleRadioClick = (filterKey, option) => {
+    if (selectedFilters[filterKey] === option) {
+      setSelectedFilters((prev) => ({ ...prev, [filterKey]: undefined }));
+    } else {
+      setSelectedFilters((prev) => ({ ...prev, [filterKey]: option }));
+    }
+  };
+
+  // Clear all filters (reset selected filters, price range, and page)
+  const clearFilters = () => {
+    setSelectedFilters({});
+    setPriceRange(initialPriceRange);
+    setPage(1);
   };
 
   return (
     <div className="bg-gray-900 pb-6 min-h-screen">
       <section className="container mx-auto py-8 px-4">
-        <h2 className="text-3xl font-bold text-white capitalize mb-6">
-          {category} Products
+        {/* Back Button */}
+        <div className="mb-4">
+          <button
+            onClick={() => navigate(-1)}
+            className="px-4 py-2 bg-gray-500 text-white font-semibold rounded hover:bg-blue-600 transition cursor-pointer"
+          >
+            &larr;  Back
+          </button>
+        </div>
+
+        <h2 className="text-4xl font-bold text-blue-500 capitalize mb-6">
+          {category}
         </h2>
 
         <div className="flex flex-col md:flex-row gap-6">
@@ -534,7 +547,17 @@ const ProductCategory = () => {
               </div>
             )}
 
-            <div className="space-y-4">
+            {/* Clear All Filters Button */}
+            <div className="mt-6">
+              <button
+                onClick={clearFilters}
+                className="w-full px-4 py-2 bg-gray-500 text-white font-semibold rounded hover:bg-blue-600 transition cursor-pointer"
+              >
+                Clear All Filters
+              </button>
+            </div>
+
+            <div className="space-y-4 mt-6">
               {Object.keys(categoryFilters).map((filterKey) => {
                 if (filterKey === "priceRange") return null;
                 const options = categoryFilters[filterKey];
@@ -550,15 +573,11 @@ const ProductCategory = () => {
                           className="flex items-center gap-2 text-white cursor-pointer"
                         >
                           <input
-                            type="checkbox"
+                            type="radio"
                             name={filterKey}
                             value={option}
-                            checked={
-                              selectedFilters[filterKey]
-                                ? selectedFilters[filterKey].includes(option)
-                                : false
-                            }
-                            onChange={() => toggleFilter(filterKey, option)}
+                            checked={selectedFilters[filterKey] === option}
+                            onClick={() => handleRadioClick(filterKey, option)}
                             className="cursor-pointer accent-blue-500"
                           />
                           {option}
@@ -569,6 +588,7 @@ const ProductCategory = () => {
                 );
               })}
             </div>
+
           </aside>
 
           {/* Product Cards Section */}

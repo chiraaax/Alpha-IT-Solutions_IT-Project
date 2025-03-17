@@ -14,11 +14,11 @@ const productTypes = [
     { value: 'powerSupply', label: 'Power Supply' },
     { value: 'casings', label: 'Casings' },
     { value: 'monitors', label: 'Monitors' },
-    { value: 'coolers', label: 'CPU Coolers/AIO' },
+    { value: 'cpuCoolers', label: 'CPU Coolers/AIO' },
     { value: 'keyboard', label: 'Keyboard' },
     { value: 'mouse', label: 'Mouse' },
     { value: 'soundSystems', label: 'Sound Systems' },
-    { value: 'cables', label: 'Cables & Connectors' },
+    { value: 'cables&Connectors', label: 'Cables & Connectors' },
     { value: 'storage', label: 'Storage' },
     { value: 'externalStorage', label: 'External Storage' },
   ];
@@ -645,8 +645,8 @@ const productTypes = [
       availability: "",
       state: "",
       description: "",
-      specs: {},
     });
+    
     const [image, setImage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
   
@@ -672,21 +672,42 @@ const productTypes = [
     const handleSubmit = async (e) => {
       e.preventDefault();
       setIsLoading(true);
-  
+    
+      // Common fields that are not considered "specs"
+      const commonFields = ['price', 'availability', 'state', 'description', 'category'];
+    
+      // Build the specs array
+      const specs = productFields[selectedProductType].reduce((acc, field) => {
+        // If the field is not one of the common ones, it is a spec field
+        if (!commonFields.includes(field.name)) {
+          // Only include if there's a value
+          if (product[field.name]) {
+            acc.push({
+              key: field.name,
+              value: product[field.name],
+            });
+          }
+        }
+        return acc;
+      }, []);
+    
+      // Prepare product data
+      // Optionally, remove spec keys from the top level if you only want them under "specs"
       const productData = {
-        ...product,
-        image, // Include image URL if available
+        price: product.price,
+        availability: product.availability,
+        state: product.state,
+        description: product.description,
+        category: product.category,
+        image, // from separate state
+        specs, // our transformed specifications
       };
-  
+    
       try {
-        const response = await axios.post(
-          "http://localhost:5000/api/products",
-          productData
-        );
-  
+        const response = await axios.post("http://localhost:5000/api/products", productData);
         if (response.status === 201) {
           alert("Product added successfully!");
-          navigate("/"); // 
+          navigate("/dashboard");
         }
       } catch (error) {
         console.error("❌ Error:", error);
@@ -695,6 +716,7 @@ const productTypes = [
         setIsLoading(false);
       }
     };
+    
   
     const inputClass =
       "w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-800 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition";
@@ -728,13 +750,10 @@ const productTypes = [
                 {selectedProductType}
                 </h3>
                             {/* Dynamically render fields based on selected product type */}
-              {productFields[selectedProductType]?.map((field, idx) =>
+                            {productFields[selectedProductType]?.map((field, idx) =>
                 field.type === "select" ? (
                   <div key={idx} className="space-y-2">
-                    <label
-                      htmlFor={field.name}
-                      className="block text-sm font-medium text-gray-700"
-                    >
+                    <label htmlFor={field.name} className="block text-sm font-medium text-gray-700">
                       {field.label}
                     </label>
                     <select
@@ -754,10 +773,7 @@ const productTypes = [
                   </div>
                 ) : (
                   <div key={idx} className="space-y-2">
-                    <label
-                      htmlFor={field.name}
-                      className="block text-sm font-medium text-gray-700"
-                    >
+                    <label htmlFor={field.name} className="block text-sm font-medium text-gray-700">
                       {field.label}
                     </label>
                     <input
@@ -774,6 +790,7 @@ const productTypes = [
                   </div>
                 )
               )}
+
   
               {/* Add description input */}
               <div>

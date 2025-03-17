@@ -12,20 +12,20 @@ import { LuPcCase } from "react-icons/lu";
 
 const sidebarItems = [
   { label: 'Laptop', path: 'laptop', icon: <MdLaptop className="text-4xl" /> },
-  { label: 'Motherboard', path: 'motherboards', icon: <BsFillMotherboardFill className="text-4xl" /> },
+  { label: 'Motherboard', path: 'motherboard', icon: <BsFillMotherboardFill className="text-4xl" /> },
   { label: 'Processor', path: 'processor', icon: <FaMicrochip className="text-4xl" /> },
   { label: 'RAM', path: 'ram', icon: <RiRamLine className="text-4xl" /> },
   { label: 'Graphic Cards', path: 'gpu', icon: <GiCircuitry className="text-4xl" /> },
   { label: 'Power Supply Units', path: 'powerSupply', icon: <FaPlug className="text-4xl" /> },
   { label: 'Casings', path: 'casings', icon: <LuPcCase className="text-4xl" /> },
   { label: 'Monitors', path: 'monitors', icon: <MdMonitor className="text-4xl" /> },
-  { label: 'CPU Coolers / AIO', path: 'cpu coolers', icon: <FaFan className="text-4xl" /> },
+  { label: 'CPU Coolers / AIO', path: 'cpuCoolers', icon: <FaFan className="text-4xl" /> },
   { label: 'Keyboard', path: 'keyboard', icon: <MdKeyboard className="text-4xl" /> },
   { label: 'Mouse', path: 'mouse', icon: <MdMouse className="text-4xl" /> },
-  { label: 'Sound Systems', path: 'sound systems', icon: <FaVolumeUp className="text-4xl" /> },
-  { label: 'Cables & Connectors', path: 'cables and connectors', icon: <FaPlug className="text-4xl" /> },
+  { label: 'Sound Systems', path: 'soundSystems', icon: <FaVolumeUp className="text-4xl" /> },
+  { label: 'Cables & Connectors', path: 'cables&Connectors', icon: <FaPlug className="text-4xl" /> },
   { label: 'Storage', path: 'storage', icon: <MdStorage className="text-4xl" /> },
-  { label: 'External Storage', path: 'external storage', icon: <FaHdd className="text-4xl" /> },
+  { label: 'External Storage', path: 'externalStorage', icon: <FaHdd className="text-4xl" /> },
 ];
 
 
