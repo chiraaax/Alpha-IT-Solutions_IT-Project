@@ -94,10 +94,10 @@ const Hero = () => {
 
 
           <br />
-
-          <button
-          onClick={() => navigate('/custom-prebuilds')}
-            className="bg-gradient-to-r from-gray-900 via-blue-500 to-blue-1000 min-w-90 text-gray-100 flex flex-col p-3 text-sm hover:bg-gradient-to-r hover:from-gray-900 hover:via-blue-500 hover:to-blue-1000 cursor-pointer"
+          </nav>
+          <div className="flex flex-col space-y-2 ">
+          <button onClick={() => navigate('/custom-prebuilds')}
+            className=" bg-gradient-to-r from-gray-900 via-blue-500 to-blue-1000 min-w-90 text-gray-100 flex flex-col p-3 text-sm hover:bg-gradient-to-r hover:from-gray-900 hover:via-blue-500 hover:to-blue-1000 cursor-pointer"
             style={{
               borderRadius: '0px',
             }}
@@ -113,7 +113,8 @@ const Hero = () => {
             </div>
             <p className="text-gray-200">- Build your dream PC -</p>
           </button>
-        </nav>
+          </div>
+        
       </aside>
 
       {/* Main Hero Content */}
