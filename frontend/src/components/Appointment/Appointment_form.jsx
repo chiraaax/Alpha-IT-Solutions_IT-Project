@@ -3,7 +3,8 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import axios from "axios";
 import { Button, Input } from "./ui";
-import "../../styles/appointment.css"
+import "../../styles/appointment.css";
+
 const timeSlots = ["09:00 AM", "10:00 AM", "11:00 AM", "02:00 PM", "03:00 PM", "04:00 PM"];
 
 export default function AppointmentDashboard() {
@@ -90,34 +91,61 @@ export default function AppointmentDashboard() {
         </div>
         <div className="mt-6 p-6 rounded-lg shadow-lg border border-gray-700 bg-gray-900 bg-opacity-90">
           <h2 className="text-xl font-semibold mb-4">Enter Your Details</h2>
-          <Input
-            value={formData.name}
-            placeholder="Full Name"
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
-          <Input
-            value={formData.email}
-            placeholder="Email"
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          />
-          <Input
-            value={formData.phone}
-            placeholder="Phone Number"
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          />
-          {phoneError && <p className="text-red-500 text-sm mb-2">{phoneError}</p>}
-          <Input
-            value={formData.deviceType}
-            placeholder="Device Type"
-            onChange={(e) => setFormData({ ...formData, deviceType: e.target.value })}
-          />
-          <Input
-            value={formData.issueDescription}
-            placeholder="Issue Description"
-            onChange={(e) => setFormData({ ...formData, issueDescription: e.target.value })}
-          />
           <div className="mb-4">
-            <label className="block text-sm font-medium">Preferred Contact Method</label>
+            <label className="block text-sm font-medium">
+              Full Name <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={formData.name}
+              placeholder="Full Name"
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">
+              Email <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={formData.email}
+              placeholder="Email"
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">
+              Phone Number <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={formData.phone}
+              placeholder="Phone Number"
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            />
+            {phoneError && <p className="text-red-500 text-sm mb-2">{phoneError}</p>}
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">
+              Device Type <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={formData.deviceType}
+              placeholder="Device Type"
+              onChange={(e) => setFormData({ ...formData, deviceType: e.target.value })}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">
+              Issue Description <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={formData.issueDescription}
+              placeholder="Issue Description"
+              onChange={(e) => setFormData({ ...formData, issueDescription: e.target.value })}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">
+              Preferred Contact Method <span className="text-red-500">*</span>
+            </label>
             <select
               className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600"
               value={formData.contactMethod}
@@ -130,7 +158,9 @@ export default function AppointmentDashboard() {
 
           {/* New Fields */}
           <div className="mb-4">
-            <label className="block text-sm font-medium">Problem Type</label>
+            <label className="block text-sm font-medium">
+              Problem Type <span className="text-red-500">*</span>
+            </label>
             <select
               className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600"
               value={formData.problemType}
@@ -144,7 +174,9 @@ export default function AppointmentDashboard() {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium">Pickup or Dropoff</label>
+            <label className="block text-sm font-medium">
+              Pickup or Dropoff <span className="text-red-500">*</span>
+            </label>
             <select
               className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600"
               value={formData.pickupOrDropoff}
@@ -210,8 +242,7 @@ export default function AppointmentDashboard() {
             <p>Your appointment for <strong>{formData.deviceType}</strong> repair is booked for <strong>{date.toDateString()}</strong> at <strong>{selectedTime}</strong>.</p>
             <p>We will contact you via <strong>{formData.contactMethod === "email" ? "email" : "phone"}</strong>.</p>
           </div>
-        )
-}
+        )}
       </main>
       <footer className="bg-gray-800 text-white text-center py-4">
         <p>&copy; {new Date().getFullYear()} Computer Repair Services. All rights reserved.</p>

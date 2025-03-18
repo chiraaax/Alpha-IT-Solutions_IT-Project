@@ -437,3 +437,19 @@ tr:hover {
 .progress-stage.active::after {
   background-color: #1e90ff; /* Blue line for active connectors */
 }
+
+.generate-report-btn {
+  background: linear-gradient(90deg, #1e3c72, #2a5298, #6a11cb, #2575fc);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 20px;
+  transition: background 0.3s ease;
+}
+
+.generate-report-btn:hover {
+  background: linear-gradient(90deg, #6a11cb, #2575fc, #1e3c72, #2a5298);
+}
