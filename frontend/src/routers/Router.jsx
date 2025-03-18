@@ -30,10 +30,10 @@ const router = createBrowserRouter([
     children: [
       { path: '', element: <Home /> },
       { path: 'products/:category', element: <ProductCategory /> },
-      { path: 'appointment', element: <AppointmentDashboard /> },
-      { path: 'appointmenentAI', element: <AppointmenentAI /> },
-      { path: 'appointment-form', element: <AppointmentForm /> },
-      { path: 'draftedTechnicianReport', element: <DraftedTechniciansReports /> },
+      { path: 'appointment', element:<ProtectedRoute><AppointmentDashboard /></ProtectedRoute>},
+      { path: 'AppointmenentAI', element:<ProtectedRoute><AppointmenentAI /></ProtectedRoute> },
+      { path: 'appointment-form', element:<ProtectedRoute><AppointmentForm /></ProtectedRoute> },
+      { path: 'draftedTechnicianReport', element:<ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
       { path: 'faq-manage', element: <ProtectedRoute element={<FAQManage />} allowedRoles={["admin"]} /> },
       { path: 'faq', element: <FAQ /> },
 

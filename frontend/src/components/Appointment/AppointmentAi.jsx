@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "../../styles/Appointmentai.css"; // Import the CSS file
 
 const AIChat = () => {
+  const navigate = useNavigate(); // Initialize the navigate function
   const [step, setStep] = useState(1); // Track the current step in the decision tree
   const [problemCategory, setProblemCategory] = useState(""); // Problem category (hardware/software/virus)
   const [specificIssue, setSpecificIssue] = useState(""); // Specific issue (e.g., slow performance)
@@ -62,14 +64,19 @@ const AIChat = () => {
     // Split the response into lines
     const lines = text.split("\n");
 
-    // Map each line to a paragraph or list item
+    // Map each line to a paragraph, list item, or subheading
     return lines.map((line, index) => {
       if (line.startsWith("- ")) {
+        // Handle list items
         return <li key={index}>{line.substring(2)}</li>;
-      } else if (line.startsWith("**")) {
-        return <h3 key={index}>{line.substring(2, line.length - 2)}</h3>;
+      } else if (line.startsWith("**") && line.endsWith("**")) {
+        // Handle subheadings (remove the ** and render as <h3>)
+        const cleanedLine = line.substring(2, line.length - 2); // Remove the **
+        return <h3 key={index}>{cleanedLine}</h3>;
       } else {
-        return <p key={index}>{line}</p>;
+        // Handle regular paragraphs (remove any remaining **)
+        const cleanedLine = line.replace(/\*\*/g, ""); // Remove all instances of **
+        return <p key={index}>{cleanedLine}</p>;
       }
     });
   };
@@ -149,6 +156,10 @@ const AIChat = () => {
           <div className="ai-chat-response-text">
             {formatResponse(response)}
           </div>
+          {/* Add the "Book Appointment" button */}
+          <button className="btn-appointment" onClick={() => navigate("/appointment-form")}>
+            If you are not satisfied with the answers, book an appointment
+          </button>
         </div>
       )}
     </div>
