@@ -9,5 +9,6 @@ export default {
       sans: ['Inter', 'sans-serif'],
     },
   },
+  darkMode: "class", // Enables class-based dark mode
   plugins: [],
-} 
+}
