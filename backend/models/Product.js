@@ -14,11 +14,11 @@ const productSchema = new Schema({
       'powerSupply',
       'casings',
       'monitors',
-      'coolers',
+      'cpuCoolers',
       'keyboard',
       'mouse',
       'soundSystems',
-      'cables',
+      'cablesConnectors',
       'storage',
       'externalStorage'
     ]

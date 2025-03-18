@@ -23,7 +23,7 @@ const sidebarItems = [
   { label: 'Keyboard', path: 'keyboard', icon: <MdKeyboard className="text-4xl" /> },
   { label: 'Mouse', path: 'mouse', icon: <MdMouse className="text-4xl" /> },
   { label: 'Sound Systems', path: 'soundSystems', icon: <FaVolumeUp className="text-4xl" /> },
-  { label: 'Cables & Connectors', path: 'cables&Connectors', icon: <FaPlug className="text-4xl" /> },
+  { label: 'Cables & Connectors', path: 'cablesConnectors', icon: <FaPlug className="text-4xl" /> },
   { label: 'Storage', path: 'storage', icon: <MdStorage className="text-4xl" /> },
   { label: 'External Storage', path: 'externalStorage', icon: <FaHdd className="text-4xl" /> },
 ];

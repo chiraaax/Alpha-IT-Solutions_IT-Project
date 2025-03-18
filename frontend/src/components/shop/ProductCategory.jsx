@@ -12,7 +12,7 @@ const filtersConfig = {
     availability: ['out of stock', 'in stock', 'pre-order'],    
     state : ['new', 'used', 'refurbished'],
     brand: ['msi', 'asus', 'lenovo', 'hp', 'acer'],
-    cpu: [
+    laptopCPU: [
       'intel core i7',
       'amd ryzen 9',
       'intel core i5',
@@ -30,7 +30,7 @@ const filtersConfig = {
       'intel n100 / celeron',
       'snapdragon x elite x1e'
     ],
-    graphics: [
+    laptopGraphics: [
       'rtx 4050 6gb',
       'amd radeon graphics',
       'rtx 3050 4gb',
@@ -45,13 +45,13 @@ const filtersConfig = {
       'tx 5080 16g',
       'brtx 4090 16gb'
     ],
-    screenSize: ['15 inches', '14 inches', '16 inches', '17 inches', '18 inches']
+    laptopScreenSize: ['15 inches', '14 inches', '16 inches', '17 inches', '18 inches']
   },
   motherboard: {
     priceRange: { min: 0, max: 2990000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
     state : ['new', 'used', 'refurbished'],
-    chipset: [
+    motherboardChipset: [
       'amd a520',
       'amd b550',
       'amd b450',
@@ -68,7 +68,7 @@ const filtersConfig = {
       'amd b840',
       'amd b850'
     ],
-    manufacturer: ['asus', 'msi', 'colorful'],
+    motherboardManufacturer: ['asus', 'msi', 'colorful'],
     socketType: [
       'amd am5',
       'intel 1700 12th/13th/14th gen',
@@ -107,7 +107,7 @@ const filtersConfig = {
     availability: ['out of stock', 'in stock', 'pre-order'],
     state : ['new', 'used', 'refurbished'],
     brand: ['corsair', 'team', 'g skill', 'adata', 'transcend'],
-    capacity: [
+    ramCapacity: [
       '64gb (32gb x 2)',
       '32gb (16gb x 2)',
       '16gb (16gb x 1)',
@@ -115,7 +115,7 @@ const filtersConfig = {
       '8gb (8gb x 1)',
       '48gb (24gb x 2)'
     ],
-    speed: [
+    ramSpeed: [
       'ddr5 6000mhz',
       'ddr5 6400mhz',
       'ddr5 5600mhz',
@@ -131,7 +131,7 @@ const filtersConfig = {
     priceRange: { min: 0, max: 999000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
     state : ['new', 'used', 'refurbished'],
-    chipset: [
+    gpuChipset: [
       'rtx 4060',
       'rtx 4060ti',
       'rtx 4070 super',
@@ -155,8 +155,8 @@ const filtersConfig = {
       'gt 710',
       'riser cable'
     ],
-    manufacturer: ['asus', 'msi', 'nvidia', 'zotac', 'corsair'],
-    vram: ['8gb', '12gb', '16gb', '4gb', '24gb', '32gb', '6gb', '2gb']
+    gpuManufacturer: ['asus', 'msi', 'nvidia', 'zotac', 'corsair'],
+    gpuVram: ['8gb', '12gb', '16gb', '4gb', '24gb', '32gb', '6gb', '2gb']
   },
   // Power supplies (again the label in your text was RAM, but these filters are for power supplies)
   powerSupply: {
@@ -166,13 +166,14 @@ const filtersConfig = {
     brands: ['asus', 'corsair', 'antec', 'thermal take', 'prolink', 'seasonic'],
     modularType: ['full modular', 'non modular', 'semi modular'],
     powerEfficiency: ['80+ titanium', '80+ gold', '80+ platinum', '80+ bronze', 'non rated'],
-    type: ['power supply', 'ups'],
+    supplyType: ['power supply', 'ups'],
     wattage: ['1600w', '1200w', '850w', '750w', '1000w', '650w', '550w', '450w']
   },
   casings: {
     priceRange: { min: 0, max: 165000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
-    manufacturer: ['asus', 'lian li', 'antec', 'corsair gamdias', 'gfield', 'msi', 'gigabyte', 'cooler master', 'nzxt', 'alcatroz', 'viper'],
+    state : ['new', 'used', 'refurbished'],
+    casingsManufacturer: ['asus', 'lian li', 'antec', 'corsair gamdias', 'gfield', 'msi', 'gigabyte', 'cooler master', 'nzxt', 'alcatroz', 'viper'],
     chassisColor: ['black', 'white', 'black & white'],
     motherboardSupportSize: ['e-atx', 'mini-itx', 'atx', 'm-atx', 'itx', 'micro-atx']
   },
@@ -318,7 +319,7 @@ const filtersConfig = {
     ],
     soundType: ['headset', 'buds', 'speakers', 'headset']
   },
-  'cables&Connectors': {
+  'cablesConnectors': {
     priceRange: { min: 0, max: 15000 },
     availability: ['out of stock', 'in stock', 'pre-order'],
     state : ['new', 'used', 'refurbished'],
@@ -462,12 +463,17 @@ const ProductCategory = () => {
         });
     
         console.log("API Response:", response.data);
-    
         setProducts(response.data);
     
-        // Read total count from headers
-        const totalCount = parseInt(response.headers["x-total-count"], 12);
-        if (!isNaN(totalCount)) {
+        // Attempt to read the total count from headers first,
+        // otherwise fall back to response.data.totalCount (if your API returns it)
+        const totalCountHeader =
+          response.headers["x-total-count"] || response.headers["X-Total-Count"];
+        const totalCount = totalCountHeader
+          ? parseInt(totalCountHeader, 10)
+          : response.data.totalCount;
+    
+        if (totalCount && !isNaN(totalCount)) {
           setTotalPages(Math.ceil(totalCount / limit));
         }
       } catch (err) {
@@ -481,11 +487,22 @@ const ProductCategory = () => {
     fetchProducts();
   }, [category, page, priceRange, selectedFilters]);
 
+  // Reset filters and price range when the category changes
   useEffect(() => {
     setPriceRange(initialPriceRange);
     setSelectedFilters({});
-    setPage(1); // Reset page when category or filters change
+    setPage(1);
   }, [category, initialPriceRange]);
+
+  // Reset page to 1 whenever the filters change
+  useEffect(() => {
+    setPage(1);
+  }, [priceRange, selectedFilters]);
+
+  // Scroll to top whenever filters change.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [selectedFilters, priceRange]);
 
   // For radio inputs: deselect if already chosen.
   const handleRadioClick = (filterKey, option) => {
@@ -610,11 +627,11 @@ const ProductCategory = () => {
                 Previous
               </button>
               <span className="text-white px-4 py-2">
-                Page {page} of {totalPages}
+                Page {page} 
               </span>
               <button
                 className="px-4 py-2 mx-2 bg-gray-700 text-white rounded"
-                disabled={page === totalPages}
+                disabled={products.length < limit} // Enable next button only if more products exist
                 onClick={() => setPage((prev) => prev + 1)}
               >
                 Next
@@ -628,3 +645,5 @@ const ProductCategory = () => {
 };
 
 export default ProductCategory;
+
+

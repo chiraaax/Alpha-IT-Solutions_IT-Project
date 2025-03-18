@@ -34,28 +34,24 @@ router.get('/', async (req, res) => {
     if (availability) filterQuery.availability = availability;
     if (state) filterQuery.state = state;
 
-    // Instead of a top-level "brand", map it to a specs filter.
-    // For example, if category is 'laptop', the corresponding spec key might be 'laptopBrand'.
+    // Initialize $and for specs filters
+    filterQuery.$and = [];
+
+    // Map brand filter to a specs filter if category is provided.
     if (brand && category) {
       const brandArray = Array.isArray(brand) ? brand : [brand];
-      // Initialize $and if not already present
-      filterQuery.$and = filterQuery.$and || [];
-      // This assumes that the spec key is the category name with "Brand" appended.
       const brandKey = `${category}Brand`;
       filterQuery.$and.push({
         specs: { $elemMatch: { key: brandKey, value: { $in: brandArray } } }
       });
     }
 
-    // Prepare an array to collect specs-related filter conditions.
-    const specsFilters = [];
-
-    // Loop though extraFilters. Assume extraFilters keys that start with 'specs.' should be applied.
+    // Process extraFilters: treat every extra filter as a specs filter.
     for (const key in extraFilters) {
       if (extraFilters.hasOwnProperty(key) && extraFilters[key]) {
         let value = extraFilters[key];
 
-        // Convert to array if needed (supports comma-separated strings).
+        // Convert to an array if the value is a comma-separated string.
         if (typeof value === 'string') {
           value = value.split(',');
         }
@@ -63,21 +59,19 @@ router.get('/', async (req, res) => {
           value = [value];
         }
 
-        if (key.startsWith('specs.')) {
-          // Extract the actual spec key (e.g., if key is "specs.laptopCPU", use "laptopCPU")
-          const specKey = key.split('.')[1];
-          specsFilters.push({
-            specs: { $elemMatch: { key: specKey, value: { $in: value } } }
-          });
-        } else {
-          // For any other top-level keys, apply them directly.
-          filterQuery[key] = { $in: value };
-        }
+        // If the key has a "specs." prefix, remove it. Otherwise use the key as is.
+        const specKey = key.startsWith('specs.') ? key.split('.')[1] : key;
+
+        // Push this condition into the $and array.
+        filterQuery.$and.push({
+          specs: { $elemMatch: { key: specKey, value: { $in: value } } }
+        });
       }
     }
-    // Append any specsFilters to the $and array.
-    if (specsFilters.length > 0) {
-      filterQuery.$and = filterQuery.$and ? filterQuery.$and.concat(specsFilters) : specsFilters;
+
+    // If no specs filters were added, remove $and from the query.
+    if (filterQuery.$and.length === 0) {
+      delete filterQuery.$and;
     }
 
     console.log('Final MongoDB Query:', JSON.stringify(filterQuery, null, 2));
@@ -94,8 +88,6 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: 'Error fetching products' });
   }
 });
-
-
 
 // GET /api/products/:id - Fetch a single product by ID
 router.get('/:id', async (req, res) => {

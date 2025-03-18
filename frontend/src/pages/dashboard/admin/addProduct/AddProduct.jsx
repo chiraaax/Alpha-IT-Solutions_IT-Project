@@ -14,11 +14,11 @@ const productTypes = [
     { value: 'powerSupply', label: 'Power Supply' },
     { value: 'casings', label: 'Casings' },
     { value: 'monitors', label: 'Monitors' },
-    { value: 'cpuCoolers', label: 'CPU Coolers/AIO' },
+    { value: 'cpuCoolers', label: 'CPU Coolers / AIO' },
     { value: 'keyboard', label: 'Keyboard' },
     { value: 'mouse', label: 'Mouse' },
     { value: 'soundSystems', label: 'Sound Systems' },
-    { value: 'cables&Connectors', label: 'Cables & Connectors' },
+    { value: 'cablesConnectors', label: 'Cables & Connectors' },
     { value: 'storage', label: 'Storage' },
     { value: 'externalStorage', label: 'External Storage' },
   ];
@@ -399,7 +399,7 @@ const productTypes = [
         { label: '20 inch', value: '20 inch' },
       ] },
     ],
-    coolers: [
+    cpuCoolers: [
       { name: 'price', label: 'Price', type: 'number', min: 0, max: 159500, placeholder: 'Enter price in LKR' },
       { name: 'availability', label: 'Availability', type: 'select', options: [
         { label: 'Out of Stock', value: 'out of stock' },
@@ -523,7 +523,7 @@ const productTypes = [
         { label: 'Headset', value: 'headset' },
       ] },
     ],
-    cables: [
+    cablesConnectors: [
       { name: 'price', label: 'Price', type: 'number', min: 0, max: 15000, placeholder: 'Enter price in LKR' },
       { name: 'availability', label: 'Availability', type: 'select', options: [
         { label: 'Out of Stock', value: 'out of stock' },
