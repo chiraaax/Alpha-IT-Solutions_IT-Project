@@ -89,8 +89,8 @@ const CodForm = ({ codData, handleCodChange }) => {
       <label>Pickup Date</label>
       <input
         type="date"
-        name="date"
-        value={codData.date}
+        name="deliveryDate"
+        value={codData.deliveryDate}
         onChange={handleCodChange}
         required
       />
@@ -98,8 +98,8 @@ const CodForm = ({ codData, handleCodChange }) => {
       <label>Pickup Time</label>
       <input
         type="time"
-        name="time"
-        value={codData.time}
+        name="deliveryTime"
+        value={codData.deliveryTime}
         onChange={handleCodChange}
         required
       />
@@ -108,4 +108,3 @@ const CodForm = ({ codData, handleCodChange }) => {
 };
 
 export default CodForm;
-

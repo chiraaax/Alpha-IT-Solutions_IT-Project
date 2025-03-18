@@ -13,15 +13,15 @@ const CheckoutForm = () => {
   });
 
   const [codData, setCodData] = useState({
-    address: "",
-    date: "",
-    time: "",
+    address: "",  
+    deliveryDate: "",
+    deliveryTime: "",
     saveAddress: false, // Included optional saveAddress field
   });
 
   const [pickupData, setPickupData] = useState({
-    date: "",
-    time: "",
+    pickupDate: "",
+    pickupTime: "",
   });
 
   const handleChange = (e) => {
@@ -47,7 +47,7 @@ const CheckoutForm = () => {
     console.log("Order data being sent to backend:", orderData);
 
     try {                                       
-      const response = await axios.post("http://localhost:5000/api/orders", orderData);
+      const response = await axios.post("http://localhost:5000/api/orders/orders", orderData);
       alert("Order placed successfully!");
       console.log(response.data);
     } catch (error) {

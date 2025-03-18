@@ -1,12 +1,3 @@
-// import express from "express"; 
-// import placeOrder from "../../controller/orderController.js";
-// const router = express.Router();
-
-// // POST request to create a new order
-// router.post("/orders", placeOrder);
-
-// export default router;
-
 import express from "express";
 import Order from "../../models/OrderManagement/Order.js";
 
@@ -14,7 +5,7 @@ const router = express.Router();
 
 router.post("/orders", async (req, res) => {
   try {
-    console.log("🔹 Incoming order request:", req.body);
+    console.log("Incoming order request:", req.body);
 
     const { name, phoneNo, email, paymentMethod, address, deliveryDate, deliveryTime, pickupDate, pickupTime, saveAddress } = req.body;
 
@@ -52,5 +43,13 @@ router.post("/orders", async (req, res) => {
   }
 });
 
+// router.get("/orders", async (req, res) => {
+//   try {
+//     const order = await Order.find();
+//     res.status(200).json(order);  // Return all orders in JSON
+//   } catch (error) {
+//     res.status(500).json({ message: "Failed to fetch orders." });
+//   }
+// });
 export default router;
 
