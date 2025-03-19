@@ -1,22 +1,3 @@
-// import mongoose from "mongoose";
-
-// const orderSchema = new mongoose.Schema({
-//   name: { type: String, required: true },
-//   phoneNo: { type: String, required: true },
-//   email: { type: String, required: true },
-//   paymentMethod: { type: String, required: true },
-//   address: { type: String },  // For COD
-//   date: { type: String },     // For COD
-//   time: { type: String },     // For COD
-//   pickupDate: { type: String },  // For Pickup
-//   pickupTime: { type: String },  // For Pickup
-//   saveAddress: { type: Boolean, default: false },
-// });
-
-// const Order = mongoose.model("Order", orderSchema);
-// export default Order;
-
-
 import mongoose from "mongoose";
 
 const codSchema = new mongoose.Schema({

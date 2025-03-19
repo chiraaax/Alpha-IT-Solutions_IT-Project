@@ -43,13 +43,26 @@ router.post("/orders", async (req, res) => {
   }
 });
 
-// router.get("/orders", async (req, res) => {
-//   try {
-//     const order = await Order.find();
-//     res.status(200).json(order);  // Return all orders in JSON
-//   } catch (error) {
-//     res.status(500).json({ message: "Failed to fetch orders." });
-//   }
-// });
+// GET all orders
+router.get('/orders', async (req, res) => {
+  try {
+      const order = await Order.find();
+      res.status(200).json(order);
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+});
+
+// GET a single order by ID
+router.get('/orders/:id', async (req, res) => {
+  try {
+      const order = await Order.findById(req.params.id);
+      if (!order) return res.status(404).json({ message: 'Order not found' });
+      res.status(200).json(order);
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+});
+
 export default router;
 

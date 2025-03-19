@@ -15,7 +15,8 @@ import Home from '../pages/Home';
 import ShoppingCart from '../pages/OrderManagement/shoppingCart';
 import CheckoutForm from '../components/OrderManagement/CheckoutForm';
 import PickupForm from '../components/OrderManagement/pickupForm';
-import codForm from '../components/OrderManagement/codForm';
+import CodForm from '../components/OrderManagement/CodForm';
+import OrderList from '../components/OrderManagement/OrderList';
 
 import CustomPreBuilds from '../components/CustomBuilds/CustomPreBuilds';
 import AppointmentDashboard from '../components/Appointment/Appointment_Dashboard'; 
@@ -52,7 +53,9 @@ const router = createBrowserRouter([
       { path : 'ShoppingCart', element : <ShoppingCart />},  //shopping cart route
       { path : 'CheckoutForm', element : <CheckoutForm />},
       { path : 'PickupForm', element : <PickupForm />},
-      { path : 'codForm', element : <codForm />}
+      { path : 'codForm', element : <CodForm />},
+      { path : 'OrderList', element : <OrderList />},
+      // { path : "/CheckoutForm/edit/:orderId", element : <CheckoutForm />},
       
     ],
   }, 
