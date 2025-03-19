@@ -16,7 +16,7 @@ import FAQ from '../components/Register/FAQ';
 import ProductCategory from '../components/shop/ProductCategory';
 import ProtectedRoute from "../routers/ProtectedRoute";  
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
-
+import ManageAppointments from "../pages/dashboard/manage-appointments"
 // CustomBuilds Components
 import GamingBuilds from '../components/CustomBuilds/GamingBuilds';
 import BudgetBuilds from '../components/CustomBuilds/BudgetBuilds';
@@ -68,6 +68,7 @@ const router = createBrowserRouter([
       { path: 'manage-products', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
       { path: 'update-product/:id', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
       { path: 'users', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
+      { path: 'manage-appointments', element: <ProtectedRoute role="admin"><ManageAppointments /></ProtectedRoute> },
     ]
   }
 ]);
