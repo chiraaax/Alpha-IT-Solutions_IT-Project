@@ -20,6 +20,7 @@ import AddProduct from '../pages/dashboard/admin/addProduct/AddProduct';
 import ManageProducts from '../pages/dashboard/admin/manageProducts/ManageProducts';
 import ManageInventory from '../pages/dashboard/admin/inventoryManagement/ManageInventory';
 import ProductDetails from '../components/shop/ProductDetails';
+import SearchPage from '../components/shop/search/SearchPage';
 
 
 const router = createBrowserRouter([
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
       { path: 'faq', element: <FAQ /> },
       { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
       { path: '/shop/:productId', element: <ProductDetails /> },
+      { path: 'search', element: <SearchPage /> },
     ],
   },
   { path: '/login', element: <Login /> },
