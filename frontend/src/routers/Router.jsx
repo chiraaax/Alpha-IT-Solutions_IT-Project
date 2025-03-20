@@ -16,7 +16,9 @@ import ShoppingCart from '../pages/OrderManagement/shoppingCart';
 import CheckoutForm from '../components/OrderManagement/CheckoutForm';
 import PickupForm from '../components/OrderManagement/pickupForm';
 import CodForm from '../components/OrderManagement/CodForm';
-import OrderList from '../components/OrderManagement/OrderList';
+// import OrderList from '../components/OrderManagement/OrderList';
+import UpdateOrder from '../components/OrderManagement/updateOrder';
+// import updateForm from '../components/OrderManagement/updateForm';
 
 import CustomPreBuilds from '../components/CustomBuilds/CustomPreBuilds';
 import AppointmentDashboard from '../components/Appointment/Appointment_Dashboard'; 
@@ -54,7 +56,10 @@ const router = createBrowserRouter([
       { path : 'CheckoutForm', element : <CheckoutForm />},
       { path : 'PickupForm', element : <PickupForm />},
       { path : 'codForm', element : <CodForm />},
-      { path : 'OrderList', element : <OrderList />},
+      // { path : 'OrderList', element : <OrderList />},
+      { path : 'updateOrder', element : <UpdateOrder />},
+      // { path : 'updateOrder/:orderId', element : <UpdateOrder />},
+      // { path : 'updateForm/:orderId', element : <updateForm />},
       // { path : "/CheckoutForm/edit/:orderId", element : <CheckoutForm />},
       
     ],

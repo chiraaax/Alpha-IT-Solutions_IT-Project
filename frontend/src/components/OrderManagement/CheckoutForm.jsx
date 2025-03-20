@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../../styles/OrderManagement/CheckoutForm.css";
 import PickupForm from "./pickupForm";
 import CodForm from "./CodForm";
+import { deleteOrder/*, updateOrder*/ } from "./orderService";
+// import updateOrder from "./updateOrder";
 
 const CheckoutForm = () => {
-  const { orderId } = useParams();
-  
-  // Form data for order submission
+  const navigate = useNavigate();
+  const { id } = useParams();
   const [formData, setFormData] = useState({
     name: "",
     phoneNo: "",
@@ -28,43 +29,53 @@ const CheckoutForm = () => {
     pickupTime: "",
   });
 
-  // Store successfully placed order details
   const [successOrder, setSuccessOrder] = useState(null);
+  // const [canModify, setCanModify] = useState(false);
 
   // Fetch order details if orderId is provided
   useEffect(() => {
-    if (orderId) {
+    if (id) {
       axios
-        .get(`http://localhost:5000/api/orders/orders/${orderId}`)
+        .get(`http://localhost:5000/api/orders/orders/${id}`)
         .then((response) => {
-          const successOrder = response.data;
+          const order = response.data;
+          setSuccessOrder(order);
           setFormData({
-            name: successOrder.name,
-            phoneNo: successOrder.phoneNo,
-            email: successOrder.email,
-            paymentMethod: successOrder.paymentMethod,
+            name: order.name,
+            phoneNo: order.phoneNo,
+            email: order.email,
+            paymentMethod: order.paymentMethod,
           });
 
-          if (successOrder.paymentMethod === "COD") {
+          if (order.paymentMethod === "COD") {
             setCodData({
-              address: successOrder.address,
-              deliveryDate: successOrder.deliveryDate,
-              deliveryTime: successOrder.deliveryTime,
-              saveAddress: successOrder.saveAddress || false,
+              address: order.address,
+              deliveryDate: order.deliveryDate,
+              deliveryTime: order.deliveryTime,
+              saveAddress: order.saveAddress || false,
             });
           } else {
             setPickupData({
-              pickupDate: successOrder.pickupDate,
-              pickupTime: successOrder.pickupTime,
+              pickupDate: order.pickupDate,
+              pickupTime: order.pickupTime,
             });
           }
-          // console.log("Success Order Data:", successOrder);
+
+          checkTimeLimit(order);
         })
         .catch((error) => {
           console.error("Error fetching order:", error);
         });
     }
-  }, [orderId]);
+  }, [id]);
+
+  const checkTimeLimit = (order) => {
+    if (!order) return;
+    const orderTime = new Date(order.createdAt);
+    const currentTime = new Date();
+    const diffHours = (currentTime - orderTime) / (1000 * 60 * 60);
+    setCanModify(diffHours <= 24);
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -78,6 +89,50 @@ const CheckoutForm = () => {
     setPickupData({ ...pickupData, [e.target.name]: e.target.value });
   };
 
+  // const handleUpdate = async () => {
+  //   if (!successOrder) {
+  //     alert("Order not found.");
+  //     return;
+  //   }
+
+  //   const updatedOrderData = {
+  //     ...formData,
+  //     ...(formData.paymentMethod === "COD" ? codData : pickupData),
+  //   };
+
+  //   try {
+  //     const result = await updateOrder(successOrder, updatedOrderData);
+  //     alert(result.message || "Order updated successfully!");
+
+  //     // Update local state with new data after updating
+  //     setSuccessOrder({ ...successOrder, ...updatedOrderData });
+  //   } catch (error) {
+  //     console.error("Error updating order:", error);
+  //     alert("Failed to update order.");
+  //   }
+  // };
+
+  const handleDelete = async () => {
+    if (!id) {
+      alert("Order not found.");
+      return;
+    }
+
+    const confirmDelete = window.confirm("Are you sure you want to delete this order?");
+    if (!confirmDelete) return;
+
+    try {
+      const result = await deleteOrder(id);
+      alert(result.message);
+
+      // Clear order data after deletion
+      setSuccessOrder(null);
+    } catch (error) {
+      console.error("Error deleting order:", error);
+      alert("Failed to delete order.");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -86,35 +141,48 @@ const CheckoutForm = () => {
       ...(formData.paymentMethod === "COD" ? codData : pickupData),
     };
 
-    console.log("Order data being sent to backend:", orderData);
-
     try {
       const response = await axios.post("http://localhost:5000/api/orders/orders", orderData);
-      
-      // Store the order details for success message display
       setSuccessOrder(response.data);
-
       alert("Order placed successfully!");
     } catch (error) {
       console.error("Error placing order:", error.response?.data || error.message);
       alert("Failed to place order. Please check your details and try again.");
     }
   };
+  
 
   return (
     <div className="checkout-container">
       <h2>Checkout</h2>
-      
       {!successOrder ? (
         <form onSubmit={handleSubmit}>
           <label>Full Name</label>
-          <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
 
           <label>Phone Number</label>
-          <input type="text" name="phoneNo" value={formData.phoneNo} onChange={handleChange} required />
+          <input
+            type="text"
+            name="phoneNo"
+            value={formData.phoneNo}
+            onChange={handleChange}
+            required
+          />
 
           <label>Email Address</label>
-          <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
 
           <h3>Payment Options</h3>
           <label>
@@ -145,21 +213,23 @@ const CheckoutForm = () => {
             <CodForm codData={codData} handleCodChange={handleCodChange} />
           )}
 
-          <button type="submit" className="order">Save and Place Order</button>
+          <button type="submit" className="order">
+            Save and Place Order
+          </button>
         </form>
       ) : (
         // Success Message with Order Details
-        
         <div className="mt-4 p-4 border rounded-lg bg-green-100">
           <h3 className="text-lg font-semibold text-green-700">
             Order Successfully Placed!
+            {console.log(id)}
           </h3>
           <p>Thank you for your order. Here are the details:</p>
           <ul className="mt-2 list-disc pl-5">
             <li><strong>Name:</strong> {formData.name}</li>
             <li><strong>Phone No:</strong> {formData.phoneNo}</li>
             <li><strong>Email:</strong> {formData.email}</li>
-            <li><strong>Order Type:</strong> {formData.paymentMethod === 'COD' ? 'Cash On Delivery' : 'Pickup (Self Collect)'}</li><br />
+            <li><strong>Order Type:</strong> {formData.paymentMethod === "COD" ? "Cash On Delivery" : "Pickup (Self Collect)"}</li>
             {formData.paymentMethod === "COD" && (
               <>
                 <li><strong>Address:</strong> {codData.address}</li>
@@ -174,6 +244,17 @@ const CheckoutForm = () => {
               </>
             )}
           </ul>
+
+          <button onClick={() => navigate("/updateOrder")}>Update</button>
+          {/* <button onClick={handleUpdate}>Update</button> */}
+          <button onClick={handleDelete}>Delete</button>
+
+          {/* {canModify && (
+            <>
+              <button onClick={handleUpdate}>Update</button>
+              <button onClick={handleDelete}>Delete</button>
+            </>
+          )} */}
         </div>
       )}
     </div>
