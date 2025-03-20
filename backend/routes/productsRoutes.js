@@ -199,3 +199,38 @@ router.get('/:productId', async (req, res) => {
 });
 
 export default router;
+
+// PATCH /api/products/:productId/inventory - Update a product's inventory
+router.patch('/:productId/inventory', async (req, res) => {
+  try {
+    const { stockCount, discount, discountPrice, threshold , displayedStock} = req.body;
+
+    // Validate that required fields are provided (at least stockCount in this case)
+    if (stockCount === undefined) {
+      return res.status(400).json({ message: "stockCount is required." });
+    }
+
+    // Build the update object only with the fields provided.
+    const updateFields = { stockCount };
+    if (discount !== undefined) updateFields.discount = discount;
+    if (discountPrice !== undefined) updateFields.discountPrice = discountPrice;
+    if (threshold !== undefined) updateFields.threshold = threshold;
+    if (displayedStock !== undefined) updateFields.displayedStock = displayedStock;
+    
+    // Update the product by its ID.
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.productId,
+      { $set: updateFields },
+      { new: true, runValidators: true } // Returns the updated document and enforces schema rules.
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    res.status(200).json(updatedProduct);
+  } catch (error) {
+    console.error("❌ Error updating product inventory:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+});

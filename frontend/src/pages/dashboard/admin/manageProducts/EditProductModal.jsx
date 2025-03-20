@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { productFields, stateField } from "../addProduct/productConfig";
+import UploadImage from "../addProduct/UploadImage";
 
 // Normalize specs to an array of key/value objects
 const normalizeSpecs = (specs) => {
@@ -25,8 +26,7 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
   const [stateValue, setStateValue] = useState(product.state);
   const [price, setPrice] = useState(product.price);
   const [specs, setSpecs] = useState(normalizeSpecs(product.specs));
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(product.image || "");
+  const [image, setImage] = useState(product.image || "");
   const [isLoading, setIsLoading] = useState(false);
 
   // Exclude common fields that are managed separately (price, availability, state)
@@ -49,24 +49,7 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
     });
   };
 
-  // Handle image selection and preview generation
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
-
-  const uploadImage = async () => {
-    return imagePreview;
-  };
-
   const handleSave = async () => {
-    let imageUrl = product.image;
-    if (imageFile) {
-      imageUrl = await uploadImage();
-    }
 
     // Prepare updated product data
     const updatedProduct = {
@@ -76,7 +59,7 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
       state: stateValue,
       price,
       specs,
-      image: imageUrl,
+      image,
     };
 
     try {
@@ -95,8 +78,9 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-8 rounded-md w-7/12">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 overflow-auto">
+  <div className="bg-white p-8 rounded-md w-7/12 max-h-screen overflow-auto">
+
         <h3 className="text-2xl font-bold mb-4">Edit Product</h3>
 
         {/* Description */}
@@ -222,25 +206,18 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
           })}
         </div>
 
-        {/* Image Upload */}
+        <div className="bg-white p-0 rounded-md w-7/12">
+
+        {/* Image Upload Using UploadImage Component */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
-            Upload Image
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="w-full border p-2 rounded-md"
-          />
-          {imagePreview && (
-            <img
-              src={imagePreview}
-              alt="Preview"
-              className="mt-2 h-32 object-cover rounded-md border"
-            />
+          <UploadImage name="product-image" setImage={setImage} />
+          {image && (
+            <img src={image} alt="Product" className="mt-2 h-32 object-cover rounded-md border" />
           )}
         </div>
+
+       
+      </div>
 
         {/* Buttons */}
         <div className="flex justify-end space-x-4">

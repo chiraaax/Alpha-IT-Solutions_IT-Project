@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import PropTypes from "prop-types";
+// import { useNavigate } from "react-router-dom";
 
 const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
   // Use product.productFields if needed
@@ -8,14 +10,19 @@ const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
   // Set up state – note that description is now read-only.
   const [_id] = useState(product._id);
   const [description] = useState(product.description);
-  const [price, setPrice] = useState(product.price);
+  const [price] = useState(product.price);
   const [discount, setDiscount] = useState(product.discount || 0);
-  const [discountPrice, setDiscountPrice] = useState(product.discountPrice || product.price);
+  const [discountPrice, setDiscountPrice] = useState(
+    product.discountPrice || product.price
+  );
   const [stockCount, setStockCount] = useState(product.stockCount || 10);
   // Threshold is set to a constant value of 1.
   const threshold = 1;
   const [isLoading, setIsLoading] = useState(false);
   const [adminNotification, setAdminNotification] = useState("");
+
+  // Uncomment if navigation is needed
+  // const navigate = useNavigate();
 
   // Whenever price or discount change, recalc discountPrice automatically.
   useEffect(() => {
@@ -35,41 +42,62 @@ const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
       // Calculate new displayed stock value.
       const newDisplayedStock = Math.floor(newStock / 2);
       if (newDisplayedStock <= threshold) {
-        setAdminNotification("🔔 Low Stock Alert: Customer stock has reached the threshold level.");
+        setAdminNotification(
+          "🔔 Low Stock Alert: Customer stock has reached the threshold level."
+        );
       }
     } else {
       alert("Cannot reduce stock below the threshold level.");
     }
   };
 
-  // Save changes (update product inventory on the backend)
-  const handleSave = async () => {
+  // Save changes (update product inventory on the backend using PATCH)
+  const handleSave = async (e) => {
+    e.preventDefault(); // Prevent default form submission.
     setIsLoading(true);
     try {
-      // Construct the updated product object.
-      const updatedProduct = {
-        ...product,
-        price,
+      // Prepare payload with fields to update.
+      const updateProduct = {
         discount,
         discountPrice,
         stockCount,
         threshold, // Always 1.
+        displayedStock, // Calculated from stockCount.user sees half of actual stock.
       };
-      await axios.put(`/api/products/${product.id}`, updatedProduct);
-      onProductUpdated(updatedProduct);
-      onClose();
+
+      // PATCH request to update the product inventory based on its _id.
+      const response = await axios.patch(
+        `http://localhost:5000/api/products/${_id}`,
+        updateProduct
+      );
+      if (response.status === 200) {
+        alert("Product inventory updated successfully!");
+        // Only call onProductUpdated if it is a function.
+        if (typeof onProductUpdated === "function") {
+          onProductUpdated(response.data);
+        } else {
+          console.warn("onProductUpdated is not a function.");
+        }
+        onClose();
+        // If you need navigation, you could uncomment the next line:
+        // navigate("/dashboard");
+      }
     } catch (error) {
-      console.error("Failed to update product", error);
-      alert("Error updating product. Please try again.");
+      console.error("❌ Error updating product:", error.message);
+      if (error.response) {
+        console.error("Response data:", error.response.data);
+      }
+      alert("Error updating product inventory. Check console for details.");
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-8 rounded-md w-7/12 relative">
         <h3 className="text-2xl font-bold mb-4">Inventory Management</h3>
-        
+
         {/* Admin Notification Banner */}
         {adminNotification && (
           <div className="absolute top-4 right-4 bg-yellow-200 border border-yellow-400 text-yellow-800 px-4 py-2 rounded flex items-center">
@@ -78,9 +106,11 @@ const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
           </div>
         )}
 
-        {/* Read-only product ID  */}
+        {/* Read-only product ID */}
         <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700">Product ID:</label>
+          <label className="block text-lg font-medium text-gray-700">
+            Product ID:
+          </label>
           <input
             type="text"
             value={_id}
@@ -90,7 +120,9 @@ const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
         </div>
         {/* Read-only Description */}
         <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700">Description:</label>
+          <label className="block text-lg font-medium text-gray-700">
+            Description:
+          </label>
           <input
             type="text"
             value={description}
@@ -101,7 +133,9 @@ const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
 
         {/* Price */}
         <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700">Price:</label>
+          <label className="block text-lg font-medium text-gray-700">
+            Price:
+          </label>
           <input
             type="number"
             value={price}
@@ -112,7 +146,9 @@ const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
 
         {/* Discount */}
         <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700">Discount (%):</label>
+          <label className="block text-lg font-medium text-gray-700">
+            Discount (%):
+          </label>
           <input
             type="number"
             value={discount}
@@ -123,7 +159,9 @@ const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
 
         {/* Calculated Discount Price */}
         <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700">Discount Price:</label>
+          <label className="block text-lg font-medium text-gray-700">
+            Discount Price:
+          </label>
           <input
             type="number"
             value={discountPrice}
@@ -134,7 +172,9 @@ const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
 
         {/* Stock Count */}
         <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700">Stock Count:</label>
+          <label className="block text-lg font-medium text-gray-700">
+            Stock Count:
+          </label>
           <input
             type="number"
             value={stockCount}
@@ -145,7 +185,9 @@ const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
 
         {/* Fixed Threshold (read-only) */}
         <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700">Stock Threshold :</label>
+          <label className="block text-lg font-medium text-gray-700">
+            Stock Threshold:
+          </label>
           <input
             type="number"
             value={threshold}
@@ -159,7 +201,9 @@ const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
 
         {/* Displayed Stock */}
         <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700">Stock (Customer View):</label>
+          <label className="block text-lg font-medium text-gray-700">
+            Stock (Customer View):
+          </label>
           <input
             type="number"
             value={displayedStock}
@@ -198,6 +242,16 @@ const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
       </div>
     </div>
   );
+};
+
+InventoryProductModal.propTypes = {
+  product: PropTypes.object.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onProductUpdated: PropTypes.func,
+};
+
+InventoryProductModal.defaultProps = {
+  onProductUpdated: () => {},
 };
 
 export default InventoryProductModal;

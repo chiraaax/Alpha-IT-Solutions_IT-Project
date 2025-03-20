@@ -24,6 +24,21 @@ const productSchema = new Schema({
     ]
   },
   price: { type: Number, required: true },
+  // New inventory-specific fields:
+  discount: { type: Number, default: 0 },
+  // discountPrice is computed as price - (price * discount/100)
+  discountPrice: { 
+    type: Number, 
+    required: true,
+    default: function() {
+      return this.price;
+    } 
+  },
+  stockCount: { type: Number, default: 0 },
+  threshold: { type: Number, default: 1 },
+  displayedStock: { type: Number, default: 0 },
+
+  // Existing fields
   availability: {
     type: String,
     required: true,
@@ -40,8 +55,7 @@ const productSchema = new Schema({
       value: { type: String, required: true } 
     }
   ],
-  
-  image: { type: String, required: false },
+  image: { type: String },
   description: { type: String, required: true }
 }, { timestamps: true });
 
