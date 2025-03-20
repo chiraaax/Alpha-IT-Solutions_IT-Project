@@ -59,8 +59,6 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
   };
 
   const uploadImage = async () => {
-    // Replace this placeholder with your actual upload logic.
-    // For now, we simply return the preview URL.
     return imagePreview;
   };
 
@@ -82,7 +80,7 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
     };
 
     try {
-      // Use product._id to target the correct document
+      //  used product._id to target the correct document
       const response = await axios.patch(
         `http://localhost:5000/api/products/${product._id}`,
         updatedProduct
@@ -98,7 +96,7 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-6 rounded-md w-1/2">
+      <div className="bg-white p-8 rounded-md w-7/12">
         <h3 className="text-2xl font-bold mb-4">Edit Product</h3>
 
         {/* Description */}

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import EditProductModal from "./EditProductModal";
+import InventoryManagement from "../inventoryManagement/InventoryManagement";
+
 
 const ManageProducts = () => {
   const navigate = useNavigate();
@@ -9,6 +11,7 @@ const ManageProducts = () => {
   const [filterCategory, setFilterCategory] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedProductForEdit, setSelectedProductForEdit] = useState(null);
+  const [selectedProductForInventory, setSelectedProductForInventory] = useState(null);
 
   useEffect(() => {
     fetchProducts();
@@ -40,6 +43,11 @@ const ManageProducts = () => {
   const handleEdit = (productId) => {
     const productToEdit = products.find((p) => p._id === productId);
     setSelectedProductForEdit(productToEdit);
+  };
+
+  const handleInventory = (productId) => {
+    const inventory = products.find((p) => p._id === productId);
+    setSelectedProductForInventory(inventory);
   };
 
   // Helper function to render specs by normalizing data to an array.
@@ -80,6 +88,22 @@ const ManageProducts = () => {
           }
         />
       )}
+
+      {/* Render Inventory Management Modal */}
+      {selectedProductForInventory && (
+        <InventoryManagement
+          product={selectedProductForInventory}
+          onClose={() => setSelectedProductForInventory(null)}
+          onInventoryUpdated={(updatedProduct) =>
+            setProducts((prev) =>
+              prev.map((p) =>
+                p._id === updatedProduct._id ? updatedProduct : p
+              )
+            )
+          }
+        />
+      )}
+
       <div className="min-h-screen bg-gray-50 py-12 px-6">
         <h2 className="text-4xl font-bold text-center text-gray-800 mb-10">
           Manage Products
@@ -140,18 +164,26 @@ const ManageProducts = () => {
                     <td className="border p-2">
                       LKR {Number(product.price).toFixed(2)}
                     </td>
-                    <td className="border p-2 flex space-x-2">
+                    <td className="border p-2 flex flex-col space-y-2">
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleEdit(product._id)}
+                          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(product._id)}
+                          className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500"
+                        >
+                          Delete
+                        </button>
+                      </div>
                       <button
-                        onClick={() => handleEdit(product._id)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500 mt-8"
+                        onClick={() => handleInventory(product._id)}
+                        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-500"
                       >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(product._id)}
-                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500 mt-8"
-                      >
-                        Delete
+                        Manage Inventory
                       </button>
                     </td>
                   </tr>
