@@ -17,6 +17,7 @@ import ProductCategory from '../components/shop/ProductCategory';
 import ProtectedRoute from "../routers/ProtectedRoute";  
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
 import AddProduct from '../pages/dashboard/admin/addProduct/AddProduct';
+import ManageProducts from '../pages/dashboard/admin/manageProducts/ManageProducts';
 
 const router = createBrowserRouter([
   {
@@ -52,7 +53,7 @@ const router = createBrowserRouter([
       //admin routes
       { path: 'admin', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
       { path: 'add-new-product', element: <ProtectedRoute role="admin"><AddProduct/></ProtectedRoute> },
-      { path: 'manage-products', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
+      { path: 'manage-products', element: <ProtectedRoute role="admin"><ManageProducts/></ProtectedRoute> },
       { path: 'update-product/:id', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
       { path: 'users', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
     ],

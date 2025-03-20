@@ -19,7 +19,7 @@ const app = express();
 app.use(cors({
   origin: "http://localhost:5173", // Replace with frontend URL
   credentials: true, // ✅ Allows cookies & authentication headers
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"], // ✅ Allows headers
 }));
 

@@ -613,7 +613,7 @@ const ProductCategory = () => {
             {loading && <p className="text-white">Loading products...</p>}
             {error && <p className="text-red-500">{error}</p>}
             {!loading && !error && products.length === 0 && (
-              <p className="text-white">No products found.</p>
+              <p className="text-white">Sorry ! This product is not yet available</p>
             )}
             {!loading && !error && <ProductCards products={products} />}
 

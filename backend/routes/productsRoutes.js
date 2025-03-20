@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
       state,
       brand,
       page = 1,
-      limit = 12,
+      limit = 99990000000000,
       ...extraFilters
     } = req.query;
 
@@ -89,18 +89,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/products/:id - Fetch a single product by ID
-router.get('/:id', async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    res.status(200).json(product);
-  } catch (error) {
-    console.error("❌ Error fetching product:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
-  }
-});
 
 // POST /api/products - Create a new product
 router.post('/', async (req, res) => {
@@ -142,8 +131,13 @@ router.post('/', async (req, res) => {
 });
 
 // PATCH /api/products/:id - Update an existing product
-router.patch('/:id', async (req, res) => {
+router.patch('/:productId', async (req, res) => {
   try {
+    // Check if the request body is empty
+    if (Object.keys(req.body).length === 0) {
+      return res.status(400).json({ message: "Request body cannot be empty." });
+    }
+
     const { price } = req.body;
 
     // Ensure price is a valid number if provided
@@ -156,12 +150,14 @@ router.patch('/:id', async (req, res) => {
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
-      req.params.id,
+      req.params.productId,
       { $set: req.body },
-      { new: true }
+      { new: true, runValidators: true } // runValidators ensures schema rules are enforced
     );
 
-    if (!updatedProduct) return res.status(404).json({ message: 'Product not found' });
+    if (!updatedProduct) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
 
     res.status(200).json(updatedProduct);
   } catch (error) {
@@ -169,6 +165,7 @@ router.patch('/:id', async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 });
+
 
 // DELETE /api/products/:id - Delete a product
 router.delete('/:id', async (req, res) => {
@@ -183,8 +180,8 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// GET /api/products/:id/related - Fetch related products (based on same category)
-router.get('/:id/related', async (req, res) => {
+// GET /api/products/:id - Fetch related products (based on same category)
+router.get('/:productId', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
