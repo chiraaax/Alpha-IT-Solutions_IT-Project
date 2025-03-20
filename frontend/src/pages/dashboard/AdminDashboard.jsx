@@ -6,6 +6,7 @@ const navItems = [
   { path: '/dashboard/admin', label: 'Dashboard' },
   { path: '/dashboard/add-new-product', label: 'Add Product' },
   { path: '/dashboard/manage-products', label: 'Manage Products' },
+  { path: '/dashboard/manage-inventory', label: 'Manage Products Inventory' },
   { path: '/dashboard/users', label: 'Users' },
 ];
 
