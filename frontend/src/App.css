@@ -124,7 +124,7 @@
   .section__subheader {
     max-width: 500px;
     margin: auto;
-    color: var(--text-light);
+    color: rgb(177, 175, 175);
     text-align: center;
     font-weight: 700;
   }

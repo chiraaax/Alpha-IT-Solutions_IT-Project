@@ -18,8 +18,8 @@ import ProtectedRoute from "../routers/ProtectedRoute";
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
 import AddProduct from '../pages/dashboard/admin/addProduct/AddProduct';
 import ManageProducts from '../pages/dashboard/admin/manageProducts/ManageProducts';
-import InventoryManagement from '../pages/dashboard/admin/inventoryManagement/InventoryManagement';
 import ManageInventory from '../pages/dashboard/admin/inventoryManagement/ManageInventory';
+import ProductDetails from '../components/shop/ProductDetails';
 
 
 const router = createBrowserRouter([
@@ -36,6 +36,7 @@ const router = createBrowserRouter([
       { path: 'faq-manage', element: <ProtectedRoute element={<FAQManage />} allowedRoles={["admin"]} /> },
       { path: 'faq', element: <FAQ /> },
       { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
+      { path: '/shop/:productId', element: <ProductDetails /> },
     ],
   },
   { path: '/login', element: <Login /> },

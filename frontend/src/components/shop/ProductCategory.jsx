@@ -1,9 +1,10 @@
 import React, { useState, useEffect , useMemo} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import ProductCards from './ProductCards';
+
 import axios from "axios";
 import qs from 'qs';
+import ProductList from './ProductList';
 
 // Define a configuration object for each category’s filters.
 const filtersConfig = {
@@ -615,7 +616,7 @@ const ProductCategory = () => {
             {!loading && !error && products.length === 0 && (
               <p className="text-white">Sorry ! This product is not yet available</p>
             )}
-            {!loading && !error && <ProductCards products={products} />}
+            {!loading && !error && <ProductList products={products} />}
 
             {/* Pagination Controls */}
             <div className="flex justify-center mt-6">
