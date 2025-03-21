@@ -2,6 +2,24 @@ import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import App from '../App';
 import Home from '../pages/Home';
+
+// import AppointmentDashboard from '../components/Appointment_Dashboard'; 
+
+// import AppointmentForm from '../components/Appointment_form';
+// import ProductCategory from '../shop/ProductCategory';
+// import SearchPage from '../shop/SearchPage';
+
+// import AppointmentForm from '../components/Appointment_form'; // Import Appointment Form
+// import DraftedTechniciansReports from '../components/DraftedTechniciansReports';
+//order management
+import ShoppingCart from '../pages/OrderManagement/shoppingCart';
+import CheckoutForm from '../components/OrderManagement/CheckoutForm';
+import PickupForm from '../components/OrderManagement/pickupForm';
+import CodForm from '../components/OrderManagement/CodForm';
+// import OrderList from '../components/OrderManagement/OrderList';
+import UpdateOrder from '../components/OrderManagement/updateOrder';
+// import updateForm from '../components/OrderManagement/updateForm';
+
 import CustomPreBuilds from '../components/CustomBuilds/CustomPreBuilds';
 import AppointmentDashboard from '../components/Appointment/Appointment_Dashboard';
 import AppointmentForm from '../components/Appointment/Appointment_form';
@@ -32,6 +50,7 @@ import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail'; //
 import CreateCustomBuild from '../components/CustomBuilds/CreateCustomPreBuild';
 import CustomizeBuild from '../components/CustomBuilds/CustomizeBuild'; // ✅ New Import
 
+// Define the router object
 const router = createBrowserRouter([
   {
     path: '/',
@@ -62,6 +81,15 @@ const router = createBrowserRouter([
       { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },
       { path: 'create-custom-prebuild', element: <CreateCustomBuild /> },
       { path: 'customize-build/:id', element: <CustomizeBuild /> }, // ✅ New Route
+
+      //order routes
+      { path: 'ShoppingCart', element: <ShoppingCart /> },
+      { path: 'CheckoutForm', element: <CheckoutForm /> },
+      { path: 'PickupForm', element: <PickupForm /> },
+      { path: 'CodForm', element: <CodForm /> },
+      { path: 'UpdateOrder', element: <UpdateOrder /> },
+      { path: 'UpdateOrder/:id', element: <UpdateOrder /> },
+      
     ]
   },
 
