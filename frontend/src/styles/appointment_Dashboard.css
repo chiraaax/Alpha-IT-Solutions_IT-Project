@@ -1,21 +1,21 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: white; /* Changed background to white */
+  background-color: #ffffff; /* White background */
   margin: 0;
   padding: 0;
-  color: black; /* Text color changed to black */
+  color: #000000; /* Black text color */
 }
 
+/* Dashboard Container */
 .dashboard-container {
   max-width: 1200px;
   margin: 20px auto;
   padding: 20px;
-  background-color: black; /* Card is now black */
+  background: linear-gradient(135deg, #d12222, #0245ff); /* Red to blue gradient */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
-  color: white; /* Ensure text inside the card is white */
+  color: #ffffff; /* White text inside the card */
 }
-
 /* Header */
 .header {
   display: flex;
@@ -73,15 +73,16 @@ tr:hover {
 }
 
 .drafted-reports {
-  background-color: #007bff;
+  background-color: green;
 }
 
 .make-appointment {
-  background-color: #28a745;
+  background-color: #007bff;
+
 }
 
 .self-diagnosis {
-  background-color: #dc3545;
+  background-color:#007bff;
 }
 
 .btn:hover {
@@ -439,7 +440,7 @@ tr:hover {
 }
 
 .generate-report-btn {
-  background: linear-gradient(90deg, #1e3c72, #2a5298, #6a11cb, #2575fc);
+  background: linear-gradient(90deg, red, #2a5298);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -451,5 +452,75 @@ tr:hover {
 }
 
 .generate-report-btn:hover {
-  background: linear-gradient(90deg, #6a11cb, #2575fc, #1e3c72, #2a5298);
+  background: linear-gradient(90deg, #1e3c72, red );
+}
+
+/* Accept and Reject Buttons */
+.accept-reject-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.accept-btn {
+  background-color: green;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.reject-btn {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+/* Status Info */
+.status-info {
+  margin-top: 20px;
+}
+
+.status-info p {
+  margin: 5px 0;
+}
+
+.status-accepted {
+  color: green;
+  font-weight: bold;
+}
+
+.status-rejected {
+  color: red;
+  font-weight: bold;
+}
+
+.status-pending {
+  color: orange;
+  font-weight: bold;
+}
+
+/* Disabled Buttons */
+button:disabled {
+  background-color: #ccc; /* Grey background */
+  color: #666; /* Darker grey text */
+  cursor: not-allowed; /* Show "not allowed" cursor */
+  opacity: 0.7; /* Reduce opacity */
+  border: 1px solid #999; /* Grey border */
+}
+
+/* Specific Button Styles */
+.generate-report-btn:disabled,
+.update-btn:disabled,
+.delete-btn:disabled {
+  background-color: #ccc; /* Grey background */
+  color: #666; /* Darker grey text */
+  cursor: not-allowed; /* Show "not allowed" cursor */
+  opacity: 0.7; /* Reduce opacity */
+  border: 1px solid #999; /* Grey border */
 }

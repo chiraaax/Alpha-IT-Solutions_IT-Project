@@ -17,6 +17,13 @@ import ProductCategory from '../components/shop/ProductCategory';
 import ProtectedRoute from "../routers/ProtectedRoute";  
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
 
+import AddProduct from '../pages/dashboard/admin/addProduct/AddProduct';
+import ManageProducts from '../pages/dashboard/admin/manageProducts/ManageProducts';
+import ManageInventory from '../pages/dashboard/admin/inventoryManagement/ManageInventory';
+import ProductDetails from '../components/shop/ProductDetails';
+import SearchPage from '../components/shop/search/SearchPage';
+import ManageAppointments from "../pages/dashboard/manage-appointments";
+
 // CustomBuilds Components
 import GamingBuilds from '../components/CustomBuilds/GamingBuilds';
 import BudgetBuilds from '../components/CustomBuilds/BudgetBuilds';
@@ -36,11 +43,22 @@ const router = createBrowserRouter([
       { path: 'AppointmenentAI', element: <ProtectedRoute><AppointmenentAI /></ProtectedRoute> },
       { path: 'appointment-form', element: <ProtectedRoute><AppointmentForm /></ProtectedRoute> },
       { path: 'draftedTechnicianReport', element: <ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
+      { path: 'faq-manage', element: <ProtectedRoute allowedRoles={["admin"]}><FAQManage /></ProtectedRoute> },
+      { path: 'appointment', element: <ProtectedRoute><AppointmentDashboard /></ProtectedRoute> },
+      { path: 'AppointmenentAI', element: <ProtectedRoute><AppointmenentAI /></ProtectedRoute> },
+      { path: 'appointment-form', element: <ProtectedRoute><AppointmentForm /></ProtectedRoute> },
+      { path: 'draftedTechnicianReport', element: <ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
       { path: 'faq-manage', element: <ProtectedRoute element={<FAQManage />} allowedRoles={["admin"]} /> },
       { path: 'faq', element: <FAQ /> },
-
       // CustomBuilds routes
       { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
+      { path: 'shop/:productId', element: <ProductDetails /> },
+      { path: 'search', element: <SearchPage /> },
+      { path: 'gaming-builds', element: <GamingBuilds /> },
+      { path: 'budget-builds', element: <BudgetBuilds /> },
+      { path: 'gaming-builds/:type/:id', element: <BuildDetail /> },
+      { path: 'budget-builds/:type/:id', element: <BuildDetail /> },
+      { path: 'custom-build-form', element: <CustomBuildForm /> },
       { path: 'gaming-builds', element: <GamingBuilds /> },
       { path: 'budget-builds', element: <BudgetBuilds /> },
       { path: 'gaming-builds/:id', element: <GamingBuildDetail /> },
@@ -55,20 +73,22 @@ const router = createBrowserRouter([
   { path: '/register', element: <Register /> },
   { path: '/forgot-password', element: <ForgotPassword /> },
   { path: '/verify-otp', element: <VerifyOTP /> },
-
   // Dashboard routes
   {
     path: "/dashboard",
     element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
     children: [
-      { path: '', element: <div>d</div> },
-      { path: 'profile', element: <div>de</div> },
-      { path: 'reviews', element: <div>sfs</div> },
-      { path: 'admin', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
-      { path: 'add-new-product', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
-      { path: 'manage-products', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
-      { path: 'update-product/:id', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
-      { path: 'users', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
+      // Customer routes
+      { path: '', element: <div>Dashboard Home</div> },
+      { path: 'profile', element: <div>Profile</div> },
+      { path: 'reviews', element: <div>Reviews</div> },
+      // Admin routes
+      { path: 'admin', element: <ProtectedRoute allowedRoles={["admin"]}><div>Admin Panel</div></ProtectedRoute> },
+      { path: 'add-new-product', element: <ProtectedRoute allowedRoles={["admin"]}><AddProduct /></ProtectedRoute> },
+      { path: 'manage-products', element: <ProtectedRoute allowedRoles={["admin"]}><ManageProducts /></ProtectedRoute> },
+      { path: 'manage-inventory', element: <ProtectedRoute allowedRoles={["admin"]}><ManageInventory /></ProtectedRoute> },
+      { path: 'users', element: <ProtectedRoute allowedRoles={["admin"]}><div>Manage Users</div></ProtectedRoute> },
+      { path: 'manage-appointments', element: <ProtectedRoute allowedRoles={["admin"]}><ManageAppointments /></ProtectedRoute> },
     ]
   }
 ]);
