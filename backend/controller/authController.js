@@ -1,7 +1,7 @@
-import User from '../models/userModel.js';  
+import User from '../model/userModel.js';  
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import sendEmail from '../config/nodemailer.js'; 
+import sendEmail from '../config/nodemiler.js'; 
 import {otpTemplate} from '../emailTemplates/otpTemplate.js';
 import { welcomeTemplate } from '../emailTemplates/welcomeTemplate.js';
 import {forgotPasswordTemplate} from '../emailTemplates/forgotPasswordTemplate.js';
@@ -55,7 +55,7 @@ export const verifyOTP = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, contactNumber, address } = req.body;
         const user = await User.findOne({ email });
 
         if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -63,7 +63,7 @@ export const login = async (req, res) => {
         }
 
         const token = jwt.sign(
-            { id: user._id, role: user.role, name: user.name, email: user.email },
+            { id: user._id, role: user.role, name: user.name, email: user.email, contactNumber: user.contactNumber, address: user.address },
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
         );
@@ -71,7 +71,7 @@ export const login = async (req, res) => {
         res.json({
              message: "Login Successful", 
             token, 
-            user: { role: user.role, name: user.name, email: user.email } 
+            user: { role: user.role, name: user.name, email: user.email, contactNumber: user.contactNumber, address: user.address } 
         });
     } catch (error) {
         res.status(500).json({ message: 'Error logging in', error: error.message });

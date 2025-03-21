@@ -16,6 +16,7 @@ import FAQ from '../components/Register/FAQ';
 import ProductCategory from '../components/shop/ProductCategory';
 import ProtectedRoute from "../routers/ProtectedRoute";  
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
+import Profile from '../components/Register/Profile';
 
 // CustomBuilds Components
 import GamingBuilds from '../components/CustomBuilds/GamingBuilds';
@@ -54,6 +55,7 @@ const router = createBrowserRouter([
   { path: '/register', element: <Register /> },
   { path: '/forgot-password', element: <ForgotPassword /> },
   { path: '/verify-otp', element: <VerifyOTP /> },
+  { path: '/profile', element: <Profile/>},
 
   // Dashboard routes
   {
