@@ -3,8 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const UpdateOrder = () => {
-  const { orderId } = useParams();
-  console.log("Order ID:", orderId);
+  const { id } = useParams();
+  // const id = typeof orderid === "object" ? orderid.id : id;
+  console.log(`Order ID:${id}`);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -27,14 +28,16 @@ const UpdateOrder = () => {
   });
 
   useEffect(() => {
-    if (!orderId) return;
-
+    // if (!id) {
+    //   console.error('Order ID is missing');
+    //   return;
+    // }
     axios
       .get(`http://localhost:5000/api/orders/orders/${id}`)
       .then((response) => {
         const order = response.data;
         setFormData({
-          name: order.name || "",
+          name: order.name || "" ,
           phoneNo: order.phoneNo || "",
           email: order.email || "",
           paymentMethod: order.paymentMethod || "COD",
@@ -57,7 +60,7 @@ const UpdateOrder = () => {
       .catch((error) => {
         console.error("Error fetching order:", error);
       });
-  }, [orderId]);
+  }, [id]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -85,7 +88,7 @@ const UpdateOrder = () => {
       .put(`http://localhost:5000/api/orders/orders/${id}`, updatedOrder)
       .then(() => {
         alert("Order updated successfully!");
-        navigate(`api/orders/orders/${id}`);
+        // navigate(`orders/${id}`);
       })
       .catch((error) => {
         console.error("Error updating order:", error);

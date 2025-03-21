@@ -1,6 +1,6 @@
 import express from "express";
 import Order from "../../models/OrderManagement/Order.js";
-
+// import { useParams } from "react-router-dom";
 const router = express.Router();
 
 router.post("/orders", async (req, res) => {
@@ -67,30 +67,36 @@ router.post("/orders", async (req, res) => {
 });
 
 // GET all orders
-router.get('/orders/:id', async (req, res) => {
+router.get('/orders/all', async (req, res) => {
   try {
       const order = await Order.find();
+      if(!order || order.length === 0) {
+        return res.status(404).json({message:"Order data not found"});
+      }
       res.status(200).json(order);
   } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ errorMessage: error.message });
   }
 });
 
 // GET a single order by ID
-router.get('/orders/:id', async (req, res) => {
+router.get("/orders/:id", async (req, res) => {
   try {
-      const order = await Order.findById(req.params.id);
-      if (!order) return res.status(404).json({ message: 'Order not found' });
-      res.status(200).json(order);
+    const id = req.params.id;
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ errorMessage: error.message });
+    }
+    res.json(order);
   } catch (error) {
-      res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
 // Delete order if it's within 24 hours
 router.delete("/orders/:id", async (req, res) => {
   try {
-    const { id } = req.params.id
+    const id  = req.params.id
     const order = await Order.findById(id);
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
@@ -115,7 +121,7 @@ router.delete("/orders/:id", async (req, res) => {
 
 router.put("/orders/:id", async (req, res) => {
   try {
-    const {id} = req.params.id
+    const id = req.params.id
     const order = await Order.findById(id);
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
@@ -132,7 +138,7 @@ router.put("/orders/:id", async (req, res) => {
     }
 
     const updatedOrder = await Order.findByIdAndUpdate(
-      orderId,
+      id,
       req.body,
       { new: true }
     );
@@ -141,4 +147,5 @@ router.put("/orders/:id", async (req, res) => {
     res.status(500).json({ message: "Error updating order" });
   }
 });
+
 export default router;

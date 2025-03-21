@@ -58,7 +58,7 @@ const router = createBrowserRouter([
       { path : 'codForm', element : <CodForm />},
       // { path : 'OrderList', element : <OrderList />},
       { path : 'updateOrder', element : <UpdateOrder />},
-      // { path : 'updateOrder/:orderId', element : <UpdateOrder />},
+      { path : 'updateOrder/:id', element : <UpdateOrder />},
       // { path : 'updateForm/:orderId', element : <updateForm />},
       // { path : "/CheckoutForm/edit/:orderId", element : <CheckoutForm />},
       

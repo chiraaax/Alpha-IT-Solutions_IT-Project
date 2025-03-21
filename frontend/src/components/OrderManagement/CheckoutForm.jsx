@@ -5,7 +5,6 @@ import "../../styles/OrderManagement/CheckoutForm.css";
 import PickupForm from "./pickupForm";
 import CodForm from "./CodForm";
 import { deleteOrder/*, updateOrder*/ } from "./orderService";
-// import updateOrder from "./updateOrder";
 
 const CheckoutForm = () => {
   const navigate = useNavigate();
@@ -112,6 +111,7 @@ const CheckoutForm = () => {
   //   }
   // };
 
+  // console.log("order ID : " , id);
   const handleDelete = async () => {
     if (!id) {
       alert("Order not found.");
@@ -144,6 +144,7 @@ const CheckoutForm = () => {
     try {
       const response = await axios.post("http://localhost:5000/api/orders/orders", orderData);
       setSuccessOrder(response.data);
+      // navigate(`/checkout/${response.data.id}`);
       alert("Order placed successfully!");
     } catch (error) {
       console.error("Error placing order:", error.response?.data || error.message);
@@ -245,7 +246,7 @@ const CheckoutForm = () => {
             )}
           </ul>
 
-          <button onClick={() => navigate("/updateOrder")}>Update</button>
+          <button onClick={() => navigate(`/updateOrder/${id}`)}>Update</button>
           {/* <button onClick={handleUpdate}>Update</button> */}
           <button onClick={handleDelete}>Delete</button>
 

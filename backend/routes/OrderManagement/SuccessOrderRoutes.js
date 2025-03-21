@@ -2,6 +2,9 @@ import express from "express";
 import SuccessOrder from "../../models/OrderManagement/SuccessOrder.js";
 const router = express.Router();
 
+// export const create =
+
+
 // Get all orders for a particular customer
 router.get("/users/:id", async (req, res) => {
   try {
