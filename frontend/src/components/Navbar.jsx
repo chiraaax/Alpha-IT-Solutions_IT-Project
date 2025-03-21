@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MdSearch, MdShoppingCart, MdAccountCircle } from 'react-icons/md';
+import { FaSun, FaMoon } from 'react-icons/fa';  // Import Sun and Moon icons for theme toggle
 import logo from '../assets/AlphaITSolutionsLogo.jpg';
 import { AuthContext } from '../context/authContext';
-
+import { useTheme } from './CustomBuilds/ThemeContext';  // Import the useTheme hook
 
 const adminDropDownMenus = [
   { label: "Dashboard", path: "/dashboard/admin" },
@@ -25,8 +26,8 @@ const Navbar = () => {
   // Access user and logout from AuthContext
   const { user, logout } = useContext(AuthContext);
 
-  // Debug log to check the user data
-  // console.log('Current user:', user);
+  // Access the theme context
+  const { isDark, toggleTheme } = useTheme();  // Retrieve the theme state and toggle function
 
   // Set dropdown menus based on the logged-in user's role
   const dropDownMenus =
@@ -93,7 +94,7 @@ const Navbar = () => {
           </Link>
           
           {/* Cart Icon */}
-          <Link to="/cart" className="relative">
+          <Link to="/ShoppingCart" className="relative">
             <MdShoppingCart size={24} />
             <sup className='absolute -top-2 -right-2 text-xs inline-block px-1.5 text-white rounded-full bg-primary'>
               {/* Optionally show the number of products */}
@@ -123,20 +124,20 @@ const Navbar = () => {
                       </li>
                     ))}
                     <li>
-                    <button 
-                      onClick={handleLogout} 
-                      className="w-full text-left px-4 py-2 rounded-lg text-white font-semibold transition-all duration-300 shadow-md"
-                      style={{
-                        textAlign: "center",
-                        background: "linear-gradient(to right, #d12222, #0245ff)",
-                        border: "none",
-                        cursor: "pointer",
-                      }}
-                      onMouseOver={(e) => e.target.style.transform = "scale(1.05)"}
-                      onMouseOut={(e) => e.target.style.transform = "scale(1)"}
-                    >
-                      Logout
-                    </button>
+                      <button 
+                        onClick={handleLogout} 
+                        className="w-full text-left px-4 py-2 rounded-lg text-white font-semibold transition-all duration-300 shadow-md"
+                        style={{
+                          textAlign: "center",
+                          background: "linear-gradient(to right, #d12222, #0245ff)",
+                          border: "none",
+                          cursor: "pointer",
+                        }}
+                        onMouseOver={(e) => e.target.style.transform = "scale(1.05)"}
+                        onMouseOut={(e) => e.target.style.transform = "scale(1)"}
+                      >
+                        Logout
+                      </button>
                     </li>
                   </ul>
                 </div>
@@ -147,6 +148,15 @@ const Navbar = () => {
               <MdAccountCircle size={24} />
             </Link>
           )}
+
+          {/* Theme Toggle Button */}
+          <button
+            className="theme-toggle-btn"
+            onClick={toggleTheme}
+            style={{ position: "absolute", left: "170px" }} // Positioned at the top right
+          >
+            {isDark ? <FaMoon size={22} /> : <FaSun size={24} />} {/* Toggle between Sun and Moon icons */}
+          </button>
         </div>
       </nav>
     </header>

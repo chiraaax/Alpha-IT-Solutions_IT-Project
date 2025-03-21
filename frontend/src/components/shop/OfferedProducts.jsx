@@ -1,34 +1,92 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Slider from 'react-slick';
 import ProductCards from './ProductCards';
-import products from '../../data/products';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 const OfferedProducts = () => {
-  // Filter the products to include only those with an oldPrice value
-  const specialOfferProducts = products.filter(product => product.oldPrice != null);
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // this is used to limit the number of products displayed on the page
-  const [visibleProducts, setVisibleProducts] = useState(8);
-  const loadMoreProducts = () => {
-    setVisibleProducts(prevCount => prevCount + 4);
+  // Fetch products from the database when the component mounts.
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get("http://localhost:5000/api/products");
+        if (response.status === 200) {
+          setProducts(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Filter products that have a discounted price lower than the original price
+  const specialOfferProducts = products.filter(
+    (product) => product.discountPrice && product.discountPrice < product.price
+  );
+
+  // Slick Carousel settings
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: specialOfferProducts.length < 4 ? specialOfferProducts.length : 4,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: true,
+    centerMode: false,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+    ],
   };
 
   return (
     <div className='bg-black pb-3'>
       <section className='section__container product__container'>
-        <h2 className='section__header'>Special offers</h2>
+        <h2 className='section__header'>Special Offers</h2>
         <p className='section__subheader mb-12'>
           Get the best deals on high-performance laptops, gaming accessories, and essential tech upgrades—only at Alpha IT Solutions!
         </p>
-        
-        {/* Render only the filtered products */}
-        <ProductCards products={specialOfferProducts.slice(0, visibleProducts)} />
 
-        {/* Load more products */}
-        <div className='product__btn'>
-          {visibleProducts < specialOfferProducts.length && (
-            <button className='btn' onClick={loadMoreProducts}>Load more</button>
-          )}
-        </div>
+        {isLoading ? (
+          <p>Loading products...</p>
+        ) : specialOfferProducts.length > 0 ? (
+          <Slider {...settings} className="slider-container">
+            {specialOfferProducts.map((product, index) => (
+              <div key={index} className="px-2">
+                <ProductCards products={[product]} />
+              </div>
+            ))}
+          </Slider>
+        ) : (
+          <p>No special offers available at the moment.</p>
+        )}
       </section>
     </div>
   );
