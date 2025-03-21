@@ -24,7 +24,7 @@ const ExpensePage = () => {
     const addExpense = async () => {
         try {
             const newExpense = { category: "Utilities", amount: 50, date: "2025-03-17" };
-            const res = await fetch("http://localhost:5000/api/expenses", {
+            const res = await fetch("http://localhost:5000/api/expenses/add", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newExpense),
@@ -42,7 +42,7 @@ const ExpensePage = () => {
     // Delete Expense
     const deleteExpense = async (id) => {
         try {
-            await fetch(`http://localhost:5000/api/expenses${id}`, { method: "DELETE" });
+            await fetch(`http://localhost:5000/api/expenses/${id}`, { method: "DELETE" });
             setExpenses(expenses.filter(expense => expense._id !== id)); // Remove from UI
         } catch (error) {
             setError("Error deleting expense");
@@ -54,7 +54,7 @@ const ExpensePage = () => {
     const updateExpense = async (id) => {
         try {
             const updatedData = { amount: 120, category: "Office Supplies" };
-            await fetch(`http://localhost:5000/api/expenses${id}`, {
+            await fetch(`http://localhost:5000/api/expenses/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatedData),

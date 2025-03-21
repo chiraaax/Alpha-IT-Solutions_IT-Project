@@ -5,12 +5,12 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 
 //order
-import orderRoutes from "./routes/OrderManagement/orderRoutes.js"
-import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js"
+import orderRoutes from "./routes/OrderManagement/orderRoutes.js";
+import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js";
 
 // import productRoutes from "./src/products/products.route.js"; 
 // import authRoutes from "./src/users/user.route.js";
-import appointmentRoutes from "./routes/appointmentroutes.js"
+import appointmentRoutes from "./routes/appointmentroutes.js";
 import authRoutes from "./routes/authRoute.js";
 import userRoutes from "./routes/userRoute.js";
 import faqRoutes from "./routes/faqRoute.js";
