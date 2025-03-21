@@ -20,35 +20,36 @@ import DashboardLayout from "../pages/dashboard/DashboardLayout";
 // CustomBuilds Components
 import GamingBuilds from '../components/CustomBuilds/GamingBuilds';
 import BudgetBuilds from '../components/CustomBuilds/BudgetBuilds';
-import BuildDetail from '../components/CustomBuilds/BuildDetail';
-import CustomBuildForm from '../components/CustomBuilds/CustomBuildForm';
+import GamingBuildDetail from '../components/CustomBuilds/GamingBuildDetail';
+import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail'; // New Import
+import CreateCustomBuild from '../components/CustomBuilds/CreateCustomPreBuild';
+import CustomizeBuild from '../components/CustomBuilds/CustomizeBuild'; // ✅ New Import
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <App />, // App is the layout (Navbar + Outlet + Footer)
+    element: <App />,
     children: [
       { path: '', element: <Home /> },
       { path: 'products/:category', element: <ProductCategory /> },
-      { path: 'appointment', element:<ProtectedRoute><AppointmentDashboard /></ProtectedRoute>},
-      { path: 'AppointmenentAI', element:<ProtectedRoute><AppointmenentAI /></ProtectedRoute> },
-      { path: 'appointment-form', element:<ProtectedRoute><AppointmentForm /></ProtectedRoute> },
-      { path: 'draftedTechnicianReport', element:<ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
+      { path: 'appointment', element: <ProtectedRoute><AppointmentDashboard /></ProtectedRoute> },
+      { path: 'AppointmenentAI', element: <ProtectedRoute><AppointmenentAI /></ProtectedRoute> },
+      { path: 'appointment-form', element: <ProtectedRoute><AppointmentForm /></ProtectedRoute> },
+      { path: 'draftedTechnicianReport', element: <ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
       { path: 'faq-manage', element: <ProtectedRoute element={<FAQManage />} allowedRoles={["admin"]} /> },
       { path: 'faq', element: <FAQ /> },
 
       // CustomBuilds routes
       { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
-      { path: 'gaming-builds', element: <GamingBuilds /> }, // New route for Gaming Builds
-      { path: 'budget-builds', element: <BudgetBuilds /> }, // New route for Budget Builds
-      // Modify these two routes to include the 'type' and 'id' dynamic params
-      { path: 'gaming-builds/:type/:id', element: <BuildDetail /> }, // Route for Gaming Build Detail
-      { path: 'budget-builds/:type/:id', element: <BuildDetail /> }, // Route for Budget Build Detail
-
-      { path: 'custom-build-form', element: <CustomBuildForm /> }, // Route for Custom Build Form
+      { path: 'gaming-builds', element: <GamingBuilds /> },
+      { path: 'budget-builds', element: <BudgetBuilds /> },
+      { path: 'gaming-builds/:id', element: <GamingBuildDetail /> },
+      { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },
+      { path: 'create-custom-prebuild', element: <CreateCustomBuild /> },
+      { path: 'customize-build/:id', element: <CustomizeBuild /> }, // ✅ New Route
     ]
   },
-  
+
   // Authentication routes
   { path: '/login', element: <Login /> },
   { path: '/register', element: <Register /> },
