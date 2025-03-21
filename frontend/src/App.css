@@ -48,6 +48,7 @@
     text-transform: uppercase;
     background: linear-gradient(to right, #d12222, #0245ff);
     -webkit-background-clip: text;
+    background-clip: text;    
     color: transparent;
     transition: all 0.3s ease-in-out;
     position: relative;
@@ -56,6 +57,7 @@
 .nav__links a:hover {
     background: linear-gradient(to right, #0245ff, #d12222);
     -webkit-background-clip: text;
+    background-clip: text;
     color: transparent;
     transform: scale(1.1);
 }

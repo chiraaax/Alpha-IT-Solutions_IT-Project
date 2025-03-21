@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/authContext';
+import '../../styles/admin_dashboard.css'// Import the CSS file
 
 const navItems = [
   { path: '/dashboard/admin', label: 'Dashboard' },
@@ -8,6 +9,7 @@ const navItems = [
   { path: '/dashboard/manage-products', label: 'Manage Products' },
   { path: '/dashboard/manage-inventory', label: 'Manage Products Inventory' },
   { path: '/dashboard/users', label: 'Users' },
+  { path: '/dashboard/manage-appointments', label: 'Manage Appointments' },
 ];
 
 const AdminDashboard = () => {
@@ -20,18 +22,18 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className='space-y-5 bg-white p-8 md:h-screen flex flex-col justify-between'>
+    <div className='admin-dashboard'>
       <div>
         <div className='nav__logo'>
-          <Link to="/">Alpha IT Solutions<span>.</span></Link>
+          <Link to="/">Alpha IT Solutions<span>.</span></Link><hr></hr>
           <p className='italic mt-4 text-gray-500'>Admin dashboard</p>
         </div>
-        <hr className='mt-5 text-gray-300' />
-        <ul className='space-y-5 pt-5'>
+        <hr />
+        <ul className='nav-items'>
           {navItems.map((item) => (
             <li key={item.path}>
               <NavLink 
-                className={({ isActive }) => isActive ? "text-blue-600 font-bold" : 'text-black'} 
+                className={({ isActive }) => isActive ? "active" : ''} 
                 end
                 to={item.path}
               >
@@ -41,18 +43,11 @@ const AdminDashboard = () => {
           ))}
         </ul>
       </div>
-      <div className='mb-3'>
-        <hr className='mb-3 text-gray-300'/>
+      <div>
+        <hr />
         <button
           onClick={handleLogout}
-          className="text-white font-medium px-5 py-2 rounded-md shadow-md transition duration-300 transform hover:scale-105"
-          style={{
-            textAlign: "center",
-            background: "linear-gradient(to right, #d12222, #0245ff)",
-            border: "none",
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
+          className="logout-button"
         >
           Logout
         </button>

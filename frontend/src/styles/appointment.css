@@ -10,14 +10,14 @@
 
 /* Change color of selected day */
 .custom-calendar .react-calendar__tile--active {
-  background: #3182ce !important; /* Blue for selected date */
+  background: #d12222 !important; /* Red for selected date */
   color: white !important;
   border-radius: 5px;
 }
 
 /* Hover effect on days */
 .custom-calendar .react-calendar__tile:hover {
-  background: #4a5568 !important; /* Darker hover effect */
+  background: #0245ff !important; /* Blue hover effect */
   color: white !important;
 }
 
@@ -26,11 +26,23 @@
   background: #2d3748 !important;
   color: white !important;
   border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.custom-calendar .react-calendar__navigation button:hover {
+  background: #0245ff !important; /* Blue hover effect */
 }
 
 /* Highlight today's date */
 .custom-calendar .react-calendar__tile--now {
-  background: #4a5568 !important;
+  background: #0245ff !important; /* Blue for today's date */
   color: white !important;
+  border-radius: 5px;
+}
+
+/* Optional: Style for disabled dates */
+.custom-calendar .react-calendar__tile--disabled {
+  background: #4a5568 !important; /* Gray for disabled dates */
+  color: #a0aec0 !important;
   border-radius: 5px;
 }

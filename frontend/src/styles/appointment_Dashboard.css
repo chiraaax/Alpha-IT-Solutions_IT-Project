@@ -1,21 +1,21 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: white; /* Changed background to white */
+  background-color: #ffffff; /* White background */
   margin: 0;
   padding: 0;
-  color: black; /* Text color changed to black */
+  color: #000000; /* Black text color */
 }
 
+/* Dashboard Container */
 .dashboard-container {
   max-width: 1200px;
   margin: 20px auto;
   padding: 20px;
-  background-color: black; /* Card is now black */
+  background: linear-gradient(135deg, #d12222, #0245ff); /* Red to blue gradient */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
-  color: white; /* Ensure text inside the card is white */
+  color: #ffffff; /* White text inside the card */
 }
-
 /* Header */
 .header {
   display: flex;
@@ -73,15 +73,16 @@ tr:hover {
 }
 
 .drafted-reports {
-  background-color: #007bff;
+  background-color: green;
 }
 
 .make-appointment {
-  background-color: #28a745;
+  background-color: #007bff;
+
 }
 
 .self-diagnosis {
-  background-color: #dc3545;
+  background-color:#007bff;
 }
 
 .btn:hover {
@@ -353,4 +354,173 @@ tr:hover {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Progress Bar Styles */
+.progress-bar {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #111; /* Dark background for the progress bar container */
+  border-radius: 8px;
+  border: 1px solid #1e90ff; /* Blue border to match the modal */
+}
+
+.progress-bar h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: white; /* White text for the heading */
+}
+
+.progress-stages {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.progress-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.progress-stage .circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #333; /* Dark gray for inactive circles */
+  border: 2px solid #1e90ff; /* Blue border for circles */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.progress-stage.active .circle {
+  background-color: #1e90ff; /* Blue background for active circles */
+  border-color: #1e90ff;
+}
+
+.progress-stage span {
+  font-size: 12px;
+  text-align: center;
+  color: white; /* White text for stage labels */
+  margin-top: 8px;
+}
+
+/* Connector Lines Between Circles */
+.progress-stages::before {
+  content: "";
+  position: absolute;
+  top: 12px; /* Center the line vertically */
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #1e90ff; /* Blue line for connectors */
+  z-index: 0;
+}
+
+.progress-stage:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 12px; /* Center the line vertically */
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background-color: #1e90ff; /* Blue line for connectors */
+  z-index: -1;
+  transition: background-color 0.3s ease;
+}
+
+.progress-stage.active::after {
+  background-color: #1e90ff; /* Blue line for active connectors */
+}
+
+.generate-report-btn {
+  background: linear-gradient(90deg, red, #2a5298);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 20px;
+  transition: background 0.3s ease;
+}
+
+.generate-report-btn:hover {
+  background: linear-gradient(90deg, #1e3c72, red );
+}
+
+/* Accept and Reject Buttons */
+.accept-reject-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.accept-btn {
+  background-color: green;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.reject-btn {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+/* Status Info */
+.status-info {
+  margin-top: 20px;
+}
+
+.status-info p {
+  margin: 5px 0;
+}
+
+.status-accepted {
+  color: green;
+  font-weight: bold;
+}
+
+.status-rejected {
+  color: red;
+  font-weight: bold;
+}
+
+.status-pending {
+  color: orange;
+  font-weight: bold;
+}
+
+/* Disabled Buttons */
+button:disabled {
+  background-color: #ccc; /* Grey background */
+  color: #666; /* Darker grey text */
+  cursor: not-allowed; /* Show "not allowed" cursor */
+  opacity: 0.7; /* Reduce opacity */
+  border: 1px solid #999; /* Grey border */
+}
+
+/* Specific Button Styles */
+.generate-report-btn:disabled,
+.update-btn:disabled,
+.delete-btn:disabled {
+  background-color: #ccc; /* Grey background */
+  color: #666; /* Darker grey text */
+  cursor: not-allowed; /* Show "not allowed" cursor */
+  opacity: 0.7; /* Reduce opacity */
+  border: 1px solid #999; /* Grey border */
 }

@@ -14,6 +14,9 @@ const appointmentSchema = new mongoose.Schema({
   chipLevelRepair: { type: Boolean, required: true }, 
   attemptedFixes: { type: Boolean, required: true }, 
   backupData: { type: Boolean, required: true }, 
+  status: { type: String, default: "pending" }, // pending, accepted, rejected
+  rejectionReason: String,
+  progress: { type: Number, default: -1 }, // -1: Not started, 0-4: Progress stages
 });
 
 export default mongoose.model("Appointment", appointmentSchema);

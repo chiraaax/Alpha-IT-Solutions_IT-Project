@@ -3,7 +3,8 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import axios from "axios";
 import { Button, Input } from "./ui";
-import "../../styles/appointment.css"
+import "../../styles/appointment.css";
+
 const timeSlots = ["09:00 AM", "10:00 AM", "11:00 AM", "02:00 PM", "03:00 PM", "04:00 PM"];
 
 export default function AppointmentDashboard() {
@@ -63,14 +64,19 @@ export default function AppointmentDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-black to-gray-900 text-white">
-      <header className="bg-blue-800 text-white py-4 text-center shadow-lg">
+      <header className="bg-gradient-to-r from-red-600 to-blue-600 text-white py-4 text-center shadow-lg">
         <h1 className="text-3xl font-bold">Computer Repair Appointment Booking</h1>
       </header>
       <main className="flex-grow p-6 max-w-4xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="p-6 rounded-lg shadow-lg border border-gray-700 bg-gray-900 bg-opacity-90">
             <h2 className="text-xl font-semibold mb-4">Select a Date</h2>
-            <Calendar onChange={setDate} value={date} minDate={new Date()} className="custom-calendar" />
+            <Calendar
+              onChange={setDate}
+              value={date}
+              minDate={new Date()}
+              className="custom-calendar"
+            />
           </div>
           <div className="p-6 rounded-lg shadow-lg border border-gray-700 bg-gray-900 bg-opacity-90">
             <h2 className="text-xl font-semibold mb-4">Select a Time Slot</h2>
@@ -80,7 +86,11 @@ export default function AppointmentDashboard() {
                   key={slot}
                   variant={selectedTime === slot ? "default" : "outline"}
                   onClick={() => setSelectedTime(slot)}
-                  className={`rounded-lg p-3 transition-all ${selectedTime === slot ? "bg-blue-600 text-white" : "bg-white text-black"}`}
+                  className={`rounded-lg p-3 transition-all ${
+                    selectedTime === slot
+                      ? "bg-gradient-to-r from-red-600 to-blue-600 text-white"
+                      : "bg-white text-black"
+                  }`}
                 >
                   {slot}
                 </Button>
@@ -90,34 +100,61 @@ export default function AppointmentDashboard() {
         </div>
         <div className="mt-6 p-6 rounded-lg shadow-lg border border-gray-700 bg-gray-900 bg-opacity-90">
           <h2 className="text-xl font-semibold mb-4">Enter Your Details</h2>
-          <Input
-            value={formData.name}
-            placeholder="Full Name"
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
-          <Input
-            value={formData.email}
-            placeholder="Email"
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          />
-          <Input
-            value={formData.phone}
-            placeholder="Phone Number"
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          />
-          {phoneError && <p className="text-red-500 text-sm mb-2">{phoneError}</p>}
-          <Input
-            value={formData.deviceType}
-            placeholder="Device Type"
-            onChange={(e) => setFormData({ ...formData, deviceType: e.target.value })}
-          />
-          <Input
-            value={formData.issueDescription}
-            placeholder="Issue Description"
-            onChange={(e) => setFormData({ ...formData, issueDescription: e.target.value })}
-          />
           <div className="mb-4">
-            <label className="block text-sm font-medium">Preferred Contact Method</label>
+            <label className="block text-sm font-medium">
+              Full Name <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={formData.name}
+              placeholder="Full Name"
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">
+              Email <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={formData.email}
+              placeholder="Email"
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">
+              Phone Number <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={formData.phone}
+              placeholder="Phone Number"
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            />
+            {phoneError && <p className="text-red-500 text-sm mb-2">{phoneError}</p>}
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">
+              Device Type <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={formData.deviceType}
+              placeholder="Device Type"
+              onChange={(e) => setFormData({ ...formData, deviceType: e.target.value })}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">
+              Issue Description <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={formData.issueDescription}
+              placeholder="Issue Description"
+              onChange={(e) => setFormData({ ...formData, issueDescription: e.target.value })}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">
+              Preferred Contact Method <span className="text-red-500">*</span>
+            </label>
             <select
               className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600"
               value={formData.contactMethod}
@@ -130,7 +167,9 @@ export default function AppointmentDashboard() {
 
           {/* New Fields */}
           <div className="mb-4">
-            <label className="block text-sm font-medium">Problem Type</label>
+            <label className="block text-sm font-medium">
+              Problem Type <span className="text-red-500">*</span>
+            </label>
             <select
               className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600"
               value={formData.problemType}
@@ -144,7 +183,9 @@ export default function AppointmentDashboard() {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium">Pickup or Dropoff</label>
+            <label className="block text-sm font-medium">
+              Pickup or Dropoff <span className="text-red-500">*</span>
+            </label>
             <select
               className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600"
               value={formData.pickupOrDropoff}
@@ -193,7 +234,7 @@ export default function AppointmentDashboard() {
           </div>
 
           <Button
-            className="w-full p-3 rounded-lg bg-blue-600 text-white font-semibold transition-all hover:bg-blue-700"
+            className="w-full p-3 rounded-lg bg-gradient-to-r from-red-600 to-blue-600 text-white font-semibold transition-all hover:from-red-700 hover:to-blue-700"
             onClick={handleBooking}
           >
             Book Appointment
@@ -210,8 +251,7 @@ export default function AppointmentDashboard() {
             <p>Your appointment for <strong>{formData.deviceType}</strong> repair is booked for <strong>{date.toDateString()}</strong> at <strong>{selectedTime}</strong>.</p>
             <p>We will contact you via <strong>{formData.contactMethod === "email" ? "email" : "phone"}</strong>.</p>
           </div>
-        )
-}
+        )}
       </main>
       <footer className="bg-gray-800 text-white text-center py-4">
         <p>&copy; {new Date().getFullYear()} Computer Repair Services. All rights reserved.</p>
