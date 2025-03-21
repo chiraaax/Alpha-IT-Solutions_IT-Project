@@ -120,6 +120,7 @@ const CheckoutForm = () => {
 
     const confirmDelete = window.confirm("Are you sure you want to delete this order?");
     if (!confirmDelete) return;
+  
 
     try {
       const result = await deleteOrder(id);

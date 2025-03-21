@@ -81,6 +81,15 @@ const router = createBrowserRouter([
       { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },
       { path: 'create-custom-prebuild', element: <CreateCustomBuild /> },
       { path: 'customize-build/:id', element: <CustomizeBuild /> }, // ✅ New Route
+
+      //order routes
+      { path: 'ShoppingCart', element: <ShoppingCart /> },
+      { path: 'CheckoutForm', element: <CheckoutForm /> },
+      { path: 'PickupForm', element: <PickupForm /> },
+      { path: 'CodForm', element: <CodForm /> },
+      { path: 'UpdateOrder', element: <UpdateOrder /> },
+      { path: 'UpdateOrder/:id', element: <UpdateOrder /> },
+      
     ]
   },
 

@@ -19,4 +19,3 @@ const CartItem = ({ item, updateQuantity }) => {
   };
   
   export default CartItem;
-  

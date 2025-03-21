@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import CheckoutForm from "./CheckoutForm";
-// import pickupCheckout from "../../pages/OrderManagement/pickupCheckout";
+import axios from "axios";  // Import axios for API requests
+import CheckoutForm from "./CheckoutForm"
 
 const Summary = ({ cart }) => {
     const navigate = useNavigate(); // React Router navigation
@@ -9,11 +9,26 @@ const Summary = ({ cart }) => {
     const tax = subtotal * 0.05;
     const total = subtotal + tax;
 
-    const formatCurrency = (amount) => 
+    const formatCurrency = (amount) =>
         new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
 
-    const handleCheckout = () => {
-        navigate("/CheckoutForm"); // Ensure this matches your route definition
+    const handleCheckout = async () => {
+        try {
+            // Prepare the data you want to send
+            const orderData = {
+                totalAmount: total,
+                // Add other fields if necessary, such as userId, orderId, etc.
+            };
+
+            // Make a POST request to save the total amount to your database
+            const response = await axios.post("api/successorders/create", orderData);
+            console.log("SuccessOrder saved:", response.data);
+            
+            // After saving, navigate to the checkout form
+            navigate("/CheckoutForm"); // Ensure this matches your route definition
+        } catch (error) {
+            console.error("Error saving order:", error);
+        }
     };
 
     return (

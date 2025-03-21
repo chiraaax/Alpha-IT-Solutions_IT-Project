@@ -54,6 +54,7 @@ router.post("/orders", async (req, res) => {
       return res.status(400).json({ message: "Invalid payment method" });
     }
 
+  
     const order = new Order(orderData);
     await order.save();
     console.log("Order saved:", order);
