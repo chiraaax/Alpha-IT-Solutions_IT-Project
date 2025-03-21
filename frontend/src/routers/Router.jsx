@@ -27,13 +27,15 @@ import ManageAppointments from "../pages/dashboard/manage-appointments";
 // CustomBuilds Components
 import GamingBuilds from '../components/CustomBuilds/GamingBuilds';
 import BudgetBuilds from '../components/CustomBuilds/BudgetBuilds';
-import BuildDetail from '../components/CustomBuilds/BuildDetail';
-import CustomBuildForm from '../components/CustomBuilds/CustomBuildForm';
+import GamingBuildDetail from '../components/CustomBuilds/GamingBuildDetail';
+import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail'; // New Import
+import CreateCustomBuild from '../components/CustomBuilds/CreateCustomPreBuild';
+import CustomizeBuild from '../components/CustomBuilds/CustomizeBuild'; // ✅ New Import
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <App />, // App is the layout (Navbar + Outlet + Footer)
+    element: <App />,
     children: [
       { path: '', element: <Home /> },
       { path: 'products/:category', element: <ProductCategory /> },
@@ -42,18 +44,27 @@ const router = createBrowserRouter([
       { path: 'appointment-form', element: <ProtectedRoute><AppointmentForm /></ProtectedRoute> },
       { path: 'draftedTechnicianReport', element: <ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
       { path: 'faq-manage', element: <ProtectedRoute allowedRoles={["admin"]}><FAQManage /></ProtectedRoute> },
+      { path: 'appointment', element: <ProtectedRoute><AppointmentDashboard /></ProtectedRoute> },
+      { path: 'AppointmenentAI', element: <ProtectedRoute><AppointmenentAI /></ProtectedRoute> },
+      { path: 'appointment-form', element: <ProtectedRoute><AppointmentForm /></ProtectedRoute> },
+      { path: 'draftedTechnicianReport', element: <ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
+      { path: 'faq-manage', element: <ProtectedRoute element={<FAQManage />} allowedRoles={["admin"]} /> },
       { path: 'faq', element: <FAQ /> },
       // CustomBuilds routes
       { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
       { path: 'shop/:productId', element: <ProductDetails /> },
       { path: 'search', element: <SearchPage /> },
       { path: 'gaming-builds', element: <GamingBuilds /> },
+      { path: 'budget-builds', element: <BudgetBuilds /> },        
+      { path: 'gaming-builds', element: <GamingBuilds /> },
       { path: 'budget-builds', element: <BudgetBuilds /> },
-      { path: 'gaming-builds/:type/:id', element: <BuildDetail /> },
-      { path: 'budget-builds/:type/:id', element: <BuildDetail /> },
-      { path: 'custom-build-form', element: <CustomBuildForm /> },
+      { path: 'gaming-builds/:id', element: <GamingBuildDetail /> },
+      { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },
+      { path: 'create-custom-prebuild', element: <CreateCustomBuild /> },
+      { path: 'customize-build/:id', element: <CustomizeBuild /> }, // ✅ New Route
     ]
   },
+
   // Authentication routes
   { path: '/login', element: <Login /> },
   { path: '/register', element: <Register /> },

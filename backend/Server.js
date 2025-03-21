@@ -11,9 +11,20 @@ import aiRoutes from "./routes/appointmentairoutes.js";
 import productsRoutes from './routes/productsRoutes.js';
 import uploadRoutes from "./routes/uploadRoutes.js";
 import path from "path";
+import prebuildRoutes from "./routes/prebuildRoutes.js"; // ✅ Correct Import
 
 dotenv.config();
 const app = express();
+
+// CORS configuration
+const corsOptions = {
+  origin: "http://localhost:5173", // Replace with your frontend URL
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true, // Allow credentials (cookies, authorization headers)
+};
+
+// Apply CORS middleware
+app.use(cors(corsOptions));
 
 // CORS Configuration
 app.use(cors({
@@ -23,10 +34,13 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"], // ✅ Allows headers
 }));
 
+// Middleware
 app.use(express.json()); // Parse JSON request body
 app.use(cookieParser()); // Parse cookies
+app.use(express.urlencoded({ extended: true })); // Handles URL-encoded data
 
 // API Routes
+// Routes
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", userRoutes);
@@ -40,16 +54,30 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.options("*", cors());
 
 // MongoDB Connection
+app.use("/api/ai", aiRoutes);
+app.use("/api/prebuilds", prebuildRoutes); // ✅ Now works properly
+
+// Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log("MongoDB Connection Error:", err));
+  .catch((err) => {
+    console.error("MongoDB Connection Error:", err.message);
+    process.exit(1); // Exit process on failure
+  });
 
+// Home route
 app.get("/", (req, res) => {
   res.send("API is running...");
+});
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error("Global Error: ", err.stack);
+  res.status(500).send("Something went wrong!");
 });
 
 // Start Server
