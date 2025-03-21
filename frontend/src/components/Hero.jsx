@@ -12,20 +12,20 @@ import { LuPcCase } from "react-icons/lu";
 
 const sidebarItems = [
   { label: 'Laptop', path: 'laptop', icon: <MdLaptop className="text-4xl" /> },
-  { label: 'Motherboard', path: 'motherboards', icon: <BsFillMotherboardFill className="text-4xl" /> },
+  { label: 'Motherboard', path: 'motherboard', icon: <BsFillMotherboardFill className="text-4xl" /> },
   { label: 'Processor', path: 'processor', icon: <FaMicrochip className="text-4xl" /> },
   { label: 'RAM', path: 'ram', icon: <RiRamLine className="text-4xl" /> },
   { label: 'Graphic Cards', path: 'gpu', icon: <GiCircuitry className="text-4xl" /> },
   { label: 'Power Supply Units', path: 'powerSupply', icon: <FaPlug className="text-4xl" /> },
   { label: 'Casings', path: 'casings', icon: <LuPcCase className="text-4xl" /> },
   { label: 'Monitors', path: 'monitors', icon: <MdMonitor className="text-4xl" /> },
-  { label: 'CPU Coolers / AIO', path: 'cpu coolers', icon: <FaFan className="text-4xl" /> },
+  { label: 'CPU Coolers / AIO', path: 'cpuCoolers', icon: <FaFan className="text-4xl" /> },
   { label: 'Keyboard', path: 'keyboard', icon: <MdKeyboard className="text-4xl" /> },
   { label: 'Mouse', path: 'mouse', icon: <MdMouse className="text-4xl" /> },
-  { label: 'Sound Systems', path: 'sound systems', icon: <FaVolumeUp className="text-4xl" /> },
-  { label: 'Cables & Connectors', path: 'cables and connectors', icon: <FaPlug className="text-4xl" /> },
+  { label: 'Sound Systems', path: 'soundSystems', icon: <FaVolumeUp className="text-4xl" /> },
+  { label: 'Cables & Connectors', path: 'cablesConnectors', icon: <FaPlug className="text-4xl" /> },
   { label: 'Storage', path: 'storage', icon: <MdStorage className="text-4xl" /> },
-  { label: 'External Storage', path: 'external storage', icon: <FaHdd className="text-4xl" /> },
+  { label: 'External Storage', path: 'externalStorage', icon: <FaHdd className="text-4xl" /> },
 ];
 
 
@@ -94,10 +94,10 @@ const Hero = () => {
 
 
           <br />
-
-          <button
-          onClick={() => navigate('/custom-prebuilds')}
-            className="bg-gradient-to-r from-gray-900 via-blue-500 to-blue-1000 min-w-90 text-gray-100 flex flex-col p-3 text-sm hover:bg-gradient-to-r hover:from-gray-900 hover:via-blue-500 hover:to-blue-1000 cursor-pointer"
+          </nav>
+          <div className="flex flex-col space-y-2 ">
+          <button onClick={() => navigate('/custom-prebuilds')}
+            className=" bg-gradient-to-r from-gray-900 via-blue-500 to-blue-1000 min-w-90 text-gray-100 flex flex-col p-3 text-sm hover:bg-gradient-to-r hover:from-gray-900 hover:via-blue-500 hover:to-blue-1000 cursor-pointer"
             style={{
               borderRadius: '0px',
             }}
@@ -113,7 +113,8 @@ const Hero = () => {
             </div>
             <p className="text-gray-200">- Build your dream PC -</p>
           </button>
-        </nav>
+          </div>
+        
       </aside>
 
       {/* Main Hero Content */}

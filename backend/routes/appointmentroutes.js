@@ -75,4 +75,53 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+// Update appointment status (accept/reject)
+router.put("/:id/status", async (req, res) => {
+  const { id } = req.params;
+  const { status, rejectionReason } = req.body;
+
+  try {
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+
+    appointment.status = status;
+    if (status === "rejected") {
+      appointment.rejectionReason = rejectionReason;
+    } else {
+      appointment.rejectionReason = "";
+    }
+
+    await appointment.save();
+    res.status(200).json(appointment);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating appointment", error });
+  }
+});
+
+// Update appointment progress
+router.put("/:id/progress", async (req, res) => {
+  const { id } = req.params;
+  const { progress } = req.body;
+
+  try {
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+
+  // Validate progress stage (must be between -1 and 4)
+    if (progress < -1 || progress > 4) {
+      return res.status(400).json({ message: "Invalid progress stage" });
+    }
+
+    appointment.progress = progress;
+    await appointment.save();
+    res.status(200).json(appointment);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating progress", error });
+  }
+});
+
 export default router;

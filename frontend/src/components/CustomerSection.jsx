@@ -5,36 +5,14 @@ import { BsPlayFill, BsPauseFill } from 'react-icons/bs';
 const customerData = [
   {
     id: 'techstart',
-    logo: 'https://cdn.prod.website-files.com/66e88746834b80507cdf7933/66ec7ff7808fef2aeecfff1b_Outliant.svg',
-    video: 'https://dhygzobemt712.cloudfront.net/Web/home/2024-wxp/customers/lattice.mp4',
+    logo: 'https://res.cloudinary.com/dovdejenw/image/upload/v1742238110/Image%20Files/d9fkjsuimshemjbiqnmi.png',
+    video: 'https://res.cloudinary.com/dovdejenw/video/upload/v1742241466/Video%20Files/pujm0dks03iusdyywmua.mp4',
     poster: 'https://cdn.prod.website-files.com/66e88746834b80507cdf7933/66ec7faa88e83cdb12efc5b3_lattice-bg.webp',
     stat: '94%',
-    statDesc: 'job placement rate',
-    quote: "CodeTutor's platform revolutionized how we train our junior developers. The AI-powered guidance and interactive exercises have significantly accelerated our onboarding process.",
-    author: 'Sarah Chen — CTO',
+    statDesc: 'Upgrade Compatibility Rate',
+    quote: '"The best way to predict the future is to create it. In the digital world, that means building a system with the most powerful and reliable components available, ensuring that your machine is not only future-proof but also ready to tackle any challenge."',
+    author: '-Alan Kay (adapted)-',
     link: '/customers/techstart'
-  },
-  {
-    id: 'edutech',
-    logo: 'https://cdn.prod.website-files.com/66e88746834b80507cdf7933/66ec7ff8ace31b63debbf4d9_Jasper.svg',
-    video: 'https://dhygzobemt712.cloudfront.net/Web/home/2024-wxp/customers/outliant.mp4',
-    poster: 'https://cdn.prod.website-files.com/66e88746834b80507cdf7933/66ec7faad1ba5dcf377b861c_outliant-bg.webp',
-    stat: '85%',
-    statDesc: 'completion rate',
-    quote: "CodeTutor has transformed our computer science curriculum. Students are more engaged and show better understanding of complex programming concepts thanks to the interactive learning approach.",
-    author: 'Dr. Michael Torres — Department Head',
-    link: '/customers/edutech'
-  },
-  {
-    id: 'devacademy',
-    logo: 'https://cdn.prod.website-files.com/66e88746834b80507cdf7933/66ec7ff8a7ffdf748142d329_Fivetran.svg',
-    video: 'https://dhygzobemt712.cloudfront.net/Web/home/2024-wxp/customers/fivetran.mp4',
-    poster: 'https://cdn.prod.website-files.com/66e88746834b80507cdf7933/66ec7faad1ba5dcf377b861c_outliant-bg.webp',
-    stat: '3x',
-    statDesc: 'faster learning',
-    quote: "Our students consistently report that CodeTutor's personalized learning paths and AI assistance help them grasp programming concepts three times faster than traditional methods.",
-    author: 'Rachel Kim — Lead Instructor',
-    link: '/customers/devacademy'
   }
 ];
 
@@ -66,7 +44,7 @@ const CustomerSection = () => {
         <div className="flex justify-between items-center mb-16">
           <div className="max-w-[34rem]">
             <h2 className="text-4xl md:text-5xl font-bold">
-              The best startup companies build on here
+            The Best Performance Starts with Quality Components
             </h2>
           </div>
           <div className="hidden md:flex gap-4">
@@ -91,13 +69,13 @@ const CustomerSection = () => {
         <div className="relative overflow-hidden">
           <div 
             ref={sliderRef}
-            className="flex transition-transform duration-500 ease-in-out"
+            
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
           >
             {customerData.map((customer) => (
               <div 
                 key={customer.id}
-                className="w-full flex-shrink-0 relative"
+                className="w-full flex-shrink-1 relative"
               >
                 <div className="relative aspect-video overflow-hidden rounded-lg">
                   <video
@@ -117,7 +95,7 @@ const CustomerSection = () => {
                     <img 
                       src={customer.logo} 
                       alt="" 
-                      className="h-12 w-auto mb-auto"
+                      className="h-auto w-auto mb-auto"
                     />
                     
                     <div className="sm:grid grid-cols-2 hidden items-end   gap-8 text-white">
