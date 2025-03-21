@@ -1,7 +1,7 @@
-import User from '../model/userModel.js';  
+import User from '../models/userModel.js';  
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import sendEmail from '../config/nodemiler.js'; 
+import sendEmail from '../config/nodemailer.js'; 
 import {otpTemplate} from '../emailTemplates/otpTemplate.js';
 import { welcomeTemplate } from '../emailTemplates/welcomeTemplate.js';
 import {forgotPasswordTemplate} from '../emailTemplates/forgotPasswordTemplate.js';

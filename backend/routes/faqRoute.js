@@ -1,5 +1,5 @@
 import express from 'express';
-import { addFAQ, deleteFAQ, getFAQs, incrementFAQViews, updateFAQ } from '../controller/faqController.js';
+import { addFAQ, deleteFAQ, getFAQs, getSimilarFAQs, incrementFAQViews, updateFAQ } from '../controller/faqController.js';
 
 const router = express.Router();
 
@@ -8,5 +8,6 @@ router.post('/add-faqs', addFAQ);
 router.put('/update-faq/:id', updateFAQ);
 router.delete('/delete-faq/:id', deleteFAQ);
 router.put('/increment-views/:id', incrementFAQViews);
+router.get('/similar', getSimilarFAQs);
 
 export default router;

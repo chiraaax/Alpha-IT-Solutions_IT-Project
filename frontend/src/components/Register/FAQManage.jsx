@@ -39,7 +39,7 @@ const FAQManage = () => {
     const handleUpdateFaq = async (e) => {
         e.preventDefault();
         try {
-            await axios.put("http://localhost:5000/api/faq/update-faq/${selectedFaq._id}", { question, answer });
+            await axios.put(`http://localhost:5000/api/faq/update-faq/${selectedFaq._id}`, { question, answer });
             resetForm();
             fetchFAQs();
         } catch (error) {
@@ -50,7 +50,7 @@ const FAQManage = () => {
     // Handle Delete FAQ
     const handleDeleteFaq = async (id) => {
         try {
-            await axios.delete("http://localhost:5000/api/faq/delete-faq/${id}");
+            await axios.delete(`http://localhost:5000/api/faq/delete-faq/${id}`);
             fetchFAQs();
         } catch (error) {
             console.error("Error deleting FAQ:", error);
@@ -76,6 +76,7 @@ const FAQManage = () => {
 
     return (
         <div>
+            <AdminNav/>
             <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-6">
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">FAQ Management</h2>
 

@@ -8,6 +8,8 @@ import authRoutes from "./routes/authRoute.js";
 import userRoutes from "./routes/userRoute.js";
 import faqRoutes from "./routes/faqRoute.js";
 import aiRoutes from "./routes/appointmentairoutes.js";
+import inquiryRoutes from "./routes/inquiryRoute.js";
+import reviewRoutes from "./routes/reviewRoute.js";
 
 dotenv.config();
 const app = express();
@@ -30,6 +32,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/profile", userRoutes);
 app.use("/api/faq", faqRoutes);
 app.use("/api/ai", aiRoutes); 
+app.use("/api/inquiries", inquiryRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 // Connect to MongoDB
 mongoose

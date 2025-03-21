@@ -18,6 +18,17 @@ import ProtectedRoute from "../routers/ProtectedRoute";
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
 import Profile from '../components/Register/Profile';
 
+//Inquiry Components
+import InquiryForm from '../components/Inquiry/InquiryForm';
+import InquiryManage from '../components/Inquiry/InquiryManage';
+import UserInquiries from '../components/Inquiry/UserInquiries';
+
+//Review Components
+import ApprovedReviews from '../components/Reviews/ApprovedReviews';
+import UserReviews from '../components/Reviews/UserReviews';
+import ReviewManage from '../components/Reviews/ReviewManage';
+import ReviewForm from '../components/Reviews/ReviewForm';
+
 // CustomBuilds Components
 import GamingBuilds from '../components/CustomBuilds/GamingBuilds';
 import BudgetBuilds from '../components/CustomBuilds/BudgetBuilds';
@@ -37,6 +48,11 @@ const router = createBrowserRouter([
       { path: 'draftedTechnicianReport', element:<ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
       { path: 'faq-manage', element: <ProtectedRoute element={<FAQManage />} allowedRoles={["admin"]} /> },
       { path: 'faq', element: <FAQ /> },
+      { path: 'ApprovedReviews', element:<ApprovedReviews/>},
+      { path: 'ReviewForm', element:<ReviewForm/>},
+      { path: 'UserReviews', element:<UserReviews/>},
+      { path: 'InquiryForm', element:<InquiryForm/>},
+      { path: 'UserInquiries', element:<UserInquiries/>},
 
       // CustomBuilds routes
       { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
@@ -70,6 +86,8 @@ const router = createBrowserRouter([
       { path: 'manage-products', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
       { path: 'update-product/:id', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
       { path: 'users', element: <ProtectedRoute role="admin"><div>dg</div></ProtectedRoute> },
+      { path: 'ReviewManage', element: <ProtectedRoute role="admin"><div><ReviewManage/></div></ProtectedRoute> },
+      { path: 'InquiryManage', element: <ProtectedRoute role="admin"><div><InquiryManage/></div></ProtectedRoute>},
     ]
   }
 ]);
