@@ -4,7 +4,6 @@ import cors from "cors";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import appointmentRoutes from "./routes/appointmentroutes.js";
-import appointmentRoutes from "./routes/appointmentroutes.js";
 import authRoutes from "./routes/authRoute.js";
 import userRoutes from "./routes/userRoute.js";
 import faqRoutes from "./routes/faqRoute.js";
