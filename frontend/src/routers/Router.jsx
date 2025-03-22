@@ -30,7 +30,6 @@ import BudgetBuilds from '../components/CustomBuilds/BudgetBuilds';
 import GamingBuildDetail from '../components/CustomBuilds/GamingBuildDetail';
 import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail'; // New Import
 import CreateCustomBuild from '../components/CustomBuilds/CreateCustomPreBuild';
-import CustomizeBuild from '../components/CustomBuilds/CustomizeBuild'; // ✅ New Import
 import PreBuildDashboard from "../components/CustomBuilds/PreBuildDashboard"; // Updated import for your custom dashboard
 
 import FilterForm from '../pages/dashboard/admin/filterProducts/FilterForm';
@@ -59,9 +58,8 @@ const router = createBrowserRouter([
       { path: 'budget-builds', element: <BudgetBuilds /> },        
       { path: 'gaming-builds/:id', element: <GamingBuildDetail /> },
       { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },  
-      { path: 'customize-build/:id', element: <CustomizeBuild /> }, 
-      { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, // ✅ New Route
-      { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, // Updated route for your custom dashboard
+      { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, 
+       // Updated route for your custom dashboard
     ]
   },
 
@@ -89,7 +87,7 @@ const router = createBrowserRouter([
       { path: 'manage-filters', element: <ProtectedRoute allowedRoles={["admin"]}><FilterForm /></ProtectedRoute> },
       { path: 'manage-filters-db', element: <ProtectedRoute allowedRoles={["admin"]}><FiltersList /></ProtectedRoute> },
       { path: 'create-custom-prebuild', element: <ProtectedRoute allowedRoles={["admin"]}><CreateCustomBuild /></ProtectedRoute> },
-      // { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, // Updated route for your custom dashboard
+      { path: 'prebuild-dashboard', element: <ProtectedRoute allowedRoles={["admin"]}><PreBuildDashboard /></ProtectedRoute>  },
     ]
   }
 ]);
