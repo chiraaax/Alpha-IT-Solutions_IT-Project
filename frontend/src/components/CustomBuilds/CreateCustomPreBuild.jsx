@@ -24,7 +24,7 @@ const CreateCustomPreBuild = () => {
         }
 
         setLoading(true);
-        const preBuildData = { image, category, price, cpu, gpu, ram, storage, psu, casing, description };
+        const preBuildData = { image, category,  price: parseFloat(price), cpu, gpu, ram, storage, psu, casing, description };
 
         try {
             const response = await fetch("http://localhost:5000/api/prebuilds/create", {
@@ -36,8 +36,10 @@ const CreateCustomPreBuild = () => {
             });
 
             if (!response.ok) {
-                throw new Error("Server error!");
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Server error!");
             }
+            
 
             const data = await response.json();
             showNotification("Pre-build created successfully!", "success");
