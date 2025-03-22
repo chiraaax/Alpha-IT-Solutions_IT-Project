@@ -89,15 +89,16 @@ mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-})
+  })
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => {
     console.error("MongoDB Connection Error:", err.message);
     process.exit(1); // Exit process on failure
   });
+
+// Middleware for routes
 app.use("/api/filters", filterRoutes);
 app.use("/api/prebuilds", prebuildRoutes);
-  .catch((err) => console.log("MongoDB Connection Error:", err));
 
 
 app.get("/", (req, res) => {
