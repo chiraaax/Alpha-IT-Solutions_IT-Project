@@ -4,7 +4,7 @@ import { body, validationResult } from "express-validator"; // For validation mi
 
 const router = express.Router();
 
-// Validation middleware for creating/updating a prebuild
+// Validation middleware for creating a prebuild
 const validatePreBuild = [
   body("image").notEmpty().withMessage("Image URL is required."),
   body("category").notEmpty().withMessage("Category is required."),
@@ -18,10 +18,11 @@ const validatePreBuild = [
   body("description").notEmpty().withMessage("Description is required."),
 ];
 
-// ✅ Route to create a new prebuild
+// Route to create a new prebuild
 router.post("/create", validatePreBuild, async (req, res) => {
   const errors = validationResult(req);
 
+  // If validation errors exist, return a 400 response
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
@@ -29,10 +30,11 @@ router.post("/create", validatePreBuild, async (req, res) => {
   try {
     const { image, category, price, cpu, gpu, ram, storage, psu, casing, description } = req.body;
 
+    // Trim inputs to avoid unnecessary whitespace and ensure proper data format
     const newPreBuild = new PreBuild({
       image: image.trim(),
       category: category.trim(),
-      price: parseFloat(price),
+      price: parseFloat(price), // Ensure price is a number
       cpu: cpu.trim(),
       gpu: gpu.trim(),
       ram: ram.trim(),
@@ -42,49 +44,70 @@ router.post("/create", validatePreBuild, async (req, res) => {
       description: description.trim(),
     });
 
+    // Save to the database
     await newPreBuild.save();
+
+    // Respond with success message
     res.status(201).json({ message: "✅ Prebuild created successfully!", data: newPreBuild });
   } catch (error) {
     console.error("❌ Error creating prebuild:", error);
-    res.status(500).json({ message: "🚨 Internal Server Error while creating prebuild.", error: error.message });
+
+    // Send detailed error response
+    res.status(500).json({
+      message: "🚨 Internal Server Error while creating prebuild.",
+      error: error.message,
+    });
   }
 });
 
-// ✅ Route to get all prebuilds
+// Route to get all prebuilds
 router.get("/", async (req, res) => {
-  console.log("Fetching all prebuilds..."); // Log when this route is triggered
   try {
     const preBuilds = await PreBuild.find();
     res.status(200).json({ message: "✅ Fetched all prebuilds successfully!", data: preBuilds });
   } catch (error) {
     console.error("❌ Error fetching prebuilds:", error);
-    res.status(500).json({ message: "🚨 Server error while fetching prebuilds.", error: error.message });
+    res.status(500).json({
+      message: "🚨 Server error while fetching prebuilds.",
+      error: error.message,
+    });
   }
 });
 
-// ✅ Route to get prebuilds by category
+// Route to get prebuilds by category (e.g., Gaming)
 router.get("/category/:category", async (req, res) => {
-  const { category } = req.params;
-
-  console.log(`Fetching prebuilds for category: ${category}`); // Log when this route is triggered
+  const { category } = req.params; // Capture the category from the URL
 
   try {
     const preBuilds = await PreBuild.find({ category: { $regex: new RegExp(category, "i") } });
 
-    if (!preBuilds.length) {
+    if (!preBuilds || preBuilds.length === 0) {
       return res.status(404).json({ message: `❌ No prebuilds found for category: ${category}` });
     }
 
     res.status(200).json({ message: "✅ Prebuilds fetched successfully!", data: preBuilds });
   } catch (error) {
     console.error("❌ Error fetching prebuilds by category:", error);
-    res.status(500).json({ message: "🚨 Server error while fetching prebuilds by category.", error: error.message });
+    res.status(500).json({
+      message: "🚨 Server error while fetching prebuilds by category.",
+      error: error.message,
+    });
   }
 });
 
-// ✅ Route to get prebuild by ID
+// Route to get all prebuilds (Custom category is now redundant)
+router.get("/custom", async (req, res) => {
+  try {
+    const builds = await PreBuild.find().lean(); // Use PreBuild model here
+    res.status(200).json({ message: "✅ Fetched all prebuilds successfully!", data: builds });
+  } catch (error) {
+    console.error("❌ Error fetching prebuilds:", error);
+    res.status(500).json({ message: "🚨 Server error while fetching prebuilds.", error: error.message });
+  }
+});
+
+// Route to get prebuild by ID
 router.get("/:id", async (req, res) => {
-  console.log(`Fetching prebuild with ID: ${req.params.id}`); // Log when this route is triggered
   try {
     const build = await PreBuild.findById(req.params.id);
 
@@ -99,58 +122,34 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// ✅ Route to update a prebuild by ID
-router.put("/:id", validatePreBuild, async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+// Route to create a new prebuild (custom creation removed as it's redundant now)
+router.post("/createCustom", async (req, res) => {
+  const { image, category, price, cpu, gpu, ram, storage, psu, casing, description } = req.body;
+
+  if (!image || !category || !price || !cpu || !gpu || !ram || !storage || !psu || !casing || !description) {
+    return res.status(400).json({ message: "⚠️ All fields are required!" });
   }
 
   try {
-    const { image, category, price, cpu, gpu, ram, storage, psu, casing, description } = req.body;
+    const newBuild = new PreBuild({
+      image: image.trim(),
+      category: category.trim(),
+      price: parseFloat(price),
+      cpu: cpu.trim(),
+      gpu: gpu.trim(),
+      ram: ram.trim(),
+      storage: storage.trim(),
+      psu: psu.trim(),
+      casing: casing.trim(),
+      description: description.trim(),
+    });
 
-    const updatedBuild = await PreBuild.findByIdAndUpdate(
-      req.params.id,
-      {
-        image: image.trim(),
-        category: category.trim(),
-        price: parseFloat(price),
-        cpu: cpu.trim(),
-        gpu: gpu.trim(),
-        ram: ram.trim(),
-        storage: storage.trim(),
-        psu: psu.trim(),
-        casing: casing.trim(),
-        description: description.trim(),
-      },
-      { new: true, runValidators: true }
-    );
+    await newBuild.save();
 
-    if (!updatedBuild) {
-      return res.status(404).json({ message: "❌ Build not found!" });
-    }
-
-    res.status(200).json({ message: "✅ Build updated successfully!", data: updatedBuild });
+    res.status(201).json({ message: "✅ Prebuild created successfully!", data: newBuild });
   } catch (error) {
-    console.error("❌ Error updating prebuild:", error);
-    res.status(500).json({ message: "🚨 Server error while updating prebuild.", error: error.message });
-  }
-});
-
-// ✅ Route to delete a prebuild by ID
-router.delete("/:id", async (req, res) => {
-  console.log(`Deleting prebuild with ID: ${req.params.id}`); // Log when this route is triggered
-  try {
-    const deletedBuild = await PreBuild.findByIdAndDelete(req.params.id);
-
-    if (!deletedBuild) {
-      return res.status(404).json({ message: "❌ Build not found!" });
-    }
-
-    res.status(200).json({ message: "✅ Build deleted successfully!", data: deletedBuild });
-  } catch (error) {
-    console.error("❌ Error deleting prebuild:", error);
-    res.status(500).json({ message: "🚨 Server error while deleting prebuild.", error: error.message });
+    console.error("❌ Error creating prebuild:", error);
+    res.status(500).json({ message: "🚨 Error creating prebuild.", error: error.message });
   }
 });
 
