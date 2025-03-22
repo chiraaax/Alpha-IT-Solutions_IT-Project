@@ -32,6 +32,13 @@ import ReviewForm from '../components/Reviews/ReviewForm';
 // CustomBuilds Components
 import GamingBuilds from '../components/CustomBuilds/GamingBuilds';
 import BudgetBuilds from '../components/CustomBuilds/BudgetBuilds';
+import GamingBuildDetail from '../components/CustomBuilds/GamingBuildDetail';
+import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail';
+import CreateCustomBuild from '../components/CustomBuilds/CreateCustomPreBuild';
+import CustomizeBuild from '../components/CustomBuilds/CustomizeBuild'; // ✅ New Import
+import FilterForm from '../pages/dashboard/admin/filterProducts/FilterForm';
+import FiltersList from '../pages/dashboard/admin/filterProducts/FiltersList';
+
 import BuildDetail from '../components/CustomBuilds/BuildDetail';
 import CustomBuildForm from '../components/CustomBuilds/CustomBuildForm';
 
@@ -42,6 +49,10 @@ const router = createBrowserRouter([
     children: [
       { path: '', element: <Home /> },
       { path: 'products/:category', element: <ProductCategory /> },
+      { path: 'appointment', element: <ProtectedRoute><AppointmentDashboard /></ProtectedRoute> },
+      { path: 'AppointmenentAI', element: <ProtectedRoute><AppointmenentAI /></ProtectedRoute> },
+      { path: 'draftedTechnicianReport', element: <ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
+      { path: 'appointment-form', element: <ProtectedRoute><AppointmentForm /></ProtectedRoute> },
       { path: 'appointment', element:<ProtectedRoute><AppointmentDashboard /></ProtectedRoute>},
       { path: 'AppointmenentAI', element:<ProtectedRoute><AppointmenentAI /></ProtectedRoute> },
       { path: 'appointment-form', element:<ProtectedRoute><AppointmentForm /></ProtectedRoute> },
@@ -55,6 +66,14 @@ const router = createBrowserRouter([
 
       // CustomBuilds routes
       { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
+      { path: 'shop/:productId', element: <ProductDetails /> },
+      { path: 'search', element: <SearchPage /> },
+      { path: 'gaming-builds', element: <GamingBuilds /> },
+      { path: 'budget-builds', element: <BudgetBuilds /> },        
+      { path: 'gaming-builds/:id', element: <GamingBuildDetail /> },
+      { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },  
+      { path: 'customize-build/:id', element: <CustomizeBuild /> }, 
+
       { path: 'gaming-builds', element: <GamingBuilds /> }, // New route for Gaming Builds
       { path: 'budget-builds', element: <BudgetBuilds /> }, // New route for Budget Builds
       // Modify these two routes to include the 'type' and 'id' dynamic params
@@ -77,6 +96,21 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
     children: [
+      // Customer routes
+      { path: '', element: <div>Dashboard Home</div> },
+      { path: 'profile', element: <div>Profile</div> },
+      { path: 'reviews', element: <div>Reviews</div> },
+      // Admin routes
+      { path: 'admin', element: <ProtectedRoute allowedRoles={["admin"]}><div>Admin Panel</div></ProtectedRoute> },
+      { path: 'add-new-product', element: <ProtectedRoute allowedRoles={["admin"]}><AddProduct /></ProtectedRoute> },
+      { path: 'manage-products', element: <ProtectedRoute allowedRoles={["admin"]}><ManageProducts /></ProtectedRoute> },
+      { path: 'manage-inventory', element: <ProtectedRoute allowedRoles={["admin"]}><ManageInventory /></ProtectedRoute> },
+      { path: 'users', element: <ProtectedRoute allowedRoles={["admin"]}><div>Manage Users</div></ProtectedRoute> },
+      { path: 'manage-appointments', element: <ProtectedRoute allowedRoles={["admin"]}><ManageAppointments /></ProtectedRoute> },
+      { path: 'manage-filters', element: <ProtectedRoute allowedRoles={["admin"]}><FilterForm /></ProtectedRoute> },
+      { path: 'manage-filters-db', element: <ProtectedRoute allowedRoles={["admin"]}><FiltersList /></ProtectedRoute> },
+      { path: 'create-custom-prebuild', element: <ProtectedRoute allowedRoles={["admin"]}><CreateCustomBuild /></ProtectedRoute> },
+
       { path: '', element: <div>d</div> },
       { path: 'profile', element: <div><Profile/></div> },
       { path: 'UserInquiries', element: <div><UserInquiries/></div> },

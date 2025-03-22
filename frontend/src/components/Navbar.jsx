@@ -10,6 +10,8 @@ const adminDropDownMenus = [
   { label: "Dashboard", path: "/dashboard/admin" },
   { label: "Manage Items", path: "/dashboard/manage-products" },
   { label: "Add Product", path: "/dashboard/add-new-product" },
+  { label: "Manage filters", path: "/dashboard/manage-filters" },
+  { label: "Manage appointments", path: "/dashboard/manage-appointments" },
   { label: "Manage Inquiry", path: "/dashboard/InquiryManage"},
   { label: "Manage Review", path: "/dashboard/ReviewManage"},
   { label: "FAQ Manage", path: "/dashboard/FAQManage"},
