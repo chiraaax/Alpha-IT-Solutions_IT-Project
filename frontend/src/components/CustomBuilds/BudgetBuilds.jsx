@@ -143,12 +143,12 @@ const BudgetBuilds = () => {
                   {/* Displaying Specifications */}
                   <div className="mt-5 text-2xl text-balance">
                     <p className="text-xl font-semibold underline">Specifications</p>
-                    <p><strong>CPU:</strong> {build.cpu}</p>
+                    <p><strong>CPU:</strong> {build.processor}</p>
                     <p><strong>GPU:</strong> {build.gpu}</p>
                     <p><strong>RAM:</strong> {build.ram}</p>
                     <p><strong>Storage:</strong> {build.storage}</p>
-                    <p><strong>Power Supply:</strong> {build.psu}</p>
-                    <p><strong>Casing:</strong> {build.casing}</p>
+                    <p><strong>Power Supply:</strong> {build.powerSupply}</p>
+                    <p><strong>Casing:</strong> {build.casings}</p>
                   </div>
                 </div>
               ))}

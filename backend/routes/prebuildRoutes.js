@@ -1,20 +1,21 @@
 import express from "express";
 import PreBuild from "../models/PreBuild.js"; // Import the PreBuild model
 import { body, validationResult } from "express-validator"; // For validation middleware
+import Product from "../models/Product.js"; 
 
 const router = express.Router();
 
-// Validation middleware for creating/updating a prebuild
+// Validation middleware for creating/updating a prebuild (compatibility is optional)
 const validatePreBuild = [
   body("image").notEmpty().withMessage("Image URL is required."),
   body("category").notEmpty().withMessage("Category is required."),
   body("price").isFloat({ gt: 0 }).withMessage("Price must be a positive number."),
-  body("cpu").notEmpty().withMessage("CPU is required."),
+  body("processor").notEmpty().withMessage("Processor is required."),
   body("gpu").notEmpty().withMessage("GPU is required."),
   body("ram").notEmpty().withMessage("RAM is required."),
   body("storage").notEmpty().withMessage("Storage is required."),
-  body("psu").notEmpty().withMessage("PSU is required."),
-  body("casing").notEmpty().withMessage("Casing is required."),
+  body("powerSupply").notEmpty().withMessage("Power Supply is required."),
+  body("casings").notEmpty().withMessage("Casings is required."),
   body("description").notEmpty().withMessage("Description is required."),
 ];
 
@@ -27,19 +28,29 @@ router.post("/create", validatePreBuild, async (req, res) => {
   }
 
   try {
-    const { image, category, price, cpu, gpu, ram, storage, psu, casing, description } = req.body;
+    // Destructure the fields from the request body
+    const { image, category, price, processor, gpu, ram, storage, powerSupply, casings, description, compatibility } = req.body;
 
+    // Create a new PreBuild object including the compatibility field if provided.
     const newPreBuild = new PreBuild({
       image: image.trim(),
       category: category.trim(),
       price: parseFloat(price),
-      cpu: cpu.trim(),
+      processor: processor.trim(),
       gpu: gpu.trim(),
       ram: ram.trim(),
       storage: storage.trim(),
-      psu: psu.trim(),
-      casing: casing.trim(),
+      powerSupply: powerSupply.trim(),
+      casings: casings.trim(),
       description: description.trim(),
+      compatibility: {
+        processor: (compatibility && compatibility.processor) || [],
+        gpu: (compatibility && compatibility.gpu) || [],
+        ram: (compatibility && compatibility.ram) || [],
+        storage: (compatibility && compatibility.storage) || [],
+        powerSupply: (compatibility && compatibility.powerSupply) || [],
+        casings: (compatibility && compatibility.casings) || [],
+      },
     });
 
     await newPreBuild.save();
@@ -107,24 +118,31 @@ router.put("/:id", validatePreBuild, async (req, res) => {
   }
 
   try {
-    const { image, category, price, cpu, gpu, ram, storage, psu, casing, description } = req.body;
+    const { image, category, price, processor, gpu, ram, storage, powerSupply, casings, description, compatibility } = req.body;
 
-    const updatedBuild = await PreBuild.findByIdAndUpdate(
-      req.params.id,
-      {
-        image: image.trim(),
-        category: category.trim(),
-        price: parseFloat(price),
-        cpu: cpu.trim(),
-        gpu: gpu.trim(),
-        ram: ram.trim(),
-        storage: storage.trim(),
-        psu: psu.trim(),
-        casing: casing.trim(),
-        description: description.trim(),
+    // Build the update object, including compatibility if available.
+    const updateData = {
+      image: image.trim(),
+      category: category.trim(),
+      price: parseFloat(price),
+      processor: processor.trim(),
+      gpu: gpu.trim(),
+      ram: ram.trim(),
+      storage: storage.trim(),
+      powerSupply: powerSupply.trim(),
+      casings: casings.trim(),
+      description: description.trim(),
+      compatibility: {
+        processor: (compatibility && compatibility.processor) || [],
+        gpu: (compatibility && compatibility.gpu) || [],
+        ram: (compatibility && compatibility.ram) || [],
+        storage: (compatibility && compatibility.storage) || [],
+        powerSupply: (compatibility && compatibility.powerSupply) || [],
+        casings: (compatibility && compatibility.casings) || [],
       },
-      { new: true, runValidators: true }
-    );
+    };
+
+    const updatedBuild = await PreBuild.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
 
     if (!updatedBuild) {
       return res.status(404).json({ message: "❌ Build not found!" });
@@ -154,4 +172,66 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+router.get("/:id/compatibility", async (req, res) => {
+  try {
+    const build = await PreBuild.findById(req.params.id);
+    if (!build) {
+      return res.status(404).json({ message: "❌ Build not found!" });
+    }
+
+    const categories = ["processor", "gpu", "ram", "storage", "powerSupply", "casings"];
+    let compatibilityOptions = {};
+
+    // For each category, fetch the detailed product info
+    for (const category of categories) {
+      const ids = build.compatibility[category] || [];
+      const products = await Promise.all(
+        ids.map(async (prodId) => {
+          try {
+            return await Product.findById(prodId);
+          } catch (err) {
+            console.error(`Error fetching product ${prodId}:`, err);
+            return null;
+          }
+        })
+      );
+      // Filter out any null results in case of an error fetching a product.
+      compatibilityOptions[category] = products.filter((p) => p);
+    }
+
+    res.status(200).json({ message: "✅ Compatibility options fetched successfully!", data: compatibilityOptions });
+  } catch (error) {
+    console.error("❌ Error fetching compatibility options:", error);
+    res.status(500).json({ message: "🚨 Server error while fetching compatibility options.", error: error.message });
+  }
+});
+
 export default router;
+
+// ✅ Route to customize a prebuild by ID
+router.put("/:id/customize", async (req, res) => {
+  try {
+    // Here you could apply different logic if needed for customizations.
+    // For now, we'll simply update the prebuild with the provided fields.
+    const updatedBuild = await PreBuild.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedBuild) {
+      return res.status(404).json({ message: "❌ Build not found!" });
+    }
+
+    res.status(200).json({
+      message: "✅ Build customized successfully!",
+      data: updatedBuild,
+    });
+  } catch (error) {
+    console.error("❌ Error customizing prebuild:", error);
+    res.status(500).json({
+      message: "🚨 Server error while customizing prebuild.",
+      error: error.message,
+    });
+  }
+});

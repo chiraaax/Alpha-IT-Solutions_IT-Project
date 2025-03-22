@@ -29,10 +29,10 @@ export const getPreBuildById = async (req, res) => {
 
 // Create a new Custom Pre-Build
 export const createPreBuild = async (req, res) => {
-  const { image, category, price, cpu, gpu, ram, storage, psu, casing, description } = req.body;
+  const { image, category, price, processor, gpu, ram, storage, powerSupply, casings, description } = req.body;
 
   // Validate required fields
-  if (!image || !category || !price || !cpu || !gpu || !ram || !storage || !psu || !casing || !description) {
+  if (!image || !category || !price || !processor || !gpu || !ram || !storage || !powerSupply || !casings || !description) {
     return res.status(400).json({ message: "⚠️ All fields are required!" });
   }
 
@@ -42,12 +42,12 @@ export const createPreBuild = async (req, res) => {
       image: image.trim(),
       category: category.trim(),
       price: parseFloat(price),
-      cpu: cpu.trim(),
+      processor: processor.trim(),
       gpu: gpu.trim(),
       ram: ram.trim(),
       storage: storage.trim(),
-      psu: psu.trim(),
-      casing: casing.trim(),
+      powerSupply: powerSupply.trim(),
+      casings: casings.trim(),
       description: description.trim(),
     });
 
