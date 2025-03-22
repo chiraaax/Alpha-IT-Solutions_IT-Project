@@ -1,9 +1,9 @@
-import CustomPreBuild from "../models/CustomPreBuild.js"; // Import the CustomPreBuild model
+import PreBuild from "../models/PreBuild.js"; // Import the PreBuild model
 
 // Get all Custom Pre-Builds
-export const getAllCustomPreBuilds = async (req, res) => {
+export const getAllPreBuilds = async (req, res) => {
   try {
-    const builds = await CustomPreBuild.find().lean(); // Use .lean() for better performance
+    const builds = await PreBuild.find().lean(); // Use .lean() for better performance
     res.status(200).json({ message: "✅ Fetched all builds successfully!", data: builds });
   } catch (error) {
     console.error("❌ Error fetching builds:", error);
@@ -12,9 +12,9 @@ export const getAllCustomPreBuilds = async (req, res) => {
 };
 
 // Get a single Custom Pre-Build by ID
-export const getCustomPreBuildById = async (req, res) => {
+export const getPreBuildById = async (req, res) => {
   try {
-    const build = await CustomPreBuild.findById(req.params.id);
+    const build = await PreBuild.findById(req.params.id);
 
     if (!build) {
       return res.status(404).json({ message: "❌ Build not found!", data: null });
@@ -28,7 +28,7 @@ export const getCustomPreBuildById = async (req, res) => {
 };
 
 // Create a new Custom Pre-Build
-export const createCustomPreBuild = async (req, res) => {
+export const createPreBuild = async (req, res) => {
   const { image, category, price, cpu, gpu, ram, storage, psu, casing, description } = req.body;
 
   // Validate required fields
@@ -38,7 +38,7 @@ export const createCustomPreBuild = async (req, res) => {
 
   try {
     // Create new build object
-    const newBuild = new CustomPreBuild({
+    const newBuild = new PreBuild({
       image: image.trim(),
       category: category.trim(),
       price: parseFloat(price),
@@ -62,9 +62,9 @@ export const createCustomPreBuild = async (req, res) => {
 };
 
 // Update a Custom Pre-Build
-export const updateCustomPreBuild = async (req, res) => {
+export const updatePreBuild = async (req, res) => {
   try {
-    const updatedBuild = await CustomPreBuild.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updatedBuild = await PreBuild.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
     if (!updatedBuild) {
       return res.status(404).json({ message: "❌ Build not found!" });
@@ -78,9 +78,9 @@ export const updateCustomPreBuild = async (req, res) => {
 };
 
 // Delete a Custom Pre-Build
-export const deleteCustomPreBuild = async (req, res) => {
+export const deletePreBuild = async (req, res) => {
   try {
-    const deletedBuild = await CustomPreBuild.findByIdAndDelete(req.params.id);
+    const deletedBuild = await PreBuild.findByIdAndDelete(req.params.id);
 
     if (!deletedBuild) {
       return res.status(404).json({ message: "❌ Build not found!" });
