@@ -21,6 +21,7 @@ const GamingBuilds = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedBuilds, setSelectedBuilds] = useState([]); // Track selected builds
+  const [productsLookup, setProductsLookup] = useState({}); // Lookup for product details
   const navigate = useNavigate();
 
   // Fetching gaming builds data from API
@@ -39,6 +40,23 @@ const GamingBuilds = () => {
       .catch((err) => {
         setError("Unable to load gaming builds. Please try again later.");
         setLoading(false);
+      });
+  }, []);
+
+  // Fetch products data to build a lookup for displaying product descriptions
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/products")
+      .then((response) => {
+        const lookup = {};
+        // Assuming response.data is an array of products.
+        response.data.forEach((product) => {
+          lookup[product._id] = product;
+        });
+        setProductsLookup(lookup);
+      })
+      .catch((err) => {
+        console.error("Error fetching products:", err);
       });
   }, []);
 
@@ -61,9 +79,19 @@ const GamingBuilds = () => {
   };
 
   // Navigate to gaming build details
-  const handleNavigate = useCallback((id) => {
-    navigate(`/gaming-builds/${id}`);
-  }, [navigate]);
+  const handleNavigate = useCallback(
+    (id) => {
+      navigate(`/gaming-builds/${id}`);
+    },
+    [navigate]
+  );
+
+  // Helper: Retrieve product description from the lookup if available
+  const getProductDescription = (productId, fallback) => {
+    return productsLookup[productId]
+      ? productsLookup[productId].description
+      : fallback;
+  };
 
   return (
     <div className={`min-h-screen p-6 ${isDark ? "bg-gray-900 text-white" : "bg-white text-black"}`}>
@@ -115,7 +143,9 @@ const GamingBuilds = () => {
                   e.stopPropagation(); // Prevent triggering navigation on button click
                   handleCompareClick(build);
                 }}
-                className={`mt-4 p-2 rounded-full transition-all ${isBuildSelected(build._id) ? "bg-blue-600 text-white" : "bg-gray-300 text-black"}`}
+                className={`mt-4 p-2 rounded-full transition-all ${
+                  isBuildSelected(build._id) ? "bg-blue-600 text-white" : "bg-gray-300 text-black"
+                }`}
               >
                 {isBuildSelected(build._id) ? "Selected" : "Compare"}
               </button>
@@ -140,15 +170,27 @@ const GamingBuilds = () => {
                   <h1 className="text-3xl font-semibold">{build.description}</h1>
                   <p className="mt-3 text-xl font-bold text-green-400">{formatPrice(build.price)}</p>
 
-                  {/* Displaying Specifications */}
-                  <div className="mt-5 text-2xl text-balance">
+                  {/* Displaying Specifications using product lookup */}
+                  <div className="mt-5 text-2xl">
                     <p className="text-xl font-semibold underline">Specifications</p>
-                    <p><strong>CPU:</strong> {build.cpu}</p>
-                    <p><strong>GPU:</strong> {build.gpu}</p>
-                    <p><strong>RAM:</strong> {build.ram}</p>
-                    <p><strong>Storage:</strong> {build.storage}</p>
-                    <p><strong>Power Supply:</strong> {build.psu}</p>
-                    <p><strong>Casing:</strong> {build.casing}</p>
+                    <p>
+                      <strong>Processor:</strong> {getProductDescription(build.processor, build.processor)}
+                    </p>
+                    <p>
+                      <strong>GPU:</strong> {getProductDescription(build.gpu, build.gpu)}
+                    </p>
+                    <p>
+                      <strong>RAM:</strong> {getProductDescription(build.ram, build.ram)}
+                    </p>
+                    <p>
+                      <strong>Storage:</strong> {getProductDescription(build.storage, build.storage)}
+                    </p>
+                    <p>
+                      <strong>Power Supply:</strong> {getProductDescription(build.powerSupply, build.powerSupply)}
+                    </p>
+                    <p>
+                      <strong>Casing:</strong> {getProductDescription(build.casings, build.casings)}
+                    </p>
                   </div>
                 </div>
               ))}
