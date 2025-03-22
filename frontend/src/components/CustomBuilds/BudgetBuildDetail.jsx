@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useTheme } from "./ThemeContext"; // Assuming you have this context
+import { useTheme } from "./ThemeContext"; 
 import { FaSun, FaMoon } from "react-icons/fa"; // For theme toggle icons
 
 const BudgetBuildDetail = () => {

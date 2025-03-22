@@ -10,6 +10,9 @@ const navItems = [
   { path: '/dashboard/manage-inventory', label: 'Manage Products Inventory' },
   { path: '/dashboard/users', label: 'Users' },
   { path: '/dashboard/manage-appointments', label: 'Manage Appointments' },
+  { path: '/dashboard/manage-filters', label: 'Manage Filters' },
+  { path: '/dashboard/manage-filters-db', label: 'Manage Filters db' },
+  { path: '/dashboard/create-custom-prebuild', label: 'Create Custom Prebuild' },
 ];
 
 const AdminDashboard = () => {

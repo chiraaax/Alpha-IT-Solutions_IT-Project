@@ -10,6 +10,8 @@ const adminDropDownMenus = [
   { label: "Dashboard", path: "/dashboard/admin" },
   { label: "Manage Items", path: "/dashboard/manage-products" },
   { label: "Add Product", path: "/dashboard/add-new-product" },
+  { label: "Manage filters", path: "/dashboard/manage-filters" },
+  { label: "Manage appointments", path: "/dashboard/manage-appointments" },
 ];
 
 const userDropDownMenus = [
@@ -94,7 +96,7 @@ const Navbar = () => {
           </Link>
           
           {/* Cart Icon */}
-          <Link to="/ShoppingCart" className="relative">
+          <Link to="/cart" className="relative">
             <MdShoppingCart size={24} />
             <sup className='absolute -top-2 -right-2 text-xs inline-block px-1.5 text-white rounded-full bg-primary'>
               {/* Optionally show the number of products */}
