@@ -31,6 +31,8 @@ import GamingBuildDetail from '../components/CustomBuilds/GamingBuildDetail';
 import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail'; // New Import
 import CreateCustomBuild from '../components/CustomBuilds/CreateCustomPreBuild';
 import CustomizeBuild from '../components/CustomBuilds/CustomizeBuild'; // ✅ New Import
+import FilterForm from '../pages/dashboard/admin/filterProducts/FilterForm';
+import FiltersList from '../pages/dashboard/admin/filterProducts/FiltersList';
 
 const router = createBrowserRouter([
   {
@@ -59,9 +61,8 @@ const router = createBrowserRouter([
       { path: 'gaming-builds', element: <GamingBuilds /> },
       { path: 'budget-builds', element: <BudgetBuilds /> },
       { path: 'gaming-builds/:id', element: <GamingBuildDetail /> },
-      { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },
-      { path: 'create-custom-prebuild', element: <CreateCustomBuild /> },
-      { path: 'customize-build/:id', element: <CustomizeBuild /> }, // ✅ New Route
+      { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },  
+      { path: 'customize-build/:id', element: <CustomizeBuild /> }, 
     ]
   },
 
@@ -86,6 +87,9 @@ const router = createBrowserRouter([
       { path: 'manage-inventory', element: <ProtectedRoute allowedRoles={["admin"]}><ManageInventory /></ProtectedRoute> },
       { path: 'users', element: <ProtectedRoute allowedRoles={["admin"]}><div>Manage Users</div></ProtectedRoute> },
       { path: 'manage-appointments', element: <ProtectedRoute allowedRoles={["admin"]}><ManageAppointments /></ProtectedRoute> },
+      { path: 'manage-filters', element: <ProtectedRoute allowedRoles={["admin"]}><FilterForm /></ProtectedRoute> },
+      { path: 'manage-filters-db', element: <ProtectedRoute allowedRoles={["admin"]}><FiltersList /></ProtectedRoute> },
+      { path: 'create-custom-prebuild', element: <ProtectedRoute allowedRoles={["admin"]}><CreateCustomBuild /></ProtectedRoute> },
     ]
   }
 ]);
