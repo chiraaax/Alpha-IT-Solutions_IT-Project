@@ -19,11 +19,12 @@ const app = express();
 
 // Consolidated CORS configuration
 const corsOptions = {
-  origin: "http://localhost:5173", // Replace with your frontend URL if needed
-  credentials: true, // Allows cookies & authentication headers
+  origin: "http://localhost:5173" || PORT,
+  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
+
 
 // Apply CORS middleware once, before any routes are defined
 app.use(cors(corsOptions));
@@ -58,15 +59,13 @@ app.use((err, req, res, next) => {
 
 // Connect to MongoDB
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => {
     console.error("MongoDB Connection Error:", err.message);
-    process.exit(1); // Exit process on failure
+    process.exit(1);
   });
+
 
 // Start Server
 const PORT = process.env.PORT || 5000;

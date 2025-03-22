@@ -28,9 +28,9 @@ import ManageAppointments from "../pages/dashboard/manage-appointments";
 import GamingBuilds from '../components/CustomBuilds/GamingBuilds';
 import BudgetBuilds from '../components/CustomBuilds/BudgetBuilds';
 import GamingBuildDetail from '../components/CustomBuilds/GamingBuildDetail';
-import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail'; // New Import
+import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail';
 import CreateCustomBuild from '../components/CustomBuilds/CreateCustomPreBuild';
-import CustomizeBuild from '../components/CustomBuilds/CustomizeBuild'; // ✅ New Import
+import CustomizeBuild from '../components/CustomBuilds/CustomizeBuild'; 
 import FilterForm from '../pages/dashboard/admin/filterProducts/FilterForm';
 import FiltersList from '../pages/dashboard/admin/filterProducts/FiltersList';
 

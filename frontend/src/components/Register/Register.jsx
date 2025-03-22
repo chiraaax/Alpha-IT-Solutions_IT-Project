@@ -29,7 +29,7 @@ const Register = () => {
 
             toast.success("Check your email for OTP verification!", { position: "top-right" });
             
-            navigate('/VerifyOTP');
+            navigate('/verify-otp');
         } catch (error) {
             console.error('Registration failed:', error);
             toast.error("Registration failed. Please try again.", { position: "top-right" });
