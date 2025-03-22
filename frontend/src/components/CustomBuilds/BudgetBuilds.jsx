@@ -21,9 +21,10 @@ const BudgetBuilds = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedBuilds, setSelectedBuilds] = useState([]); // Track selected builds
+  const [productsLookup, setProductsLookup] = useState({}); // Lookup for product details
   const navigate = useNavigate();
 
-  // Fetching budget builds data from API
+  // Fetch budget builds data from API
   useEffect(() => {
     axios
       .get(API_URL)
@@ -39,6 +40,24 @@ const BudgetBuilds = () => {
       .catch((err) => {
         setError("Unable to load budget builds. Please try again later.");
         setLoading(false);
+      });
+  }, []);
+
+  // Fetch products data to build a lookup mapping
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/products")
+      .then((response) => {
+        const lookup = {};
+        // Depending on your API response structure, adjust accordingly
+        // Assuming response.data is an array of products.
+        response.data.forEach((product) => {
+          lookup[product._id] = product;
+        });
+        setProductsLookup(lookup);
+      })
+      .catch((err) => {
+        console.error("Error fetching products:", err);
       });
   }, []);
 
@@ -61,9 +80,19 @@ const BudgetBuilds = () => {
   };
 
   // Navigate to budget build details
-  const handleNavigate = useCallback((id) => {
-    navigate(`/budget-builds/${id}`);
-  }, [navigate]);
+  const handleNavigate = useCallback(
+    (id) => {
+      navigate(`/budget-builds/${id}`);
+    },
+    [navigate]
+  );
+
+  // Helper: Retrieve product description from the lookup if available
+  const getProductDescription = (productId, fallback) => {
+    return productsLookup[productId]
+      ? productsLookup[productId].description
+      : fallback;
+  };
 
   return (
     <div className={`min-h-screen p-6 ${isDark ? "bg-gray-900 text-white" : "bg-white text-black"}`}>
@@ -96,9 +125,7 @@ const BudgetBuilds = () => {
             <div
               key={build._id}
               onClick={() => handleNavigate(build._id)} // Adding the navigation here
-              className={`cursor-pointer p-4 rounded-lg shadow-lg transition-all hover:shadow-2xl ${
-                isDark ? "bg-gray-800 text-white" : "bg-white text-black"
-              }`}
+              className={`cursor-pointer p-4 rounded-lg shadow-lg transition-all hover:shadow-2xl ${isDark ? "bg-gray-800 text-white" : "bg-white text-black"}`}
             >
               <img
                 src={build.image || "https://via.placeholder.com/300"}
@@ -140,15 +167,27 @@ const BudgetBuilds = () => {
                   <h1 className="text-3xl font-semibold">{build.description}</h1>
                   <p className="mt-3 text-xl font-bold text-green-400">{formatPrice(build.price)}</p>
 
-                  {/* Displaying Specifications */}
-                  <div className="mt-5 text-2xl text-balance">
+                  {/* Displaying Specifications using product lookup */}
+                  <div className="mt-5 text-2xl">
                     <p className="text-xl font-semibold underline">Specifications</p>
-                    <p><strong>CPU:</strong> {build.processor}</p>
-                    <p><strong>GPU:</strong> {build.gpu}</p>
-                    <p><strong>RAM:</strong> {build.ram}</p>
-                    <p><strong>Storage:</strong> {build.storage}</p>
-                    <p><strong>Power Supply:</strong> {build.powerSupply}</p>
-                    <p><strong>Casing:</strong> {build.casings}</p>
+                    <p>
+                      <strong>Processor:</strong> {getProductDescription(build.processor, build.processor)}
+                    </p>
+                    <p>
+                      <strong>GPU:</strong> {getProductDescription(build.gpu, build.gpu)}
+                    </p>
+                    <p>
+                      <strong>RAM:</strong> {getProductDescription(build.ram, build.ram)}
+                    </p>
+                    <p>
+                      <strong>Storage:</strong> {getProductDescription(build.storage, build.storage)}
+                    </p>
+                    <p>
+                      <strong>Power Supply:</strong> {getProductDescription(build.powerSupply, build.powerSupply)}
+                    </p>
+                    <p>
+                      <strong>Casing:</strong> {getProductDescription(build.casings, build.casings)}
+                    </p>
                   </div>
                 </div>
               ))}
