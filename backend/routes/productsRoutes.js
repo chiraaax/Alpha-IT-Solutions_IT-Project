@@ -50,38 +50,27 @@ router.get('/', async (req, res) => {
     for (const key in extraFilters) {
       if (extraFilters.hasOwnProperty(key) && extraFilters[key]) {
         let value = extraFilters[key];
-
-        // Convert to an array if the value is a comma-separated string.
         if (typeof value === 'string') {
           value = value.split(',');
         }
         if (!Array.isArray(value)) {
           value = [value];
         }
-
-        // If the key has a "specs." prefix, remove it. Otherwise use the key as is.
         const specKey = key.startsWith('specs.') ? key.split('.')[1] : key;
-
-        // Push this condition into the $and array.
         filterQuery.$and.push({
           specs: { $elemMatch: { key: specKey, value: { $in: value } } }
         });
       }
     }
-
-    // If no specs filters were added, remove $and from the query.
     if (filterQuery.$and.length === 0) {
       delete filterQuery.$and;
     }
 
     console.log('Final MongoDB Query:', JSON.stringify(filterQuery, null, 2));
-
-    // Query the database using the filter
     const products = await Product.find(filterQuery)
       .skip((page - 1) * limit)
       .limit(limit);
 
-    // Send the response with products
     res.json(products);
   } catch (err) {
     console.error('Error fetching products:', err);
@@ -89,25 +78,38 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET /api/products/:productId - Fetch related products (based on same category)
+router.get('/:productId', async (req, res) => {
+  try {
+    // Use the correct parameter name
+    const product = await Product.findById(req.params.productId);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
 
+    const relatedProducts = await Product.find({
+      category: product.category,
+      _id: { $ne: product._id }
+    }).limit(5);
+
+    res.status(200).json(relatedProducts);
+  } catch (error) {
+    console.error("❌ Error fetching related products:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+});
 
 // POST /api/products - Create a new product
 router.post('/', async (req, res) => {
   try {
     const { category, price, availability, state, specs, image, description } = req.body;
-
-    // Validate required fields
     if (!category || !price || !availability || !state) {
       return res.status(400).json({ message: "Category, price, availability, and state are required." });
     }
 
-    // Ensure price is a positive number
     const numericPrice = parseFloat(price);
     if (isNaN(numericPrice) || numericPrice <= 0) {
       return res.status(400).json({ message: "Price must be a positive number." });
     }
 
-    // Ensure specs is a valid object
     if (specs && typeof specs !== "object") {
       return res.status(400).json({ message: "Specs must be an object." });
     }
@@ -130,17 +132,14 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PATCH /api/products/:id - Update an existing product
+// PATCH /api/products/:productId - Update an existing product
 router.patch('/:productId', async (req, res) => {
   try {
-    // Check if the request body is empty
     if (Object.keys(req.body).length === 0) {
       return res.status(400).json({ message: "Request body cannot be empty." });
     }
 
     const { price } = req.body;
-
-    // Ensure price is a valid number if provided
     if (price !== undefined) {
       const numericPrice = parseFloat(price);
       if (isNaN(numericPrice) || numericPrice <= 0) {
@@ -152,7 +151,7 @@ router.patch('/:productId', async (req, res) => {
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.productId,
       { $set: req.body },
-      { new: true, runValidators: true } // runValidators ensures schema rules are enforced
+      { new: true, runValidators: true }
     );
 
     if (!updatedProduct) {
@@ -166,6 +165,36 @@ router.patch('/:productId', async (req, res) => {
   }
 });
 
+// PATCH /api/products/:productId/inventory - Update a product's inventory
+router.patch('/:productId/inventory', async (req, res) => {
+  try {
+    const { stockCount, discount, discountPrice, threshold, displayedStock } = req.body;
+    if (stockCount === undefined) {
+      return res.status(400).json({ message: "stockCount is required." });
+    }
+
+    const updateFields = { stockCount };
+    if (discount !== undefined) updateFields.discount = discount;
+    if (discountPrice !== undefined) updateFields.discountPrice = discountPrice;
+    if (threshold !== undefined) updateFields.threshold = threshold;
+    if (displayedStock !== undefined) updateFields.displayedStock = displayedStock;
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.productId,
+      { $set: updateFields },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    res.status(200).json(updatedProduct);
+  } catch (error) {
+    console.error("❌ Error updating product inventory:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+});
 
 // DELETE /api/products/:id - Delete a product
 router.delete('/:id', async (req, res) => {
@@ -180,57 +209,4 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// GET /api/products/:id - Fetch related products (based on same category)
-router.get('/:productId', async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
-
-    const relatedProducts = await Product.find({
-      category: product.category,
-      _id: { $ne: product._id }
-    }).limit(5);
-
-    res.status(200).json(relatedProducts);
-  } catch (error) {
-    console.error("❌ Error fetching related products:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
-  }
-});
-
 export default router;
-
-// PATCH /api/products/:productId/inventory - Update a product's inventory
-router.patch('/:productId/inventory', async (req, res) => {
-  try {
-    const { stockCount, discount, discountPrice, threshold , displayedStock} = req.body;
-
-    // Validate that required fields are provided (at least stockCount in this case)
-    if (stockCount === undefined) {
-      return res.status(400).json({ message: "stockCount is required." });
-    }
-
-    // Build the update object only with the fields provided.
-    const updateFields = { stockCount };
-    if (discount !== undefined) updateFields.discount = discount;
-    if (discountPrice !== undefined) updateFields.discountPrice = discountPrice;
-    if (threshold !== undefined) updateFields.threshold = threshold;
-    if (displayedStock !== undefined) updateFields.displayedStock = displayedStock;
-    
-    // Update the product by its ID.
-    const updatedProduct = await Product.findByIdAndUpdate(
-      req.params.productId,
-      { $set: updateFields },
-      { new: true, runValidators: true } // Returns the updated document and enforces schema rules.
-    );
-
-    if (!updatedProduct) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
-
-    res.status(200).json(updatedProduct);
-  } catch (error) {
-    console.error("❌ Error updating product inventory:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
-  }
-});

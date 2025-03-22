@@ -15,9 +15,9 @@ export const productTypes = [
     { value: "cablesConnectors", label: "Cables & Connectors" },
     { value: "storage", label: "Storage" },
     { value: "externalStorage", label: "External Storage" },
-  ];
+];
   
-  export const stateField = {
+export const stateField = {
     name: "state",
     label: "State",
     type: "select",
@@ -26,9 +26,9 @@ export const productTypes = [
       { label: "Used", value: "used" },
       { label: "Refurbished", value: "refurbished" },
     ],
-  };
+};
   
-  export const productFields = {
+export const productFields = {
     laptop: [
       { name: "price", label: "Price", type: "number", min: 0, max: 2790000, placeholder: "Enter price in LKR" },
       { name: "availability", label: "Availability", type: "select", options: [
@@ -627,5 +627,5 @@ export const productTypes = [
         { label: "2.5 SATA Enclosure", value: "2.5 sata enclosure" },
       ] },
     ],
-  };
+};
   
