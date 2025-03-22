@@ -94,7 +94,7 @@ const Navbar = () => {
           </Link>
           
           {/* Cart Icon */}
-          <Link to="/cart" className="relative">
+          <Link to="/ShoppingCart" className="relative">
             <MdShoppingCart size={24} />
             <sup className='absolute -top-2 -right-2 text-xs inline-block px-1.5 text-white rounded-full bg-primary'>
               {/* Optionally show the number of products */}
