@@ -28,11 +28,14 @@ import ManageAppointments from "../pages/dashboard/manage-appointments";
 import GamingBuilds from '../components/CustomBuilds/GamingBuilds';
 import BudgetBuilds from '../components/CustomBuilds/BudgetBuilds';
 import GamingBuildDetail from '../components/CustomBuilds/GamingBuildDetail';
-import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail';
+import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail'; // New Import
 import CreateCustomBuild from '../components/CustomBuilds/CreateCustomPreBuild';
 import CustomizeBuild from '../components/CustomBuilds/CustomizeBuild'; // ✅ New Import
+import PreBuildDashboard from "../components/CustomBuilds/PreBuildDashboard"; // Updated import for your custom dashboard
+
 import FilterForm from '../pages/dashboard/admin/filterProducts/FilterForm';
 import FiltersList from '../pages/dashboard/admin/filterProducts/FiltersList';
+import EditCustomPreBuild from '../components/CustomBuilds/EditCustomPreBuild';
 
 
 const router = createBrowserRouter([
@@ -57,7 +60,8 @@ const router = createBrowserRouter([
       { path: 'gaming-builds/:id', element: <GamingBuildDetail /> },
       { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },  
       { path: 'customize-build/:id', element: <CustomizeBuild /> }, 
-
+      { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, // ✅ New Route
+      { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, // Updated route for your custom dashboard
     ]
   },
 
@@ -85,7 +89,7 @@ const router = createBrowserRouter([
       { path: 'manage-filters', element: <ProtectedRoute allowedRoles={["admin"]}><FilterForm /></ProtectedRoute> },
       { path: 'manage-filters-db', element: <ProtectedRoute allowedRoles={["admin"]}><FiltersList /></ProtectedRoute> },
       { path: 'create-custom-prebuild', element: <ProtectedRoute allowedRoles={["admin"]}><CreateCustomBuild /></ProtectedRoute> },
-
+      // { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, // Updated route for your custom dashboard
     ]
   }
 ]);
