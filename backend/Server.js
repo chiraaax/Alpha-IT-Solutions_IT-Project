@@ -3,7 +3,14 @@ import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
-import appointmentRoutes from "./routes/appointmentroutes.js";
+
+//order
+import orderRoutes from "./routes/OrderManagement/orderRoutes.js"
+import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js"
+
+// import productRoutes from "./src/products/products.route.js"; 
+// import authRoutes from "./src/users/user.route.js";
+import appointmentRoutes from "./routes/appointmentroutes.js"
 import authRoutes from "./routes/authRoute.js";
 import userRoutes from "./routes/userRoute.js";
 import faqRoutes from "./routes/faqRoute.js";
@@ -12,6 +19,7 @@ import productsRoutes from "./routes/productsRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import path from "path";
 import prebuildRoutes from "./routes/prebuildRoutes.js"; // ✅ Correct Import
+
 
 dotenv.config();
 const app = express();
@@ -59,6 +67,26 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 // Handle preflight requests (OPTIONS)
 app.options("*", cors());
 
+// MongoDB Connection
+app.use("/api/ai", aiRoutes);
+app.use("/api/prebuilds", prebuildRoutes); // ✅ Now works properly
+
+app.use("/api/orders", orderRoutes); // Order Routes
+app.use("/api/successorders", SuccessOrderRoutes); // SuccessOrder Routes
+
+// Connect to MongoDB
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => {
+    console.error("MongoDB Connection Error:", err.message);
+    process.exit(1); // Exit process on failure
+  });
+
+// Home route
 // ✅ Home route
 app.get("/", (req, res) => {
   res.send("🚀 API is running...");
