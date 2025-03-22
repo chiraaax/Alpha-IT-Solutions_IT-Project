@@ -14,7 +14,8 @@ const InquiryForm = () => {
         productName: '',
         additionalDetails: '',
         userApproval: false,
-        attachment: null
+        attachment: null,
+        inquirySubject: '',
     });
 
     const [submittedData, setSubmittedData] = useState(null);
@@ -114,7 +115,7 @@ const InquiryForm = () => {
                     }
                 });
     
-                // Step 2: Submit the Inquiry
+                // Submit the Inquiry
                 const response = await axios.post("http://localhost:5000/api/inquiries/submit", submissionData, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -134,7 +135,8 @@ const InquiryForm = () => {
                     productName: '',
                     additionalDetails: '',
                     userApproval: false,
-                    attachment: null
+                    attachment: null,
+                    inquirySubject: '',
                 });
             }
 
@@ -174,73 +176,79 @@ const InquiryForm = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-r from-indigo-200 to-indigo-400 p-6">
-            {/* FAQ Search Section */}
-            <div className="w-full max-w-xl bg-white shadow-xl rounded-lg p-6 mb-6">
-                <h3 className="text-2xl font-semibold text-indigo-700 flex items-center gap-2">Check Before Submitting an Inquiry</h3>
-                <p className="text-gray-600 mb-3">
-                    Before submitting your inquiry, check if your question has already been answered in our FAQ section.
-                </p>
-                <input
-                    type="text"
-                    value={query}
-                    onChange={handleQueryChange}
-                    placeholder="Type your inquiry..."
-                    className="w-full border rounded-md px-4 py-2 focus:ring focus:ring-indigo-500"
-                />
-                {suggestedFAQs.length > 0 && (
-                    <ul className="bg-gray-100 p-2 mt-3 rounded-md border">
-                        {suggestedFAQs.map((faq) => (
-                            <li key={faq._id} className="p-2 border-b last:border-b-0">
-                                <strong className="text-indigo-600">{faq.question}</strong>
-                                <p className="text-gray-700 mt-1">{faq.answer}</p>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+        <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-900 via-gray-900 to-black p-6">
+        {/* FAQ Search Section */}
+        <div className="w-full max-w-xl bg-white bg-opacity-10 backdrop-blur-lg shadow-xl rounded-xl p-6 mb-6 border border-gray-700">
+            <h3 className="text-2xl font-semibold text-purple-400 flex items-center gap-2">
+                🔍 Check Before Submitting an Inquiry
+            </h3>
+            <p className="text-gray-1000 mb-3">Check if your question is already answered in our FAQ section.</p>
+            <input
+                type="text"
+                value={query}
+                onChange={handleQueryChange}
+                placeholder="Type your inquiry..."
+                className="w-full border border-gray-700 rounded-lg px-4 py-2 focus:ring focus:ring-purple-500 bg-gray-900 text-gray-200"
+            />
+            {suggestedFAQs.length > 0 && (
+                <ul className="bg-gray-800 p-2 mt-3 rounded-md border border-gray-700 text-gray-300">
+                    {suggestedFAQs.map((faq) => (
+                        <li key={faq._id} className="p-2 border-b border-gray-700 last:border-b-0">
+                            <strong className="text-purple-400">{faq.question}</strong>
+                            <p className="text-gray-400 mt-1">{faq.answer}</p>
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </div>
 
-            {/* Inquiry Form Section */}
-            <div className="w-full max-w-xl bg-white shadow-xl rounded-lg p-6">
-                <h2 className="text-3xl font-bold text-indigo-700 mb-4 flex items-center gap-2">Submit an Inquiry</h2>
-                <form onSubmit={handleSubmit} className="space-y-3">
-                    <input type="text" name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange} required className="w-full border rounded-md px-4 py-2 mb-3" />
+        {/* Inquiry Form Section */}
+        <div className="w-full max-w-xl bg-white bg-opacity-10 backdrop-blur-lg shadow-xl rounded-xl p-6 border border-gray-700">
+            <h2 className="text-3xl font-bold text-pink-400 mb-4 flex items-center gap-2">
+                ✉️ Submit an Inquiry
+            </h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <input type="text" name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
 
-                    <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required className="w-full border rounded-md px-4 py-2 mb-3" />
+                <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
 
-                    <input type="text" name="contactNumber" placeholder="Contact Number" value={formData.contactNumber} onChange={handleChange} required className="w-full border rounded-md px-4 py-2 mb-3" />
+                <input type="text" name="contactNumber" placeholder="Contact Number" value={formData.contactNumber} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
 
-                    <input type="text" name="productName" placeholder="Product Name (if applicable)" value={formData.productName} onChange={handleChange} required className="w-full border rounded-md px-4 py-2 mb-3" />
+                <input type="text" name="productName" placeholder="Product Name (if applicable)" value={formData.productName} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
 
-                    <select name="inquiryType" value={formData.inquiryType} onChange={handleChange} className="w-full border rounded-md px-4 py-2 mb-3">
-                        <option value="General">General</option>
-                        <option value="Product Availability">Product Availability</option>
-                        <option value="Support">Support</option>
-                    </select>
+                <select name="inquiryType" value={formData.inquiryType} onChange={handleChange} className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500">
+                    <option value="General">General</option>
+                    <option value="Product Availability">Product Availability</option>
+                    <option value="Support">Support</option>
+                </select>
 
-                    <textarea name="additionalDetails" placeholder="Additional Details" value={formData.additionalDetails} onChange={handleChange} required className="w-full border rounded-md px-4 py-2 mb-3"></textarea>
+                <input type="text" name="productName" placeholder="Subject" value={formData.inquirySubject} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
 
-                    <label className='flex items-center mb-3'>
-                        <input type="checkbox" name="userApproval" checked={formData.userApproval} onChange={handleChange} className="mr-2" />Allow this inquiry to be added to the FAQ
-                    </label>
+                <textarea name="additionalDetails" placeholder="Additional Details" value={formData.additionalDetails} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500"></textarea>
 
-                    <input type="file" name="attachment" accept=".png,.jpg,.jpeg" onChange={handleFileChange} className="w-full border rounded-md px-4 py-2 mb-3" />
+                <label className="flex items-center text-gray-1000">
+                    <input type="checkbox" name="userApproval" checked={formData.userApproval} onChange={handleChange} className="mr-2" />
+                    Allow this inquiry to be added to the FAQ
+                </label>
 
-                    <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition">Submit Inquiry</button>
-                </form>
+                <input type="file" name="attachment" accept=".png,.jpg,.jpeg" onChange={handleFileChange} className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-300 focus:ring focus:ring-pink-500" />
 
-                {submittedData && submittedData._id && (
+                <button type="submit" className="w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 hover:shadow-lg transition duration-300 transform hover:scale-105">
+                    🚀 Submit Inquiry
+                </button>
+            </form>
+
+            {submittedData && submittedData._id && (
                 <button 
                     onClick={handleDownloadInquiry} 
-                    className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition mt-3"
+                    className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 hover:shadow-lg transition duration-300 transform hover:scale-105 mt-3"
                 >
-                    Download Inquiry PDF
+                    📄 Download Inquiry PDF
                 </button>
-                )}
-
-            </div>
+            )}
         </div>
-    );
-};
+    </div>
+
+)};
 
 export default InquiryForm;

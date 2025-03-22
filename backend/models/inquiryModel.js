@@ -13,7 +13,8 @@ const inquirySchema = new mongoose.Schema({
     createdAt: {type: Date, default: Date.now},
     resolvedAt: { type: Date },
     userApproval: { type: Boolean, default: false },
-    adminAnswer: String,
+    adminAnswer: {type: String},
+    inquirySubject: {type: String},
 });
 
 const Inquiry = mongoose.model("Inquiry", inquirySchema);

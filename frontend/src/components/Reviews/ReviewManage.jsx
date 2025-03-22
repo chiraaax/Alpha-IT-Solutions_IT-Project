@@ -48,17 +48,17 @@ function ReviewManage() {
     };
 
     return (
-    <div className="max-w-full mx-auto p-8 bg-white rounded-xl shadow-lg border border-gray-200">
+      <div className="max-w-full mx-auto p-8 bg-white rounded-xl shadow-lg border border-gray-200">
       <h3 className="text-3xl font-bold mb-6 text-gray-800">All User Reviews</h3>
       {message && <p className="text-red-600 font-semibold text-lg">{message}</p>}
-
+    
       {reviews.length === 0 ? (
         <p className="text-gray-500 text-lg text-center">No reviews found.</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-300 shadow-md rounded-lg overflow-hidden">
+          <table className="min-w-full bg-white border border-gray-300 shadow-md rounded-lg">
             <thead>
-              <tr className="bg-gray-800 text-white">
+              <tr className="bg-gray-800 text-white text-left">
                 <th className="p-4 border">User ID</th>
                 <th className="p-4 border">Full Name</th>
                 <th className="p-4 border">Email</th>
@@ -75,7 +75,7 @@ function ReviewManage() {
               {reviews.map((review) => (
                 <tr
                   key={review._id}
-                  className={`text-center border-t transition-all hover:bg-gray-100 ${
+                  className={`border-t hover:bg-gray-100 transition ${
                     review.status === "flagged" ? "bg-red-200" : ""
                   }`}
                 >
@@ -92,19 +92,23 @@ function ReviewManage() {
                   </td>
                   <td className="p-4 border text-yellow-500">{renderStars(review.rating)}</td>
                   <td className="p-4 border text-gray-700">{review.comment}</td>
-                  <td className="p-4 border font-semibold">{review.verifiedBuyer ? "Yes" : "No"}</td>
-                  <td className="p-4 border text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</td>
+                  <td className="p-4 border font-semibold">
+                    {review.verifiedBuyer ? "Yes" : "No"}
+                  </td>
+                  <td className="p-4 border text-gray-500">
+                    {new Date(review.createdAt).toLocaleDateString()}
+                  </td>
                   <td className="p-4 border flex flex-wrap gap-2 justify-center">
                     {review.status !== "flagged" ? (
                       <>
                         <button
-                          className="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600 transition"
+                          className="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600 transition"
                           onClick={() => handleModerate(review._id, "approved")}
                         >
                           Approve
                         </button>
                         <button
-                          className="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 transition"
+                          className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition"
                           onClick={() => handleModerate(review._id, "rejected")}
                         >
                           Reject
@@ -112,7 +116,7 @@ function ReviewManage() {
                       </>
                     ) : (
                       <button
-                        className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700 transition"
+                        className="bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700 transition"
                         onClick={() => handleModerate(review._id, "deleted")}
                       >
                         Delete
@@ -126,6 +130,7 @@ function ReviewManage() {
         </div>
       )}
     </div>
+    
 
 )};
 

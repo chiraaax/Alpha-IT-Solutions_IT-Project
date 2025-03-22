@@ -6,7 +6,10 @@ const navItems = [
   { path: '/dashboard/admin', label: 'Dashboard' },
   { path: '/dashboard/add-new-product', label: 'Add Product' },
   { path: '/dashboard/manage-products', label: 'Manage Products' },
-  { path: '/dashboard/users', label: 'Users' },
+  { path: '/dashboard/UserManage', label: 'Users' },
+  { path: '/dashboard/InquiryManage', label: 'Inquiry Manage'},
+  { path: '/dashboard/ReviewManage', label: 'Review Manage'},
+  { path: '/dashboard/FAQManage', label: 'FAQ Manage'}
 ];
 
 const AdminDashboard = () => {

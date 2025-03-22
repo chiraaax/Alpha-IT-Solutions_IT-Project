@@ -51,13 +51,13 @@ export const submitInquiry = async (req, res) => {
         }
 
         try {
-            const { fullName, email, contactNumber, inquiryType, productName, additionalDetails, userApproval } = req.body;
+            const { fullName, email, contactNumber, inquiryType, productName, additionalDetails, userApproval, inquirySubject } = req.body;
             
             if (!req.user || !req.user.id) {
                 return res.status(401).json({ message: "Unauthorized: User ID missing" });
             }
 
-            if (!fullName || !email || !contactNumber || !inquiryType || !additionalDetails) {
+            if (!fullName || !email || !contactNumber || !inquiryType || !additionalDetails || !inquirySubject) {
                 return res.status(400).json({ message: "All required fields must be filled." });
             }
 
@@ -84,6 +84,7 @@ export const submitInquiry = async (req, res) => {
                 contactNumber,
                 inquiryType,
                 productName,
+                inquirySubject,
                 additionalDetails,
                 userApproval: userApproval === "true" || userApproval === true,
                 attachment: filePath // Store file path in the database
@@ -145,6 +146,7 @@ export const downloadInquiry = async (req, res) => {
             ["Contact Number", inquiry.contactNumber],
             ["Inquiry Type", inquiry.inquiryType],
             ["Product Name", inquiry.productName || "N/A"],
+            ["Inquiry Subject", inquiry.inquirySubject || "N/A"],
             ["Additional Details", inquiry.additionalDetails],
             ["User Approval", inquiry.userApproval ? "Yes" : "No"]
         ];
@@ -341,8 +343,6 @@ export const deleteResolvedInquiry = async (req, res) => {
 // Scheduled job to run every minute and delete resolved inquiries older than 48 hours
 cron.schedule("* * * * *", async () => { 
     try {
-        console.log("Cron job running...");
-
         const now = new Date();
         const cutoffTime = new Date(now.getTime() - 48 * 60 * 60 * 1000); 
         

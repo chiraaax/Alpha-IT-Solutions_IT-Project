@@ -107,66 +107,72 @@ function UserInquiries() {
     };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-300 via-blue-500 to-blue-700 p-8">
+    <div className="min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 p-8">
 
     {/* Inquiry Section */}
-    <h2 className="text-4xl font-extrabold text-center text-white mb-4 tracking-wide">
+    <h2 className="text-4xl font-extrabold text-center text-blue-400 mb-4 tracking-wide">
          Your Inquiries
     </h2>
-    <p className="text-lg text-center text-white opacity-80 mb-8">
+    <p className="text-lg text-center text-gray-300 opacity-80 mb-8">
         View and manage your submitted inquiries. You can update, delete, or track the status of each inquiry here.
     </p>
     
-      <div className="bg-white shadow-lg rounded-lg p-6 max-w-4xl mx-auto">
+      <div className="bg-gray-800 shadow-xl rounded-lg p-6 max-w-4xl mx-auto border border-gray-700">
             {inquiries.length === 0 ? (
-                <p className="text-center text-gray-500">No inquiries submitted yet.</p>
+                <p className="text-center text-gray-400">No inquiries submitted yet.</p>
             ) : (
                 inquiries.map((inquiry) => {
                     return (
-                        <div key={inquiry._id} className="border-b border-gray-300 pb-4 mb-4">
+                        <div key={inquiry._id} className="border-b border-gray-700 pb-4 mb-4">
                             {editingInquiry === inquiry._id ? (
-                                <form onSubmit={handleUpdateSubmit}>
-                                    <div className="mb-4">
-                                        <input
-                                            type="text"
-                                            name="fullName"
-                                            value={updatedData.fullName}
-                                            onChange={handleUpdateChange}
-                                            className="w-full border rounded-md px-4 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                        <textarea
-                                            name="additionalDetails"
-                                            value={updatedData.additionalDetails}
-                                            onChange={handleUpdateChange}
-                                            className="w-full border rounded-md px-4 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                    </div>
+                                <form onSubmit={handleUpdateSubmit} className="space-y-4">
+                                    <input
+                                        type="text"
+                                        name="fullName"
+                                        value={updatedData.fullName}
+                                        onChange={handleUpdateChange}
+                                        className="w-full border border-gray-600 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-blue-500"
+                                    />
+                                    <input
+                                        type="text"
+                                        name="subject"
+                                        value={updatedData.inquirySubject}
+                                        onChange={handleUpdateChange}
+                                        className="w-full border border-gray-600 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-blue-500"
+                                    />
+                                    <textarea
+                                        name="additionalDetails"
+                                        value={updatedData.additionalDetails}
+                                        onChange={handleUpdateChange}
+                                        className="w-full border border-gray-600 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-blue-500"
+                                    />
                                     <div className="flex justify-end space-x-2">
-                                        <button type="submit" className="bg-blue-500 text-white py-2 px-6 rounded-md hover:bg-blue-600">
+                                        <button type="submit" className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 hover:shadow-lg transition duration-300">
                                             Save Changes
                                         </button>
-                                        <button type="button" onClick={() => setEditingInquiry(null)} className="bg-gray-400 text-white py-2 px-6 rounded-md hover:bg-gray-500">
+                                        <button type="button" onClick={() => setEditingInquiry(null)} className="bg-gray-500 text-white py-2 px-6 rounded-lg hover:bg-gray-600 hover:shadow-lg transition duration-300">
                                             Cancel
                                         </button>
                                     </div>
                                 </form>
                             ) : (
                                 <>
-                                    <div className="mb-4">
-                                        <p><strong className="text-gray-700">Full Name:</strong> {inquiry.fullName}</p>
-                                        <p><strong className="text-gray-700">Email:</strong> {inquiry.email}</p>
-                                        <p><strong className="text-gray-700">Inquiry Type:</strong> {inquiry.inquiryType}</p>
-                                        <p><strong className="text-gray-700">Product Name:</strong> {inquiry.productName}</p>
-                                        <p><strong className="text-gray-700">Details:</strong> {inquiry.additionalDetails}</p>
-                                        <p><strong className="text-gray-700">Status:</strong> {inquiry.status}</p>
-                                        <p className="text-sm text-gray-500">Submitted on: {new Date(inquiry.createdAt).toLocaleString()}</p>
+                                    <div className="mb-4 text-gray-300">
+                                        <p><strong className="text-blue-400">Full Name:</strong> {inquiry.fullName}</p>
+                                        <p><strong className="text-blue-400">Email:</strong> {inquiry.email}</p>
+                                        <p><strong className="text-blue-400">Inquiry Type:</strong> {inquiry.inquiryType}</p>
+                                        <p><strong className="text-blue-400">Product Name:</strong> {inquiry.productName}</p>
+                                        <p><strong className="text-blue-400">Inquiry Subject:</strong> {inquiry.inquirySubject}</p>
+                                        <p><strong className="text-blue-400">Details:</strong> {inquiry.additionalDetails}</p>
+                                        <p><strong className="text-blue-400">Status:</strong> {inquiry.status}</p>
+                                        <p className="text-sm text-gray-400">Submitted on: {new Date(inquiry.createdAt).toLocaleString()}</p>
                                         <p className="text-sm text-red-500">Auto-delete in: {getCountdownTime(inquiry.createdAt)}</p>
                                     </div>
                                     <div className="flex space-x-2">
-                                        <button onClick={() => handleEdit(inquiry)} className="bg-yellow-500 text-white py-2 px-6 rounded-md hover:bg-yellow-600">
+                                        <button onClick={() => handleEdit(inquiry)} className="bg-yellow-500 text-white py-2 px-6 rounded-lg hover:bg-yellow-600 hover:shadow-lg transition duration-300">
                                             Update
                                         </button>
-                                        <button onClick={() => handleDelete(inquiry._id, inquiry.createdAt)} className="bg-red-500 text-white py-2 px-6 rounded-md hover:bg-red-600">
+                                        <button onClick={() => handleDelete(inquiry._id, inquiry.createdAt)} className="bg-red-500 text-white py-2 px-6 rounded-lg hover:bg-red-600 hover:shadow-lg transition duration-300">
                                             Delete
                                         </button>
                                     </div>
@@ -178,6 +184,7 @@ function UserInquiries() {
             )}
       </div>
     </div>
+
   );
 }
 
