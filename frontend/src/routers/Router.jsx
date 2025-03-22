@@ -30,9 +30,10 @@ import BudgetBuilds from '../components/CustomBuilds/BudgetBuilds';
 import GamingBuildDetail from '../components/CustomBuilds/GamingBuildDetail';
 import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail';
 import CreateCustomBuild from '../components/CustomBuilds/CreateCustomPreBuild';
-import CustomizeBuild from '../components/CustomBuilds/CustomizeBuild'; 
+import CustomizeBuild from '../components/CustomBuilds/CustomizeBuild'; // ✅ New Import
 import FilterForm from '../pages/dashboard/admin/filterProducts/FilterForm';
 import FiltersList from '../pages/dashboard/admin/filterProducts/FiltersList';
+
 
 const router = createBrowserRouter([
   {
@@ -43,13 +44,8 @@ const router = createBrowserRouter([
       { path: 'products/:category', element: <ProductCategory /> },
       { path: 'appointment', element: <ProtectedRoute><AppointmentDashboard /></ProtectedRoute> },
       { path: 'AppointmenentAI', element: <ProtectedRoute><AppointmenentAI /></ProtectedRoute> },
-      { path: 'appointment-form', element: <ProtectedRoute><AppointmentForm /></ProtectedRoute> },
       { path: 'draftedTechnicianReport', element: <ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
-      { path: 'faq-manage', element: <ProtectedRoute allowedRoles={["admin"]}><FAQManage /></ProtectedRoute> },
-      { path: 'appointment', element: <ProtectedRoute><AppointmentDashboard /></ProtectedRoute> },
-      { path: 'AppointmenentAI', element: <ProtectedRoute><AppointmenentAI /></ProtectedRoute> },
       { path: 'appointment-form', element: <ProtectedRoute><AppointmentForm /></ProtectedRoute> },
-      { path: 'draftedTechnicianReport', element: <ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
       { path: 'faq-manage', element: <ProtectedRoute element={<FAQManage />} allowedRoles={["admin"]} /> },
       { path: 'faq', element: <FAQ /> },
       // CustomBuilds routes
@@ -58,11 +54,10 @@ const router = createBrowserRouter([
       { path: 'search', element: <SearchPage /> },
       { path: 'gaming-builds', element: <GamingBuilds /> },
       { path: 'budget-builds', element: <BudgetBuilds /> },        
-      { path: 'gaming-builds', element: <GamingBuilds /> },
-      { path: 'budget-builds', element: <BudgetBuilds /> },
       { path: 'gaming-builds/:id', element: <GamingBuildDetail /> },
       { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },  
       { path: 'customize-build/:id', element: <CustomizeBuild /> }, 
+
     ]
   },
 
@@ -90,6 +85,7 @@ const router = createBrowserRouter([
       { path: 'manage-filters', element: <ProtectedRoute allowedRoles={["admin"]}><FilterForm /></ProtectedRoute> },
       { path: 'manage-filters-db', element: <ProtectedRoute allowedRoles={["admin"]}><FiltersList /></ProtectedRoute> },
       { path: 'create-custom-prebuild', element: <ProtectedRoute allowedRoles={["admin"]}><CreateCustomBuild /></ProtectedRoute> },
+
     ]
   }
 ]);
