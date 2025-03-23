@@ -3,12 +3,17 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useTheme } from "./ThemeContext";
 import { FaSun, FaMoon } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 
 const BudgetBuildDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
-
+  const dispatch = useDispatch();
+  // Retrieve cart items from Redux store
+  const cartItems = useSelector((state) => state.cart.cartItems) || [];
+  
+  // Local state for build details and lookup
   const [build, setBuild] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,12 +33,14 @@ const BudgetBuildDetail = () => {
   });
   // Local state for the edited build. Initially, we use the fetched build data.
   const [editedBuild, setEditedBuild] = useState(null);
+  // Local state for add-to-cart messages (temporary confirmation or warning)
+  const [message, setMessage] = useState("");
 
-  // Fetch build details and products lookup concurrently
+  // Fetch build details and products lookup concurrently from prebuilds db.
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch build details
+        // Fetch build details from prebuilds endpoint
         const buildResponse = await axios.get(`http://localhost:5000/api/prebuilds/${id}`);
         const fetchedBuild = buildResponse.data.data || buildResponse.data;
         if (fetchedBuild) {
@@ -44,7 +51,7 @@ const BudgetBuildDetail = () => {
           setError("No data found for this build.");
         }
 
-        // Fetch all products and create lookup by _id
+        // Fetch all products (for lookup purposes) if needed.
         const productsResponse = await axios.get("http://localhost:5000/api/products");
         const lookup = {};
         productsResponse.data.forEach((product) => {
@@ -121,17 +128,33 @@ const BudgetBuildDetail = () => {
     setIsEditModalOpen(false);
   };
 
-  // Helper: Get product description for display based on id and options
-  const getProductDescription = (id, options) => {
-    const prod = options.find((p) => p._id === id);
-    return prod ? `${prod.description} (LKR ${prod.price})` : id;
-  };
-
-  // Helper to format price as USD (or your preferred currency)
+  // Helper to format price (you can adjust currency as needed)
   const formatPrice = (price) => {
     return price
       ? price.toLocaleString("en-US", { style: "currency", currency: "USD" })
       : "N/A";
+  };
+
+  // Check if the current prebuild is already in the cart
+  const isPrebuildInCart = () => {
+    return cartItems.some((item) => item._id === build?._id);
+  };
+
+  // Add to Cart functionality using prebuild fields: _id, price, image, description.
+  const handleAddToCart = () => {
+    if (isPrebuildInCart()) {
+      setMessage("Prebuild is already in cart. Adjust quantity in the shopping cart.");
+      setTimeout(() => setMessage(""), 2000);
+      return;
+    }
+
+    const { _id, description, price, image } = build;
+    dispatch({
+      type: "ADD_TO_CART",
+      payload: { _id, description, price, image, quantity: 1 },
+    });
+    setMessage("Prebuild added to cart!");
+    setTimeout(() => setMessage(""), 2000);
   };
 
   if (loading)
@@ -260,10 +283,16 @@ const BudgetBuildDetail = () => {
 
           {/* Action Buttons */}
           <div className="mt-6 flex flex-col md:flex-row gap-4 justify-center md:justify-start">
-            <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+            <button
+              onClick={handleAddToCart}
+              disabled={isPrebuildInCart()}
+              className={`bg-blue-600 text-white px-6 py-2 rounded-lg transition hover:bg-blue-700 ${
+                isPrebuildInCart() ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
               🛒 Add to Cart
             </button>
-            {/* Edit Button */}
+            {/* Edit/Customize Button */}
             <button
               onClick={() => setIsEditModalOpen(true)}
               className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
@@ -285,6 +314,13 @@ const BudgetBuildDetail = () => {
           No reviews yet. Be the first to leave a review!
         </p>
       </div>
+
+      {/* Temporary message for Add to Cart actions */}
+      {message && (
+        <div className="fixed top-5 right-5 bg-green-500 text-white py-2 px-4 rounded shadow-md">
+          {message}
+        </div>
+      )}
 
       {/* Edit Modal */}
       {isEditModalOpen && editedBuild && (

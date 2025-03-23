@@ -1,15 +1,67 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams  } from 'react-router-dom';
 import { FiArrowLeft, FiShoppingCart, FiCheckCircle, FiZoomIn, FiX } from 'react-icons/fi';
+import { useDispatch, useSelector } from 'react-redux';
 
 const ProductDetails = () => {
   const { productId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const product = location.state?.product;
+  const dispatch = useDispatch();
 
-  // State to control modal visibility
+  // Retrieve cart items from Redux store
+  const cartItems = useSelector((state) => state.cart.cartItems) || [];
+
+  // Check if the product is already in the cart
+  const isProductInCart = () => {
+    return cartItems.some(item => item._id === product?._id);
+  };
+
+  // Prefer product data from location.state if available, otherwise initialize as null
+  const [product, setProduct] = useState(location.state?.product || null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(!product);
+  // State for showing confirmation messages
+  const [message, setMessage] = useState('');
+
+  // Fetch product data from backend if not provided via location.state
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`/api/products/${productId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch product data');
+        }
+        const data = await response.json();
+        const { _id, description, discountPrice, price, displayedStock, image } = data;
+        setProduct({ 
+          _id, 
+          description, 
+          discountPrice, 
+          price, 
+          displayedStock, 
+          image,
+          ...data
+        });
+        setIsLoading(false);
+      } catch (error) {
+        console.error(error);
+        setIsLoading(false);
+      }
+    };
+
+    if (!product) {
+      fetchProduct();
+    }
+  }, [productId, product]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 p-6">
+        <p className="text-gray-300 text-xl">Loading product details...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -38,8 +90,47 @@ const ProductDetails = () => {
     setIsImageModalOpen(false);
   };
 
+  // Add to Cart functionality without navigating away.
+  const addToCart = () => {
+    if (isProductInCart()) {
+      // If the product is already in the cart, show a message and return.
+      setMessage('Product is already in cart. Adjust quantity in the shopping cart.');
+      setTimeout(() => {
+        setMessage('');
+      }, 2000);
+      return;
+    }
+    
+    // Calculate the effective price based on discountPrice value.
+    const effectivePrice = product.discountPrice === 0 ? product.price : product.discountPrice;
+
+    // Prepare the cart item with the required fields.
+    const cartItem = {
+      _id: product._id,
+      description: product.description,
+      price: product.price,
+      discountPrice: product.discountPrice,
+      effectivePrice, // Calculated price to be used for display or further processing.
+      displayedStock: product.displayedStock,
+      image: product.image,
+      quantity: 1, // Default quantity.
+    };
+
+    // Dispatch the action to add the product to the cart.
+    dispatch({
+      type: 'ADD_TO_CART',
+      payload: cartItem,
+    });
+
+    // Set a temporary confirmation message.
+    setMessage('Product added to cart!');
+    setTimeout(() => {
+      setMessage('');
+    }, 2000);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-800 p-6">
+    <div className="min-h-screen bg-gray-800 p-6 relative">
       <div className="max-w-3xl mx-auto bg-gray-900 shadow-xl rounded-lg overflow-hidden border-t-4 border-pink-500">
         <div className="p-16">
           <button 
@@ -77,38 +168,53 @@ const ProductDetails = () => {
                     </>
                   )}
                 </p>
-                <p className="text-lg mb-2">
-                  <strong>Category:</strong> {product.category}
-                </p>
-                <p className="text-lg mb-2">
-                  <strong>Availability:</strong> {product.availability}
-                </p>
-                <p className="text-lg mb-4">
-                  <strong>State:</strong> {product.state}
-                </p>
+                {product.category && (
+                  <p className="text-lg mb-2">
+                    <strong>Category:</strong> {product.category}
+                  </p>
+                )}
+                {product.availability && (
+                  <p className="text-lg mb-2">
+                    <strong>Availability:</strong> {product.availability}
+                  </p>
+                )}
+                {product.state && (
+                  <p className="text-lg mb-4">
+                    <strong>State:</strong> {product.state}
+                  </p>
+                )}
+                {product.displayedStock !== undefined && (
+                  <p className="text-lg mb-4">
+                    <strong>In Stock:</strong> {product.displayedStock}
+                  </p>
+                )}
                 
-                <div className="mt-8">
-                  <h2 className="text-2xl font-semibold mb-4 text-white">Specs:</h2>
-                  <ul className="space-y-4">
-                    {product.specs?.map((spec, index) => (
-                      <li 
-                        key={index} 
-                        className="flex items-center text-lg text-gray-400"
-                      >
-                        <FiCheckCircle 
-                          className="text-pink-500 mr-2 flex-shrink-0" 
-                          size={20} 
-                        />
-                        <span>{spec.key}: {spec.value}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {product.specs && product.specs.length > 0 && (
+                  <div className="mt-8">
+                    <h2 className="text-2xl font-semibold mb-4 text-white">Specs:</h2>
+                    <ul className="space-y-4">
+                      {product.specs.map((spec, index) => (
+                        <li 
+                          key={index} 
+                          className="flex items-center text-lg text-gray-400"
+                        >
+                          <FiCheckCircle 
+                            className="text-pink-500 mr-2 flex-shrink-0" 
+                            size={20} 
+                          />
+                          <span>{spec.key}: {spec.value}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
               <div className="mt-8">
                 <button 
-                  onClick={() => alert(`Added ${product.description} (ID: ${productId}) to Cart`)}
-                  className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                  onClick={addToCart}
+                  // Disable the button if the product is already in the cart.
+                  disabled={isProductInCart()}
+                  className={`w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 ${isProductInCart() ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <FiShoppingCart className="inline mr-2" />
                   Add to Cart
@@ -118,6 +224,13 @@ const ProductDetails = () => {
           </div>
         </div>
       </div>
+
+      {/* Temporary confirmation or warning message */}
+      {message && (
+        <div className="absolute top-5 right-5 bg-green-500 text-white py-2 px-4 rounded shadow-md">
+          {message}
+        </div>
+      )}
 
       {/* Modal for the zoomed image */}
       {isImageModalOpen && (
@@ -130,14 +243,13 @@ const ProductDetails = () => {
             >
               <FiX size={24} className="text-black" />
             </button>
-
-              <div className="bg-black rounded-lg overflow-hidden shadow-2xl">
-                <img 
-                  src={product.image} 
-                  alt={product.description} 
-                  className="w-full max-h-screen object-contain rounded-lg p-35"
-                />
-              </div>
+            <div className="bg-black rounded-lg overflow-hidden shadow-2xl">
+              <img 
+                src={product.image} 
+                alt={product.description} 
+                className="w-full max-h-screen object-contain rounded-lg p-35"
+              />
+            </div>
           </div>
         </div>
       )}
