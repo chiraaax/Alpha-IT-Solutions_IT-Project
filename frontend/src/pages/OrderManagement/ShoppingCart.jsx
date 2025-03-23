@@ -8,7 +8,6 @@ const ShoppingCart = () => {
   // Retrieve cart items from Redux store
   const cartItems = useSelector(state => state.cart.cartItems) || [];
 
-
   const updateQuantity = (id, quantity) => {
     dispatch({
       type: 'UPDATE_CART_ITEM',
@@ -27,7 +26,11 @@ const ShoppingCart = () => {
         <div className="md:col-span-2 space-y-6">
           {cartItems && cartItems.length > 0 ? (
             cartItems.map(item => (
-              <CartItem key={item.id} item={item} updateQuantity={updateQuantity} />
+              <CartItem 
+                key={item.id} 
+                item={item} 
+                updateQuantity={updateQuantity} 
+              />
             ))
           ) : (
             <p>Your cart is empty.</p>
