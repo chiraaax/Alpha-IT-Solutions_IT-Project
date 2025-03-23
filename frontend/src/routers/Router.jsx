@@ -72,12 +72,12 @@ const router = createBrowserRouter([
       { path: 'draftedTechnicianReport', element: <ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
       { path: 'appointment-form', element: <ProtectedRoute><AppointmentForm /></ProtectedRoute> },
     
-      { path: 'faq', element: <FAQ /> },
-      { path: 'ReviewForm', element:<ReviewForm/>},
-      { path: 'UserReviews', element:<UserReviews/>},
-      { path: 'InquiryForm', element:<InquiryForm/>},
-      { path: 'UserInquiries', element:<UserInquiries/>},
-      { path: 'profile', element: <Profile/>},
+      { path: 'faq', element: <ProtectedRoute><FAQ /></ProtectedRoute> },
+      { path: 'ReviewForm', element:<ProtectedRoute><ReviewForm /></ProtectedRoute>},
+      { path: 'UserReviews', element:<ProtectedRoute><UserReviews /></ProtectedRoute>},
+      { path: 'InquiryForm', element:<ProtectedRoute><InquiryForm /></ProtectedRoute>},
+      { path: 'UserInquiries', element:<ProtectedRoute><UserInquiries /></ProtectedRoute>},
+      { path: 'profile', element: <ProtectedRoute><Profile /></ProtectedRoute>},
 
       // CustomBuilds routes
       { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
