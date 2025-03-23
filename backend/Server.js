@@ -17,7 +17,6 @@ import filterRoutes from "./routes/filterRoutes.js";
 import orderRoutes from "./routes/OrderManagement/orderRoutes.js"
 import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js"
 
-import orderRoutes from "./routes/orderRoutes.js";
 
 dotenv.config();
 const app = express();
