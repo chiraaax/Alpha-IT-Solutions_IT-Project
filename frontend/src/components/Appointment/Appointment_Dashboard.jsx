@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../../styles/appointment_dashboard.css";
 import jsPDF from "jspdf";
 import logo from "../../assets/AlphaITSolutionsLogo.jpg"; // Import the company logo
-import sign from "../../assets/sign.png"
+import sign from "../../assets/sign.png";
 
 const AppointmentDashboard = () => {
   const [appointments, setAppointments] = useState([]);
@@ -25,7 +25,12 @@ const AppointmentDashboard = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/appointments");
+        const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
+        const response = await fetch("http://localhost:5000/api/appointments", {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
@@ -54,10 +59,12 @@ const AppointmentDashboard = () => {
   // Handle update appointment
   const handleUpdate = async () => {
     try {
+      const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
       const response = await fetch(`http://localhost:5000/api/appointments/${selectedAppointment._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(selectedAppointment),
       });
@@ -82,8 +89,12 @@ const AppointmentDashboard = () => {
     if (!isConfirmed) return;
 
     try {
+      const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
       const response = await fetch(`http://localhost:5000/api/appointments/${selectedAppointment._id}`, {
         method: "DELETE",
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       if (!response.ok) {
@@ -96,6 +107,7 @@ const AppointmentDashboard = () => {
       console.error("Error deleting appointment:", error);
     }
   };
+
   const generateReport = () => {
     try {
       if (!selectedAppointment) {
@@ -253,7 +265,7 @@ const AppointmentDashboard = () => {
       alert("Failed to generate report. Please check the console for details.");
     }
   };
-  
+
   return (
     <div className="dashboard-container">
       {/* Header with Action Buttons */}
@@ -397,33 +409,33 @@ const AppointmentDashboard = () => {
                 </div>
               </div>
 
-           {/* Generate Report Button */}
-  <button
-    className="generate-report-btn"
-    onClick={generateReport}
-    disabled={selectedAppointment.status === "pending" || selectedAppointment.status === "rejected"}
-  >
-    Generate Report
-  </button>
-</div>
+              {/* Generate Report Button */}
+              <button
+                className="generate-report-btn"
+                onClick={generateReport}
+                disabled={selectedAppointment.status === "pending" || selectedAppointment.status === "rejected"}
+              >
+                Generate Report
+              </button>
+            </div>
 
-{/* Modal Footer */}
-<div className="modal-footer">
-  <button
-    className="btn update-btn"
-    onClick={handleUpdate}
-    disabled={selectedAppointment.status === "accepted" || selectedAppointment.status === "rejected"}
-  >
-    Save Changes
-  </button>
-  <button
-    className="btn delete-btn"
-    onClick={handleDelete}
-    disabled={selectedAppointment.status === "accepted" || selectedAppointment.status === "rejected"}
-  >
-    Delete
-  </button>
-</div>
+            {/* Modal Footer */}
+            <div className="modal-footer">
+              <button
+                className="btn update-btn"
+                onClick={handleUpdate}
+                disabled={selectedAppointment.status === "accepted" || selectedAppointment.status === "rejected"}
+              >
+                Save Changes
+              </button>
+              <button
+                className="btn delete-btn"
+                onClick={handleDelete}
+                disabled={selectedAppointment.status === "accepted" || selectedAppointment.status === "rejected"}
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}
