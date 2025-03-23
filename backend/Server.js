@@ -12,6 +12,9 @@ import productsRoutes from './routes/productsRoutes.js';
 import uploadRoutes from "./routes/uploadRoutes.js";
 import path from "path";
 import prebuildRoutes from "./routes/prebuildRoutes.js"; // ✅ Correct Import
+//order
+import orderRoutes from "./routes/OrderManagement/orderRoutes.js"
+import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js"
 
 dotenv.config();
 const app = express();
@@ -49,6 +52,9 @@ app.use("/api/ai", aiRoutes);
 app.use('/api/products', productsRoutes);
 app.use("/api", uploadRoutes);
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use("/api/orders", orderRoutes); // Order Routes
+app.use("/api/successorders", SuccessOrderRoutes); // SuccessOrder Routes
+
 
 // Handle preflight requests (OPTIONS)
 app.options("*", cors());

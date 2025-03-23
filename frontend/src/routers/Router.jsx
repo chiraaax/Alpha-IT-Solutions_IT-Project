@@ -32,6 +32,13 @@ import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail'; //
 import CreateCustomBuild from '../components/CustomBuilds/CreateCustomPreBuild';
 import CustomizeBuild from '../components/CustomBuilds/CustomizeBuild'; // ✅ New Import
 
+//order management
+import ShoppingCart from '../pages/OrderManagement/ShoppingCart';
+import CheckoutForm from '../components/OrderManagement/CheckoutForm';
+import PickupForm from '../components/OrderManagement/pickupForm';
+import CodForm from '../components/OrderManagement/CodForm';
+// import OrderList from '../components/OrderManagement/OrderList';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -62,6 +69,13 @@ const router = createBrowserRouter([
       { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },
       { path: 'create-custom-prebuild', element: <CreateCustomBuild /> },
       { path: 'customize-build/:id', element: <CustomizeBuild /> }, // ✅ New Route
+
+      //order routes
+      { path: 'ShoppingCart', element: <ProtectedRoute><ShoppingCart /></ProtectedRoute> },
+      { path: 'CheckoutForm', element: <ProtectedRoute><CheckoutForm /></ProtectedRoute> },
+      { path: 'CheckoutForm/:email', element: <ProtectedRoute><CheckoutForm /></ProtectedRoute> },
+      { path: 'PickupForm', element: <ProtectedRoute><PickupForm /></ProtectedRoute> },
+      { path: 'CodForm', element: <ProtectedRoute><CodForm /></ProtectedRoute> },
     ]
   },
 
