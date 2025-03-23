@@ -17,7 +17,7 @@ const preBuildSchema = new mongoose.Schema(
       required: true,
       min: 0, // Ensure price is non-negative
     },
-    cpu: {
+    processor: { // Changed from cpu
       type: String,
       required: true,
     },
@@ -33,17 +33,25 @@ const preBuildSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    psu: {
+    powerSupply: { // Changed from psu
       type: String,
       required: true,
     },
-    casing: {
+    casings: { // Changed from casing
       type: String,
       required: true,
     },
     description: {
       type: String,
       required: true,
+    },
+    compatibility: {
+      processor: { type: [String], default: [] },
+      gpu: { type: [String], default: [] },
+      ram: { type: [String], default: [] },
+      storage: { type: [String], default: [] },
+      powerSupply: { type: [String], default: [] },
+      casings: { type: [String], default: [] },
     },
   },
   {

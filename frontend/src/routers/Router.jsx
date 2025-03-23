@@ -59,6 +59,8 @@ const router = createBrowserRouter([
       { path: 'budget-builds', element: <BudgetBuilds /> },        
       { path: 'gaming-builds/:id', element: <GamingBuildDetail /> },
       { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },  
+      { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, 
+       // Updated route for your custom dashboard
       { path: 'ai-customize-build', element: <AICustomizeBuild /> }, 
       { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, // ✅ New Route
       { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, // Updated route for your custom dashboard
@@ -89,7 +91,7 @@ const router = createBrowserRouter([
       { path: 'manage-filters', element: <ProtectedRoute allowedRoles={["admin"]}><FilterForm /></ProtectedRoute> },
       { path: 'manage-filters-db', element: <ProtectedRoute allowedRoles={["admin"]}><FiltersList /></ProtectedRoute> },
       { path: 'create-custom-prebuild', element: <ProtectedRoute allowedRoles={["admin"]}><CreateCustomBuild /></ProtectedRoute> },
-      // { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, // Updated route for your custom dashboard
+      { path: 'prebuild-dashboard', element: <ProtectedRoute allowedRoles={["admin"]}><PreBuildDashboard /></ProtectedRoute>  },
     ]
   }
 ]);
