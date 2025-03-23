@@ -123,7 +123,7 @@ const FilterForm = ({ existingFilter }) => {
           </label>
           <input
             type="text"
-            placeholder="e.g., in stock, out of stock"
+            placeholder="e.g., in stock, out of stock, pre-order"
             value={availability.join(", ")}
             onChange={(e) =>
               setAvailability(e.target.value.split(",").map((v) => v.trim()))
@@ -138,7 +138,7 @@ const FilterForm = ({ existingFilter }) => {
           </label>
           <input
             type="text"
-            placeholder="e.g., CA, NY"
+            placeholder="e.g.,new , refurbished"
             value={stateValues.join(", ")}
             onChange={(e) =>
               setStateValues(e.target.value.split(",").map((v) => v.trim()))
@@ -167,13 +167,13 @@ const FilterForm = ({ existingFilter }) => {
             <div className="flex flex-col space-y-2">
               <input
                 type="text"
-                placeholder="New option key"
+                placeholder="eg: brand"
                 id="newKey"
                 className="w-full p-3 bg-gray-800 text-sky-100 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-sky-500"
               />
               <input
                 type="text"
-                placeholder="Values (comma separated)"
+                placeholder="msi, asus, acer"
                 id="newValue"
                 className="w-full p-3 bg-gray-800 text-sky-100 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-sky-500"
               />
