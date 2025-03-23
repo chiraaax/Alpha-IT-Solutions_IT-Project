@@ -23,6 +23,14 @@ const Register = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
 
+        if(password !== confirmPassword){
+            setError("Passwords do not match");
+            return;
+        }
+
+        try {
+            await axios.post('http://localhost:5000/api/auth/register', { name, email, password, contactNumber, address });
+
         setNameError('');
         setEmailError('');
         setPasswordError('');
@@ -80,7 +88,7 @@ const Register = () => {
             const response = await axios.post('http://localhost:5000/api/auth/register', { name, email, password, contactNumber, address });
             
             localStorage.setItem('email', email);
-
+        
             toast.success("Check your email for OTP verification!", { position: "top-right" });
             
             navigate('/verify-otp');

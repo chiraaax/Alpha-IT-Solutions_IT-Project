@@ -1,27 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import axios from "axios";
 import { Button, Input } from "./ui";
 import "../../styles/appointment.css";
+import { useAuth } from "../../context/authContext"; // Assuming you have an AuthContext for user authentication
 
 const timeSlots = ["09:00 AM", "10:00 AM", "11:00 AM", "02:00 PM", "03:00 PM", "04:00 PM"];
 
 export default function AppointmentDashboard() {
+  const { user } = useAuth(); // Get the logged-in user from your authentication context
   const [date, setDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(null);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    name: user ? user.name : "", // Pre-fill name if user is logged in
+    email: user ? user.email : "", // Pre-fill email if user is logged in
     phone: "",
     deviceType: "",
     issueDescription: "",
     contactMethod: "email",
-    problemType: "", // New field for problem type
-    pickupOrDropoff: "", // New field for pickup or dropoff
-    chipLevelRepair: false, // New field for chip-level repair
-    attemptedFixes: false, // New field for attempted fixes
-    backupData: false, // New field for data backup
+    problemType: "",
+    pickupOrDropoff: "",
+    chipLevelRepair: false,
+    attemptedFixes: false,
+    backupData: false,
   });
   const [isBooked, setIsBooked] = useState(false);
   const [phoneError, setPhoneError] = useState("");
@@ -35,17 +37,29 @@ export default function AppointmentDashboard() {
   const handleBooking = async () => {
     setPhoneError("");
     setBookingError("");
+
     if (!validatePhoneNumber(formData.phone)) {
       setPhoneError("Phone number must be exactly 10 digits.");
       return;
     }
+
     if (formData.name && formData.email && selectedTime) {
       try {
-        const response = await axios.post("http://localhost:5000/api/appointments", {
-          ...formData,
-          date: date.toISOString().split("T")[0],
-          timeSlot: selectedTime,
-        });
+        const token = localStorage.getItem("token"); // Assuming you store the JWT token in localStorage
+        const response = await axios.post(
+          "http://localhost:5000/api/appointments",
+          {
+            ...formData,
+            userId: user._id, // Associate the appointment with the logged-in user
+            date: date.toISOString().split("T")[0],
+            timeSlot: selectedTime,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Include the token in the request
+            },
+          }
+        );
 
         if (response.status === 201) {
           setIsBooked(true);
@@ -156,7 +170,7 @@ export default function AppointmentDashboard() {
             </select>
           </div>
 
-          {/* New Fields */}
+          {/* Additional Fields */}
           <div className="mb-4">
             <label className="block text-sm font-medium">
               Problem Type <span className="text-red-500">*</span>

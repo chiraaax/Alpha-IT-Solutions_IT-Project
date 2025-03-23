@@ -13,6 +13,9 @@ const navItems = [
   { path: '/dashboard/manage-filters', label: 'Manage Filters' },
   { path: '/dashboard/manage-filters-db', label: 'Manage Filters db' },
   { path: '/dashboard/create-custom-prebuild', label: 'Create Custom Prebuild' },
+  { path: '/dashboard/prebuild-dashboard', label: 'Manage Custom Prebuild' },
+  
+  
   { path: '/dashboard/InquiryManage', label: 'Inquiry Manage'},
   { path: '/dashboard/ReviewManage', label: 'Review Manage'},
   { path: '/dashboard/FAQManage', label: 'FAQ Manage'}
