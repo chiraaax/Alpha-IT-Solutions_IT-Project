@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from "react-toastify";
 import loginImage from "../../assets/login-5.jpg";
-import User from '../../../../backend/models/userModel';
 
 const Register = () => {
     const [name, setName] = useState('');
