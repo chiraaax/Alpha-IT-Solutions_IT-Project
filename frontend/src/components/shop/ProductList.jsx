@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 const ProductList = ({ products }) => {
   const dispatch = useDispatch();
 
+  // Function to handle adding a product to the cart
   const handleAddToCart = (product) => {
     dispatch({ type: 'ADD_TO_CART', payload: product });
   };
