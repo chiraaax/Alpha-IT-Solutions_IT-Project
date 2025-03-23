@@ -10,6 +10,7 @@ const FiltersList = () => {
   const [formData, setFormData] = useState({});
   // This state holds the options as an array of objects for easy editing.
   const [optionsList, setOptionsList] = useState([]);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,8 +31,6 @@ const FiltersList = () => {
       priceRange: filter.priceRange,
       availability: filter.availability,
       state: filter.state,
-      // We no longer use the textarea for options.
-      // options will be built from optionsList during submit.
     });
     // Convert filter.options (an object) to an array for dynamic editing.
     if (filter.options) {
@@ -75,26 +74,50 @@ const FiltersList = () => {
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate required fields
+    if (
+      !formData.category ||
+      !formData.priceRange ||
+      (formData.priceRange.min === undefined || formData.priceRange.min === null || formData.priceRange.min === '') ||
+      (formData.priceRange.max === undefined || formData.priceRange.max === null || formData.priceRange.max === '') ||
+      !formData.availability ||
+      formData.availability.length === 0 ||
+      !formData.state ||
+      formData.state.length === 0
+    ) {
+      alert("All fields are required.");
+      return;
+    }
+
+    // Validate price range
+    if (Number(formData.priceRange.min) < 0) {
+      alert("Minimum price cannot be less than 0.");
+      return;
+    }
+
+    // Convert optionsList array into an object where each key maps to an array of values.
+    const optionsObject = {};
+    optionsList.forEach(option => {
+      const key = option.key.trim();
+      if (key) {
+        optionsObject[key] = option.values.split(',')
+          .map(item => item.trim())
+          .filter(item => item);
+      }
+    });
+    
+    const updatedData = {
+      ...formData,
+      options: optionsObject
+    };
+
     try {
-      // Convert optionsList array into an object where each key maps to an array of values.
-      const optionsObject = {};
-      optionsList.forEach(option => {
-        const key = option.key.trim();
-        if (key) {
-          // Split comma-separated values and filter out any empty strings.
-          optionsObject[key] = option.values.split(',')
-            .map(item => item.trim())
-            .filter(item => item);
-        }
-      });
-      const updatedData = {
-        ...formData,
-        options: optionsObject
-      };
       const response = await axios.put(`http://localhost:5000/api/filters/${selectedFilter._id}`, updatedData);
       const updatedFilter = response.data;
       setFilters(filters.map(filter => filter._id === updatedFilter._id ? updatedFilter : filter));
-      closeEditModal();
+      // Show success popup on update
+      setShowSuccessPopup(true);
     } catch (err) {
       console.error(err);
     }
@@ -103,7 +126,20 @@ const FiltersList = () => {
   // Handlers for simple text changes in the main form
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    // For priceRange fields, update nested value accordingly.
+    if(name === 'priceMin') {
+      setFormData({ 
+        ...formData, 
+        priceRange: { ...formData.priceRange, min: Number(value) } 
+      });
+    } else if(name === 'priceMax') {
+      setFormData({ 
+        ...formData, 
+        priceRange: { ...formData.priceRange, max: Number(value) } 
+      });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   // Handlers for dynamic options list
@@ -122,9 +158,16 @@ const FiltersList = () => {
     setOptionsList(newOptionsList);
   };
 
+  const closeSuccessPopup = () => {
+    setShowSuccessPopup(false);
+    closeEditModal();
+    // Optionally, reload filters or navigate to a route:
+    fetchFilters();
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 p-8">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-100">
+      <h1 className="text-3xl font-bold mb-8 text-center text-blue-200">
         Filter Configurations
       </h1>
       <div className="space-y-6">
@@ -144,11 +187,24 @@ const FiltersList = () => {
             </p>
             {filter.options && (
               <div className="mb-4">
-                {Object.entries(filter.options).map(([key, values]) => (
-                  <div key={key} className="text-gray-300">
-                    <span className="font-semibold">{key}:</span> {values.join(', ')}
-                  </div>
-                ))}
+                <h4 className="text-lg text-gray-200 mb-2">Options:</h4>
+                <div className="space-y-2">
+                  {Object.entries(filter.options).map(([key, values]) => (
+                    <div key={key} className="p-2 bg-gray-700 rounded shadow-sm">
+                      <div className="text-gray-100 font-bold">{key}</div>
+                      <div className="flex flex-wrap mt-1">
+                        {values.map((value, i) => (
+                          <span
+                            key={i}
+                            className="mr-2 mb-1 px-2 py-1 bg-blue-600 text-white rounded-full text-sm"
+                          >
+                            {value}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
             <div className="flex space-x-4">
@@ -168,20 +224,12 @@ const FiltersList = () => {
           </div>
         ))}
       </div>
-      <div className="mt-8 text-center">
-        <button 
-          onClick={() => navigate('/add')}
-          className="px-6 py-3 bg-green-500 text-white font-bold rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400"
-        >
-          Add New Filter
-        </button>
-      </div>
 
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="absolute inset-0 bg-black opacity-50" onClick={closeEditModal}></div>
-          <div className="bg-gray-800 p-6 rounded shadow-md z-10 w-96 overflow-y-auto max-h-full">
+          <div className="absolute inset-0 bg-black opacity-95" onClick={closeEditModal}></div>
+          <div className="bg-gray-800 p-6 rounded shadow-md z-10 w-150 overflow-y-auto max-h-full">
             <h2 className="text-xl font-bold text-gray-100 mb-4">Edit Filter</h2>
             <form onSubmit={handleEditSubmit} className="space-y-4">
               <div>
@@ -191,6 +239,8 @@ const FiltersList = () => {
                   name="category"
                   value={formData.category || ''}
                   onChange={handleChange}
+                  placeholder="Enter category"
+                  required
                   className="w-full p-2 rounded bg-gray-700 text-gray-100"
                 />
               </div>
@@ -201,22 +251,18 @@ const FiltersList = () => {
                     type="number"
                     name="priceMin"
                     value={formData.priceRange?.min || ''}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      priceRange: { ...formData.priceRange, min: Number(e.target.value) }
-                    })}
-                    placeholder="Min"
+                    onChange={handleChange}
+                    placeholder="Min (0 or greater)"
+                    required
                     className="w-1/2 p-2 rounded bg-gray-700 text-gray-100"
                   />
                   <input
                     type="number"
                     name="priceMax"
                     value={formData.priceRange?.max || ''}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      priceRange: { ...formData.priceRange, max: Number(e.target.value) }
-                    })}
+                    onChange={handleChange}
                     placeholder="Max"
+                    required
                     className="w-1/2 p-2 rounded bg-gray-700 text-gray-100"
                   />
                 </div>
@@ -231,6 +277,8 @@ const FiltersList = () => {
                     ...formData,
                     availability: e.target.value.split(',').map(item => item.trim())
                   })}
+                  placeholder="e.g., in stock, out of stock"
+                  required
                   className="w-full p-2 rounded bg-gray-700 text-gray-100"
                 />
               </div>
@@ -244,6 +292,8 @@ const FiltersList = () => {
                     ...formData,
                     state: e.target.value.split(',').map(item => item.trim())
                   })}
+                  placeholder="e.g., CA, NY"
+                  required
                   className="w-full p-2 rounded bg-gray-700 text-gray-100"
                 />
               </div>
@@ -299,6 +349,23 @@ const FiltersList = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Success Popup Modal */}
+      {showSuccessPopup && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="absolute inset-0 bg-black opacity-50"></div>
+          <div className="bg-white p-6 rounded shadow-lg z-10 text-center">
+            <h3 className="text-xl font-bold mb-4">Filter Updated!</h3>
+            <p className="mb-6">Your filter has been successfully saved.</p>
+            <button
+              onClick={closeSuccessPopup}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              OK
+            </button>
           </div>
         </div>
       )}

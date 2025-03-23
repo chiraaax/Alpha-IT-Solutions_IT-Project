@@ -13,6 +13,10 @@ import uploadRoutes from "./routes/uploadRoutes.js";
 import path from "path";
 import prebuildRoutes from "./routes/prebuildRoutes.js"; 
 import filterRoutes from "./routes/filterRoutes.js";
+//order
+import orderRoutes from "./routes/OrderManagement/orderRoutes.js"
+import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js"
+
 
 dotenv.config();
 const app = express();
@@ -34,7 +38,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 // API Routes
-app.use("/api/appointments", appointmentRoutes);
+app.use('/api/appointments', appointmentRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", userRoutes);
 app.use("/api/faq", faqRoutes);
@@ -44,6 +48,10 @@ app.use("/api", uploadRoutes);
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/filters", filterRoutes);
 app.use("/api/prebuilds", prebuildRoutes);
+app.use("/api/orders", orderRoutes); // Order Routes
+app.use("/api/successorders", SuccessOrderRoutes); // SuccessOrder Routes
+
+app.use('/api/successorder', orderRoutes);
 
 // Home route
 app.get("/", (req, res) => {
