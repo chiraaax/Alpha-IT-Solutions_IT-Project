@@ -21,6 +21,7 @@ const userDropDownMenus = [
   { label: "Dashboard", path: "/dashboard" },
   { label: "Profile", path: "/dashboard/profile" },
   { label: "My Inquiries", path: "/dashboard/UserInquiries"},
+  { label: "My Reviews", path: "/dashboard/UserReviews"}
 ];
 
 const Navbar = () => {

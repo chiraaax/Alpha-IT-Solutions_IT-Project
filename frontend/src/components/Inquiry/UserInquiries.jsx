@@ -111,7 +111,7 @@ function UserInquiries() {
 
     {/* Inquiry Section */}
     <h2 className="text-4xl font-extrabold text-center text-blue-400 mb-4 tracking-wide">
-         Your Inquiries
+         My Inquiries
     </h2>
     <p className="text-lg text-center text-gray-300 opacity-80 mb-8">
         View and manage your submitted inquiries. You can update, delete, or track the status of each inquiry here.
@@ -135,7 +135,7 @@ function UserInquiries() {
                                     />
                                     <input
                                         type="text"
-                                        name="subject"
+                                        name="inquirySubject"
                                         value={updatedData.inquirySubject}
                                         onChange={handleUpdateChange}
                                         className="w-full border border-gray-600 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-blue-500"

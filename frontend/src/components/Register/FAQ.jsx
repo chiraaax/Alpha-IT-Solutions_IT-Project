@@ -79,7 +79,7 @@ function FAQ() {
             onClick={() => navigate('/InquiryForm')}
             className="bg-cyan-500 hover:bg-cyan-400 text-white font-bold py-3 px-10 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-110 pulse"
         >
-            Contact Us
+            Add An Inquiry
         </button>
         <button
             onClick={() => navigate('/ReviewForm')}

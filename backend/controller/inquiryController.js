@@ -105,7 +105,7 @@ export const submitInquiry = async (req, res) => {
             await sendEmail(email, 'Inquiry Submitted', htmlContent);
 
             res.status(201).json({ 
-                message: "Inquiry submitted successfully", 
+                message: "Inquiry submitted successfully and check your email", 
                 relatedFAQs,
                 inquiry: newInquiry // Send the inquiry details back for download
             });
@@ -141,13 +141,13 @@ export const downloadInquiry = async (req, res) => {
         doc.fontSize(12);
 
         const inquiryData = [
-            ["Full Name", inquiry.fullName],
-            ["Email", inquiry.email],
-            ["Contact Number", inquiry.contactNumber],
-            ["Inquiry Type", inquiry.inquiryType],
+            ["Full Name", inquiry.fullName || "N/A"],
+            ["Email", inquiry.email || "N/A"],
+            ["Contact Number", inquiry.contactNumber || "N/A"],
+            ["Inquiry Type", inquiry.inquiryType || "N/A"],
             ["Product Name", inquiry.productName || "N/A"],
             ["Inquiry Subject", inquiry.inquirySubject || "N/A"],
-            ["Additional Details", inquiry.additionalDetails],
+            ["Additional Details", inquiry.additionalDetails || "N/A"],
             ["User Approval", inquiry.userApproval ? "Yes" : "No"]
         ];
 
@@ -162,7 +162,6 @@ export const downloadInquiry = async (req, res) => {
         res.status(500).json({ message: "Error generating PDF", error: error.message });
     }
 };
-
 
 //Get user's inquiry
 export const getUserInquiries = async(req, res) => {
@@ -195,6 +194,7 @@ export const updateInquiry = async(req, res) => {
         }
 
         inquiry.additionalDetails = req.body.additionalDetails || inquiry.additionalDetails;
+        inquiry.inquirySubject = req.body.inquirySubject || inquiry.inquirySubject;
         await inquiry.save();
 
         res.status(200).json({message: "Inquiry updated successfully"});
@@ -222,7 +222,7 @@ export const deleteInquiry = async(req, res) => {
         }
 
         await inquiry.deleteOne();
-        res.status(200).json({message: "inquiry deleted successfully"});
+        res.status(200).json({message: "Inquiry deleted successfully"});
     }catch(error){
         res.status(500).json({message:"Error in deleting inquiry", error: error.message});
     }
@@ -233,7 +233,7 @@ export const getAllInquiries = async (req, res) => {
     try {
         const inquiries = await Inquiry.find()
             .populate('userId', 'fullName email')
-            .select('fullName email contactNumber productName additionalDetails inquiryType status attachment');
+            .select('fullName email contactNumber productName additionalDetails inquiryType status attachment userApproval');
 
         const categorizedInquiries = {
             General: inquiries.filter(inq => inq.inquiryType === 'General'),

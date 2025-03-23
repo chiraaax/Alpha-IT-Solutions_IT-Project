@@ -49,7 +49,11 @@ function ReviewManage() {
 
     return (
       <div className="max-w-full mx-auto p-8 bg-white rounded-xl shadow-lg border border-gray-200">
-      <h3 className="text-3xl font-bold mb-6 text-gray-800">All User Reviews</h3>
+      <h3 className="text-4xl font-extrabold mb-6 text-gray-800 uppercase tracking-wide text-center relative">
+        <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
+          🛠️ Review Management
+        </span>
+      </h3>
       {message && <p className="text-red-600 font-semibold text-lg">{message}</p>}
     
       {reviews.length === 0 ? (
@@ -59,16 +63,15 @@ function ReviewManage() {
           <table className="min-w-full bg-white border border-gray-300 shadow-md rounded-lg">
             <thead>
               <tr className="bg-gray-800 text-white text-left">
-                <th className="p-4 border">User ID</th>
-                <th className="p-4 border">Full Name</th>
-                <th className="p-4 border">Email</th>
-                <th className="p-4 border">Review Title</th>
-                <th className="p-4 border">Status</th>
-                <th className="p-4 border">Rating</th>
-                <th className="p-4 border">Comment</th>
-                <th className="p-4 border">Verified Buyer</th>
-                <th className="p-4 border">Created At</th>
-                <th className="p-4 border">Actions</th>
+                <th className="p-4 border w-2/12">Full Name</th>
+                <th className="p-4 border w-2/12">Email</th>
+                <th className="p-4 border w-2/12">Review Title</th>
+                <th className="p-4 border w-1/12">Status</th>
+                <th className="p-4 border w-1/12">Rating</th>
+                <th className="p-4 border w-3/12">Comment</th>
+                <th className="p-4 border w-1/12">Verified Buyer</th>
+                <th className="p-4 border w-1/12">Created At</th>
+                <th className="p-4 border w-1/12">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -79,26 +82,25 @@ function ReviewManage() {
                     review.status === "flagged" ? "bg-red-200" : ""
                   }`}
                 >
-                  <td className="p-4 border">{review.userId}</td>
-                  <td className="p-4 border font-medium">{review.fullName}</td>
-                  <td className="p-4 border text-gray-600">{review.email}</td>
-                  <td className="p-4 border">{review.reviewTitle}</td>
+                  <td className="p-4 border w-2/12 font-medium">{review.fullName}</td>
+                  <td className="p-4 border w-2/12 text-white-600">{review.email}</td>
+                  <td className="p-4 border w-2/12">{review.reviewTitle}</td>
                   <td
-                    className={`p-4 border font-semibold ${
+                    className={`p-4 border w-1/12 font-semibold ${
                       review.status === "approved" ? "text-green-600" : "text-red-600"
                     }`}
                   >
                     {review.status}
                   </td>
-                  <td className="p-4 border text-yellow-500">{renderStars(review.rating)}</td>
-                  <td className="p-4 border text-gray-700">{review.comment}</td>
-                  <td className="p-4 border font-semibold">
+                  <td className="p-4 border w-1/12 text-yellow-500">{renderStars(review.rating)}</td>
+                  <td className="p-4 border w-3/12 text-white-700">{review.comment}</td>
+                  <td className="p-4 border w-1/12 font-semibold">
                     {review.verifiedBuyer ? "Yes" : "No"}
                   </td>
-                  <td className="p-4 border text-gray-500">
+                  <td className="p-4 border w-1/12 text-white-500">
                     {new Date(review.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="p-4 border flex flex-wrap gap-2 justify-center">
+                  <td className="p-4 border w-12/12 flex flex-col items-center gap-4 py-20">
                     {review.status !== "flagged" ? (
                       <>
                         <button

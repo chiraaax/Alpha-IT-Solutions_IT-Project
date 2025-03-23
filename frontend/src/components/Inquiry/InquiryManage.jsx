@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; 
 
 function InquiryManage() {
     const [inquiries, setInquiries] = useState([]);
@@ -11,7 +9,8 @@ function InquiryManage() {
         Support: [],
     });
     const [loading, setLoading] = useState(false);
-    const [faqForm, setFaqForm] = useState({ id: null, answer: "" });
+    const [faqForm, setFaqForm] = useState({ id: null, answer: "", userApproval: false, });
+    const [message, setMessage] = useState({ type: "", text: "" }); 
 
     useEffect(() => {
         fetchInquiries();
@@ -27,8 +26,8 @@ function InquiryManage() {
             setInquiries(data.inquiries);
             setCategorizedInquiries(data.categorizedInquiries);
         } catch (error) {
+            setMessage({ type: "error", text: "Failed to fetch inquiries." });
             console.error("Fetch error:", error.response?.data || error.message);
-            toast.error("Failed to fetch inquiries.");
         }
     };
 
@@ -46,23 +45,21 @@ function InquiryManage() {
             setInquiries(inquiries.map(inquiry => 
                 inquiry._id === id ? { ...inquiry, status: "Resolved", resolvedAt: new Date() } : inquiry
             ));
+
+            setMessage({ type: "success", text: "Inquiry resolved successfully." });
             
         } catch (error) {
+            setMessage({ type: "error", text: "Failed to resolve inquiry." });
             console.error("Resolve error:", error.response?.data || error.message);
-            toast.error("Failed to resolve inquiry.");
         } finally {
             setLoading(false);
         }
     };
 
-    const handleAddToFAQ = async (id, userApproval) => {
-        if (!userApproval) {
-            toast.warning("User approval is required to add this inquiry to FAQ.");
-            return;
-        }
+    const handleAddToFAQ = async (id) => {
 
         if (!faqForm.answer.trim()) {
-            toast.error("Please enter an answer before submitting.");
+            setMessage({ type: "error", text: "Please enter an answer before submitting." });
             return;
         }
     
@@ -71,7 +68,7 @@ function InquiryManage() {
             const token = localStorage.getItem("token");
     
             const response = await axios.post(
-                (`http://localhost:5000/api/inquiries/add-to-faq/${id}`),  // ✅ Send ID as URL param
+                (`http://localhost:5000/api/inquiries/add-to-faq/${id}`),  //  Send ID as URL param
                 { userApproval: true, answer: faqForm.answer },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -79,14 +76,14 @@ function InquiryManage() {
             console.log(" API Response:", response.data);
     
             if (response.status === 201) {
-                toast.success("Inquiry added to FAQ successfully.");
+                setMessage({ type: "success", text: "Inquiry added to FAQ successfully." });
                 setFaqForm({ id: null, answer: "" }); 
             } else {
-                toast.error(response.data.message || "Failed to add inquiry to FAQ.");
+                setMessage({ type: "error", text: response.data.message || "Failed to add inquiry to FAQ." });
             }
         } catch (error) {
+            setMessage({ type: "error", text: error.response?.data?.message || "Failed to add inquiry to FAQ." });
             console.error(" API Error:", error.response?.data || error.message);
-            toast.error(error.response?.data?.message || "Failed to add inquiry to FAQ.");
         } finally {
             setLoading(false);
         }
@@ -102,11 +99,11 @@ function InquiryManage() {
 
             setInquiries(inquiries.filter(inquiry => inquiry._id !== id));
 
-            alert(response.data.message);
+            setMessage({ type: "success", text: response.data.message });
 
         } catch (error) {
+            setMessage({ type: "error", text: error.response?.data?.message || "Failed to delete inquiry." });
             console.error("Delete Inquiry Error:", error);
-            alert(error.response?.data?.message || "Failed to mark inquiry for deletion.");
         } finally {
             setLoading(false);
         }
@@ -114,10 +111,12 @@ function InquiryManage() {
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
-            <h2 className="text-4xl font-bold text-gray-800 mb-6 text-center">
-                🛠️ Admin Inquiry Management
-            </h2>
-
+        <MessageDisplay message={message} />
+            <h3 className="text-4xl font-extrabold mb-6 text-gray-800 uppercase tracking-wide text-center relative">
+                <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
+                    🛠️ Inquiry Management
+                </span>
+            </h3>
             {Object.keys(categorizedInquiries).map((category) => (
                 <div key={category} className="mb-8 p-6 bg-white shadow-lg rounded-2xl border border-gray-200">
                     <h3 className="text-2xl font-semibold mb-4 text-gray-700 border-b pb-2">
@@ -178,12 +177,21 @@ function InquiryManage() {
                                                             {loading ? "Deleting..." : "Delete"}
                                                         </button>
                                                         <button
-                                                            onClick={() => setFaqForm({ id: inquiry._id, answer: "" })}
-                                                            className="bg-green-500 text-white px-3 py-2 rounded-md hover:bg-green-600 transition flex items-center gap-1"
+                                                            onClick={() => {
+                                                                console.log("Checking User Approval:", inquiry.userApproval); 
+
+                                                                if (!inquiry.userApproval) {
+                                                                    alert("User approval is required to add this inquiry to FAQ.");
+                                                                    return;
+                                                                }
+                                                                console.log("✅ User Approval is TRUE, opening form...");
+                                                                setFaqForm({ id: inquiry._id, answer: "" });
+                                                            }}
+                                                            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
                                                         >
-                                                            ➕ Add to FAQ
+                                                             Add to FAQ
                                                         </button>
-                                                        {faqForm.id === inquiry._id && (
+                                                        {faqForm.id === inquiry._id && inquiry.userApproval === true && (
                                                             <div className="mt-2 flex flex-wrap gap-2">
                                                                 <input
                                                                     type="text"
@@ -193,7 +201,7 @@ function InquiryManage() {
                                                                     className="border p-2 rounded-lg w-full md:w-auto"
                                                                 />
                                                                 <button
-                                                                    onClick={() => handleAddToFAQ(inquiry._id, faqForm.answer)}
+                                                                    onClick={() => handleAddToFAQ(inquiry._id)} //  Pass actual value
                                                                     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all"
                                                                 >
                                                                     ✅ Submit
@@ -216,7 +224,17 @@ function InquiryManage() {
                 </div>
             ))}
         </div>
-  )
-}
+)};
+
+// Message Component
+const MessageDisplay = ({ message }) => {
+    if (!message.text) return null;
+
+    return (
+        <div className={`p-4 my-4 text-white rounded-lg ${message.type === "success" ? "bg-green-500" : "bg-red-500"}`}>
+            {message.text}
+        </div>
+    );
+};
 
 export default InquiryManage

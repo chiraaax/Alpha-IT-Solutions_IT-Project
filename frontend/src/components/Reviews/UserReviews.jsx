@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "../../context/authContext";
+import { FaEdit, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
 
 function UserReviews() {
     const { user, setUser } = useContext(AuthContext);
@@ -106,8 +107,8 @@ function UserReviews() {
 
   return (
     <div className="min-h-screen bg-gray-900 p-8">
-            <h3 className="text-4xl font-extrabold text-center text-white mb-4 tracking-wide">
-                Customer Reviews
+            <h3 className="text-4xl font-extrabold text-center text-blue-400 mb-4 tracking-wide">
+                My Reviews
             </h3>
             <p className="text-lg text-center text-gray-300 opacity-80 mb-8">
                 Share your experience! Edit or remove your reviews below.
@@ -199,10 +200,7 @@ function UserReviews() {
                                         </button>
                                         <button
                                             className="bg-red-500 text-white px-6 py-3 rounded-md flex items-center hover:bg-red-600"
-                                            onClick={() => {
-                                                setShowDeleteConfirm(true);
-                                                setDeleteReviewId(review._id);
-                                            }}
+                                            onClick={() => handleDeleteReview(review._id, review.createdAt)}
                                         >
                                             <FaTrash className="mr-2" /> Delete
                                         </button>
@@ -220,10 +218,7 @@ function UserReviews() {
                             <div className="mt-4 flex space-x-4">
                                 <button
                                     className="bg-red-500 text-white px-6 py-3 rounded-md hover:bg-red-600"
-                                    onClick={() => {
-                                        handleDeleteReview(deleteReviewId);
-                                        setShowDeleteConfirm(false);
-                                    }}
+                                    onClick={confirmDeleteReview}
                                 >
                                     Yes, Delete
                                 </button>

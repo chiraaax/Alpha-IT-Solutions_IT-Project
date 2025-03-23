@@ -4,15 +4,15 @@ import { AuthContext } from '../../context/authContext';
 
 const navItems = [
   { path: '/dashboard/admin', label: 'Dashboard' },
+  { path: '/dashboard/AdminProfile', label: 'Profile'},
+  { path: '/dashboard/UserManage', label: 'Users' },
   { path: '/dashboard/add-new-product', label: 'Add Product' },
   { path: '/dashboard/manage-products', label: 'Manage Products' },
   { path: '/dashboard/manage-inventory', label: 'Manage Products Inventory' },
-  { path: '/dashboard/users', label: 'Users' },
   { path: '/dashboard/manage-appointments', label: 'Manage Appointments' },
   { path: '/dashboard/manage-filters', label: 'Manage Filters' },
   { path: '/dashboard/manage-filters-db', label: 'Manage Filters db' },
   { path: '/dashboard/create-custom-prebuild', label: 'Create Custom Prebuild' },
-  { path: '/dashboard/UserManage', label: 'Users' },
   { path: '/dashboard/InquiryManage', label: 'Inquiry Manage'},
   { path: '/dashboard/ReviewManage', label: 'Review Manage'},
   { path: '/dashboard/FAQManage', label: 'FAQ Manage'}

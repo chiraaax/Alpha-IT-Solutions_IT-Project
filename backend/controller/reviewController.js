@@ -1,5 +1,6 @@
 import Review from "../models/reviewModel.js";
 import mongoose from "mongoose";
+import SuccessOrder from "../models/SuccessOrder.js";
 
 const inappropriateWords = [
   "useless", "garbage", "piece of crap", "scam", "fraud", "ripoff", "junk",
@@ -23,9 +24,9 @@ export const submitReview = async (req, res) => {
       console.log("Received review request:", { userId, rating, comment });
 
       // Check if the user has a completed order
-      const hasPurchased = await Order.findOne({ 
-        userId: userId.toString(),  // Convert userId to string before querying
-        status: "completed" 
+      const hasPurchased = await SuccessOrder.findOne({ 
+        customerId: userId.toString(),  // Convert userId to string before querying
+        status: "Approved" 
       });
       console.log("Has completed order:", hasPurchased);
 

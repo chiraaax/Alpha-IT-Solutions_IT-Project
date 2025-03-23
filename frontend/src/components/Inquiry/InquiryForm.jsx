@@ -152,7 +152,7 @@ const InquiryForm = () => {
         }
 
         try {
-            const response = await axios.get(`http://localhost:5000/api/inquiries/download/${submittedData._id}`, {
+            const response = await axios.get(`http://localhost:5000/api/inquiries/download/${submittedData._id}`,{
                 responseType: "blob",
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -214,7 +214,7 @@ const InquiryForm = () => {
 
                 <input type="text" name="contactNumber" placeholder="Contact Number" value={formData.contactNumber} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
 
-                <input type="text" name="productName" placeholder="Product Name (if applicable)" value={formData.productName} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
+                <input type="text" name="productName" placeholder="Product Name (if applicable)" value={formData.productName} onChange={handleChange} className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
 
                 <select name="inquiryType" value={formData.inquiryType} onChange={handleChange} className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500">
                     <option value="General">General</option>
@@ -222,7 +222,7 @@ const InquiryForm = () => {
                     <option value="Support">Support</option>
                 </select>
 
-                <input type="text" name="productName" placeholder="Subject" value={formData.inquirySubject} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
+                <input type="text" name="inquirySubject" placeholder="Subject" value={formData.inquirySubject} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
 
                 <textarea name="additionalDetails" placeholder="Additional Details" value={formData.additionalDetails} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500"></textarea>
 

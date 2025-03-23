@@ -75,8 +75,12 @@ const FAQManage = () => {
     };
 
     return (
-        <div className="max-w-full mx-auto p-8 bg-white rounded-xl shadow-lg border border-gray-200">
-  <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">FAQ Management</h2>
+    <div className="max-w-full mx-auto p-8 bg-white rounded-xl shadow-lg border border-gray-200">
+  <h3 className="text-4xl font-extrabold mb-6 text-gray-800 uppercase tracking-wide text-center relative">
+    <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
+      🛠️ FAQ Management
+    </span>
+  </h3>
 
   {/* Add FAQ Button */}
   <div className="flex justify-end mb-4">
