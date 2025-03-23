@@ -1,7 +1,14 @@
+//single product display page
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams  } from 'react-router-dom';
 import { FiArrowLeft, FiShoppingCart, FiCheckCircle, FiZoomIn, FiX } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
+
+// useParams(): Gets the productId from the URL.
+// useLocation(): Retrieves state passed from the previous page
+// useNavigate(): Allows navigation to previous pages.
+// useDispatch() and useSelector(): Interact with Redux store to manage the cart.
 
 const ProductDetails = () => {
   const { productId } = useParams();
@@ -17,14 +24,14 @@ const ProductDetails = () => {
     return cartItems.some(item => item._id === product?._id);
   };
 
-  // Prefer product data from location.state if available, otherwise initialize as null
+  // Fetches product from location.state if available, otherwise initializes as null.
   const [product, setProduct] = useState(location.state?.product || null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(!product);
   // State for showing confirmation messages
   const [message, setMessage] = useState('');
 
-  // Fetch product data from backend if not provided via location.state
+  // If the product data is not available in location.state, it fetches it from the API.
   useEffect(() => {
     const fetchProduct = async () => {
       try {
