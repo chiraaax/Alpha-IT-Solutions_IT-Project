@@ -13,6 +13,7 @@ import uploadRoutes from "./routes/uploadRoutes.js";
 import path from "path";
 import prebuildRoutes from "./routes/prebuildRoutes.js"; 
 import filterRoutes from "./routes/filterRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -44,6 +45,7 @@ app.use("/api", uploadRoutes);
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/filters", filterRoutes);
 app.use("/api/prebuilds", prebuildRoutes);
+app.use('/api/successorder', orderRoutes);
 
 // Home route
 app.get("/", (req, res) => {

@@ -1,6 +1,8 @@
+// InventoryTable.jsx
 import { useState, useEffect } from "react";
 import axios from "axios";
 import InventoryProductModal from "./InventoryManagement";
+import NotificationBell from "./NotificationBell";
 
 const InventoryTable = () => {
   const [products, setProducts] = useState([]);
@@ -28,6 +30,38 @@ const InventoryTable = () => {
     }
   };
 
+  // Function to simulate a successful order.
+  const simulateOrder = async () => {
+    // For the purpose of testing, we’ll pick the first product.
+    if (!products.length) return;
+    const product = products[0];
+
+    try {
+      // Call your backend endpoint to create a success order.
+      const response = await axios.post("http://localhost:5000/api/successorder", {
+        orderId: "ORDER123", // sample orderId
+        products: [
+          { productId: product._id, quantity: 1 }
+        ]
+      });
+      if (response.status === 200) {
+        // Update the products list by decreasing the stock count.
+        setProducts((prev) =>
+          prev.map((p) => {
+            if (p._id === product._id) {
+              const newStock = (p.stockCount || 10) - 1;
+              return { ...p, stockCount: newStock };
+            }
+            return p;
+          })
+        );
+      }
+    } catch (error) {
+      console.error("Error simulating order:", error);
+      alert("Error simulating order. Check console for details.");
+    }
+  };
+
   // Filter products based on selected category.
   const filteredProducts = filterCategory
     ? products.filter((p) => p.category === filterCategory)
@@ -35,7 +69,10 @@ const InventoryTable = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Product Inventory Table</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Product Inventory Table</h2>
+        <NotificationBell products={products} />
+      </div>
       
       {/* Category Filter */}
       <div className="mb-4">
@@ -81,9 +118,7 @@ const InventoryTable = () => {
               // Calculate customer-visible stock.
               const displayedStock = Math.floor((product.stockCount || 10) / 2);
               
-              // Calculate discount price:
-              // 1. Compute the discount price either from the provided discountPrice or via calculation.
-              // 2. If the computed discount price equals the product price, set it to 0.
+              // Calculate discount price.
               const computedDiscountPrice = product.discountPrice
                 ? product.discountPrice
                 : product.price - (product.price * (product.discount || 0)) / 100;
@@ -100,14 +135,21 @@ const InventoryTable = () => {
                   <td className="border p-2">{product.discount || 0}</td>
                   <td className="border p-2">{discountPrice}</td>
                   <td className="border p-2">{product.stockCount || 10}</td>
-                  <td className="border p-2">1</td>
+                  <td className="border p-2">{product.threshold || 1}</td>
                   <td className="border p-2">{displayedStock}</td>
-                  <td className="border p-2">
+                  <td className="border p-2 space-y-2">
                     <button
                       onClick={() => setSelectedProduct(product)}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-md"
+                      className="w-full px-4 py-2 bg-blue-600 text-white rounded-md"
                     >
                       Edit
+                    </button>
+                    {/* Button to simulate an order */}
+                    <button
+                      onClick={simulateOrder}
+                      className="w-full px-4 py-2 bg-green-600 text-white rounded-md"
+                    >
+                      Simulate Order
                     </button>
                   </td>
                 </tr>

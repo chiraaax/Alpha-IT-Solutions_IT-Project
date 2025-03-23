@@ -1,86 +1,104 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
-// import { useNavigate } from "react-router-dom";
 
 const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
-  // Use product.productFields if needed
   const productTypeFields = product.productFields || [];
 
-  // Set up state – note that description is now read-only.
+  // Read-only fields.
   const [_id] = useState(product._id);
   const [description] = useState(product.description);
   const [price] = useState(product.price);
+
+  // Editable fields.
   const [discount, setDiscount] = useState(product.discount || 0);
   const [discountPrice, setDiscountPrice] = useState(
     product.discountPrice || product.price
   );
   const [stockCount, setStockCount] = useState(product.stockCount || 10);
-  // Threshold is set to a constant value of 1.
-  const threshold = 1;
+
+  // Notification threshold: when stockCount is 3 or less, trigger notification.
+  const notificationThreshold = 3;
   const [isLoading, setIsLoading] = useState(false);
   const [adminNotification, setAdminNotification] = useState("");
 
-  // Uncomment if navigation is needed
-  // const navigate = useNavigate();
+  // Helper: compute customer-visible stock.
+  // Even if stockCount is low, displayed stock never shows zero.
+  const getDisplayedStock = (stock) => Math.max(Math.floor(stock / 2), 1);
 
-  // Whenever price or discount change, recalc discountPrice automatically.
+  // Whenever price or discount changes, recalc discountPrice.
   useEffect(() => {
     const discPrice = price - (price * discount) / 100;
     setDiscountPrice(Number(discPrice.toFixed(2)));
   }, [price, discount]);
 
-  // Calculate what the customer sees – only half the actual stock.
-  const displayedStock = Math.floor(stockCount / 2);
+  // Computed displayed stock.
+  const computedDisplayedStock = getDisplayedStock(stockCount);
 
-  // Handle a simulated order: decrease stock by 1 if above the threshold.
-  const handleOrder = () => {
-    // Check if decreasing stock would make customer-visible stock equal to or below the threshold.
-    if (stockCount > 1) {
-      const newStock = stockCount - 1;
-      setStockCount(newStock);
-      // Calculate new displayed stock value.
-      const newDisplayedStock = Math.floor(newStock / 2);
-      if (newDisplayedStock <= threshold) {
-        setAdminNotification(
-          "🔔 Low Stock Alert: Customer stock has reached the threshold level."
-        );
-      }
+  // Trigger admin notification if stockCount is 3 or less.
+  const checkNotification = (newStock) => {
+    if (newStock <= notificationThreshold) {
+      setAdminNotification("🔔 Low Stock Alert: Stock count is 3 or less.");
     } else {
-      alert("Cannot reduce stock below the threshold level.");
+      setAdminNotification("");
     }
   };
 
-  // Save changes (update product inventory on the backend using PATCH)
+  // Handle a simulated order: decrease stock by 1 and check notification.
+  const handleOrder = () => {
+    if (stockCount > 1) {
+      const newStock = stockCount - 1;
+      setStockCount(newStock);
+      checkNotification(newStock);
+    } else {
+      alert("Cannot reduce stock below the minimum allowed value.");
+    }
+  };
+
+  // Increment and decrement handlers.
+  const incrementStock = () => {
+    const newStock = stockCount + 1;
+    setStockCount(newStock);
+    checkNotification(newStock);
+  };
+
+  const decrementStock = () => {
+    if (stockCount > 1) {
+      const newStock = stockCount - 1;
+      setStockCount(newStock);
+      checkNotification(newStock);
+    } else {
+      alert("Stock cannot be reduced further.");
+    }
+  };
+
+  // Save changes: update product inventory on the backend.
   const handleSave = async (e) => {
-    e.preventDefault(); // Prevent default form submission.
+    e.preventDefault();
     setIsLoading(true);
     try {
-      // Prepare payload with fields to update.
       const updateProduct = {
         discount,
         discountPrice,
         stockCount,
-        threshold, // Always 1.
-        displayedStock, // Calculated from stockCount.user sees half of actual stock.
+        // The API can store the threshold for internal reference if needed.
+        notificationThreshold,
+        displayedStock: getDisplayedStock(stockCount),
       };
 
-      // PATCH request to update the product inventory based on its _id.
       const response = await axios.patch(
-        `http://localhost:5000/api/products/${_id}`,
+        `http://localhost:5000/api/products/${_id}/inventory`,
         updateProduct
       );
+
       if (response.status === 200) {
         alert("Product inventory updated successfully!");
-        // Only call onProductUpdated if it is a function.
         if (typeof onProductUpdated === "function") {
           onProductUpdated(response.data);
         } else {
           console.warn("onProductUpdated is not a function.");
         }
         onClose();
-        // If you need navigation, you could uncomment the next line:
-        // navigate("/dashboard");
       }
     } catch (error) {
       console.error("❌ Error updating product:", error.message);
@@ -106,7 +124,7 @@ const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
           </div>
         )}
 
-        {/* Read-only product ID */}
+        {/* Read-only Product ID */}
         <div className="mb-4">
           <label className="block text-lg font-medium text-gray-700">
             Product ID:
@@ -131,7 +149,7 @@ const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
           />
         </div>
 
-        {/* Price */}
+        {/* Price (Read-only) */}
         <div className="mb-4">
           <label className="block text-lg font-medium text-gray-700">
             Price:
@@ -157,7 +175,7 @@ const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
           />
         </div>
 
-        {/* Calculated Discount Price */}
+        {/* Calculated Discount Price (Read-only) */}
         <div className="mb-4">
           <label className="block text-lg font-medium text-gray-700">
             Discount Price:
@@ -170,48 +188,67 @@ const InventoryProductModal = ({ product, onClose, onProductUpdated }) => {
           />
         </div>
 
-        {/* Stock Count */}
+        {/* Stock Count with Plus/Minus Buttons */}
         <div className="mb-4">
           <label className="block text-lg font-medium text-gray-700">
             Stock Count:
           </label>
-          <input
-            type="number"
-            value={stockCount}
-            onChange={(e) => setStockCount(Number(e.target.value))}
-            className="w-full p-2 border rounded-md"
-          />
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={decrementStock}
+              className="px-2 py-1 bg-red-600 text-white rounded-md"
+              disabled={stockCount <= 1}
+            >
+              -
+            </button>
+            <input
+              type="number"
+              value={stockCount}
+              onChange={(e) => {
+                const newVal = Number(e.target.value);
+                setStockCount(newVal);
+                checkNotification(newVal);
+              }}
+              className="w-20 p-2 border rounded-md text-center"
+            />
+            <button
+              onClick={incrementStock}
+              className="px-2 py-1 bg-green-600 text-white rounded-md"
+            >
+              +
+            </button>
+          </div>
         </div>
 
-        {/* Fixed Threshold (read-only) */}
+        {/* Notification Threshold Info (Read-only) */}
         <div className="mb-4">
           <label className="block text-lg font-medium text-gray-700">
-            Stock Threshold:
+            Notification Threshold:
           </label>
           <input
             type="number"
-            value={threshold}
+            value={notificationThreshold}
             readOnly
             className="w-full p-2 border rounded-md bg-gray-200"
           />
           <small className="text-gray-500">
-            Threshold is fixed at 1. When customer-visible stock reaches 1, an alert is triggered.
+            A low-stock alert is triggered when stock count is 3 or less.
           </small>
         </div>
 
-        {/* Displayed Stock */}
+        {/* Displayed Stock (Customer View - Read-only) */}
         <div className="mb-4">
           <label className="block text-lg font-medium text-gray-700">
             Stock (Customer View):
           </label>
           <input
             type="number"
-            value={displayedStock}
+            value={computedDisplayedStock}
             readOnly
             className="w-full p-2 border rounded-md bg-gray-200"
           />
           <small className="text-gray-500">
-            Displayed stock is half of the actual available stock.
+            Displayed stock is half of the actual available stock (minimum 1).
           </small>
         </div>
 
