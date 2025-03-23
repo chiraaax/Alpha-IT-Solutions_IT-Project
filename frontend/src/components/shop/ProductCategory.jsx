@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import qs from "qs";
 import ProductList from "./ProductList";
+import { FiLoader } from "react-icons/fi";
 
 const ProductCategory = () => {
   const { category } = useParams();
@@ -12,6 +13,14 @@ const ProductCategory = () => {
   const [categoryFilters, setCategoryFilters] = useState({});
   const [loadingFilters, setLoadingFilters] = useState(false);
   const [filtersError, setFiltersError] = useState(null);
+
+  // States related to products
+  const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [productsError, setProductsError] = useState(null);
+  
+  // Loader helper state for delayed icon display (1.5 seconds)
+  const [showLoader, setShowLoader] = useState(false);
 
   // Fetch filter configuration from the database based on the category.
   useEffect(() => {
@@ -34,6 +43,20 @@ const ProductCategory = () => {
     fetchCategoryFilters();
   }, [category]);
 
+  // Set a 1.5 seconds delay before showing the loading spinner icon
+  // This avoids flickering when products load very quickly.
+  useEffect(() => {
+    let timer;
+    if (loadingProducts) {
+      timer = setTimeout(() => {
+        setShowLoader(true);
+      },99900000099999999999999999999);
+    } else {
+      setShowLoader(false);
+    }
+    return () => clearTimeout(timer);
+  }, [loadingProducts]);
+
   // Compute the initial price range from the fetched configuration.
   const initialPriceRange = useMemo(() => {
     return categoryFilters.priceRange
@@ -43,10 +66,6 @@ const ProductCategory = () => {
 
   const [priceRange, setPriceRange] = useState(initialPriceRange);
   const [selectedFilters, setSelectedFilters] = useState({});
-  const [products, setProducts] = useState([]);
-  const [loadingProducts, setLoadingProducts] = useState(false);
-  const [productsError, setProductsError] = useState(null);
-
   const [page, setPage] = useState(1);
   const limit = 12; // 12 products per page
   const [totalPages, setTotalPages] = useState(1);
@@ -71,13 +90,17 @@ const ProductCategory = () => {
         ),
       };
 
-      console.log("Serialized Params:", qs.stringify(params, { arrayFormat: "repeat" }));
+      console.log(
+        "Serialized Params:",
+        qs.stringify(params, { arrayFormat: "repeat" })
+      );
       console.log("Final API Request Params:", params);
 
       try {
         const response = await axios.get(`http://localhost:5000/api/products`, {
           params,
-          paramsSerializer: (params) => qs.stringify(params, { arrayFormat: "repeat" }),
+          paramsSerializer: (params) =>
+            qs.stringify(params, { arrayFormat: "repeat" }),
         });
 
         console.log("API Response:", response.data);
@@ -100,7 +123,7 @@ const ProductCategory = () => {
       }
     };
 
-    // Only fetch products if the filter configuration has been loaded.
+    // Only fetch products if filter configuration is loaded.
     if (!loadingFilters) {
       fetchProducts();
     }
@@ -118,7 +141,7 @@ const ProductCategory = () => {
     setPage(1);
   }, [priceRange, selectedFilters]);
 
-  // Scroll to top whenever filters change.
+  // Scroll to the top whenever the filters change.
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [selectedFilters, priceRange]);
@@ -274,9 +297,11 @@ const ProductCategory = () => {
 
           {/* Product Cards Section */}
           <div className="md:w-3/4">
-            {loadingProducts && (
-              <p className="text-white">Loading products...</p>
-            )}
+            {loadingProducts && showLoader && (
+            <div className="flex justify-center items-center py-4">
+              <FiLoader className="text-white animate-spin text-3xl" />
+            </div>
+          )}
             {productsError && (
               <p className="text-red-500">{productsError}</p>
             )}

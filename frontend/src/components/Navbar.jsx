@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MdSearch, MdShoppingCart, MdAccountCircle } from 'react-icons/md';
-import { FaSun, FaMoon } from 'react-icons/fa';  // Import Sun and Moon icons for theme toggle
+import { FaSun, FaMoon } from 'react-icons/fa';
 import logo from '../assets/AlphaITSolutionsLogo.jpg';
 import { AuthContext } from '../context/authContext';
-import { useTheme } from './CustomBuilds/ThemeContext';  // Import the useTheme hook
+import { useTheme } from './CustomBuilds/ThemeContext';
+import { useDispatch } from 'react-redux';
+import { persistor } from '../redux/store';
 
 const adminDropDownMenus = [
   { label: "Dashboard", path: "/dashboard/admin" },
@@ -27,14 +29,11 @@ const Navbar = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
   const navigate = useNavigate();
-
-  // Access user and logout from AuthContext
   const { user, logout } = useContext(AuthContext);
+  const { isDark, toggleTheme } = useTheme();
+  const dispatch = useDispatch();
 
-  // Access the theme context
-  const { isDark, toggleTheme } = useTheme();  // Retrieve the theme state and toggle function
-
-  // Set dropdown menus based on the logged-in user's role
+  // Choose dropdown menus based on user role.
   const dropDownMenus =
     user && user.role === 'admin' ? adminDropDownMenus : user ? userDropDownMenus : [];
 
@@ -53,16 +52,22 @@ const Navbar = () => {
   }, [lastScrollY]);
 
   const handleDropDownToggle = () => {
-    setIsDropDownOpen(prev => !prev);
+    setIsDropDownOpen((prev) => !prev);
   };
 
   const handleLogout = () => {
+    // Clear the cart by dispatching a CLEAR_CART action.
+    dispatch({ type: 'CLEAR_CART' });
+    // Purge persisted Redux state.
+    persistor.purge();
+    // Call the logout function from AuthContext.
     if (logout) {
       logout();
     } else {
       console.log('Logging out...');
     }
     setIsDropDownOpen(false);
+    // Redirect the user to the login page.
     navigate('/login');
   };
 
@@ -82,6 +87,19 @@ const Navbar = () => {
     />
   </div>
 
+        <div className='nav__logo pr-80'>
+          <Link to="/">
+            <span>A</span>LPHA <span>I</span>T <span>S</span>OLUTIONS
+          </Link>
+        </div>
+
+        <ul className='nav__links flex gap-6'>
+          <li className='link'><Link to="/about">About</Link></li>
+          <li className='link'><Link to="/appointment">Services</Link></li>
+          <li className='link'><Link to="/custom-prebuilds">Custom Pre-Builds</Link></li>
+          <li className='link'><Link to="/">Reviews</Link></li>
+          <li className='link'><Link to="/contact">Contact</Link></li>
+        </ul>
   {/* Brand Name - Reduced padding */}
   <div className='nav__logo pr-8 pt-6'>  {/* Changed from pr-80 to pr-8 */}
     <Link to="/" className="text-xl font-semibold whitespace-nowrap">
@@ -103,15 +121,15 @@ const Navbar = () => {
           <Link to="/search">
             <MdSearch size={24} />
           </Link>
-          
+
           {/* Cart Icon */}
-          <Link to="/cart" className="relative">
+          <Link to="/shoppingCart" className="relative">
             <MdShoppingCart size={24} />
             <sup className='absolute -top-2 -right-2 text-xs inline-block px-1.5 text-white rounded-full bg-primary'>
               {/* Optionally show the number of products */}
             </sup>
           </Link>
-          
+
           {/* User Dropdown */}
           {user ? (
             <span className="relative">
@@ -144,8 +162,8 @@ const Navbar = () => {
                           border: "none",
                           cursor: "pointer",
                         }}
-                        onMouseOver={(e) => e.target.style.transform = "scale(1.05)"}
-                        onMouseOut={(e) => e.target.style.transform = "scale(1)"}
+                        onMouseOver={(e) => (e.target.style.transform = "scale(1.05)")}
+                        onMouseOut={(e) => (e.target.style.transform = "scale(1)")}
                       >
                         Logout
                       </button>
@@ -164,9 +182,9 @@ const Navbar = () => {
           <button
             className="theme-toggle-btn"
             onClick={toggleTheme}
-            style={{ position: "absolute", left: "170px" }} // Positioned at the top right
+            style={{ position: "absolute", left: "170px" }}
           >
-            {isDark ? <FaMoon size={22} /> : <FaSun size={24} />} {/* Toggle between Sun and Moon icons */}
+            {isDark ? <FaMoon size={22} /> : <FaSun size={24} />}
           </button>
         </div>
       </nav>
