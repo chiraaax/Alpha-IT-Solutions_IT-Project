@@ -16,14 +16,14 @@ function UserReviews() {
 
     useEffect(() => {
         const fetchUserReviews = async () => {
-            try{
+            try {
                 const token = localStorage.getItem("token");
                 const response = await axios.get("http://localhost:5000/api/reviews/user-review", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 console.log("Fetched reviews:", response.data); 
                 setReviews(response.data);
-            }catch(error){
+            } catch (error) {
                 console.error("Error fetching reviews:", error);
             }
         };
@@ -39,7 +39,7 @@ function UserReviews() {
         }
 
         if (!updatedRating || !updatedComment || !updatedTitle) {
-            setMessage("Rating and comment cannot be empty.");
+            setMessage("Rating, title, and comment cannot be empty.");
             return;
         }
 
@@ -47,7 +47,7 @@ function UserReviews() {
             const token = localStorage.getItem("token");
             await axios.put(
                 `http://localhost:5000/api/reviews/update/${reviewId}`,
-                { rating: updatedRating, comment: updatedComment, reviewTitle: updatedTitle},
+                { rating: updatedRating, comment: updatedComment, reviewTitle: updatedTitle },
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -69,7 +69,6 @@ function UserReviews() {
         }
     };
 
-    // Handle Delete Review
     const handleDeleteReview = async (reviewId, createdAt) => {
         const timeElapsed = (Date.now() - new Date(createdAt)) / (1000 * 60 * 60);
         if (timeElapsed > 24) {
@@ -81,7 +80,6 @@ function UserReviews() {
         setShowDeleteConfirm(true);
     };
 
-    // Confirm Delete Review
     const confirmDeleteReview = async () => {
         const token = localStorage.getItem("token");
     
@@ -90,23 +88,22 @@ function UserReviews() {
                 headers: { Authorization: `Bearer ${token}` },
             });
     
-            console.log("Review deleted successfully"); // Debugging
+            console.log("Review deleted successfully");
             setMessage("Review deleted successfully.");
             setReviews(reviews.filter((review) => review._id !== selectedReviewId));
         } catch (error) {
-            console.error("Error deleting review:", error.response?.data?.message || error); // Debugging
+            console.error("Error deleting review:", error.response?.data?.message || error);
             setMessage(error.response?.data?.message || "Failed to delete review.");
         }
         setShowDeleteConfirm(false);
     };
     
-    // Function to generate stars based on rating
     const renderStars = (rating) => {
         return "★".repeat(rating) + "☆".repeat(5 - rating);
     };
 
-  return (
-    <div className="min-h-screen bg-gray-900 p-8">
+    return (
+        <div className="min-h-screen bg-gray-900 p-8">
             <h3 className="text-4xl font-extrabold text-center text-blue-400 mb-4 tracking-wide">
                 My Reviews
             </h3>
@@ -234,7 +231,7 @@ function UserReviews() {
                 )}
             </div>
         </div>
-  );
+    );
 }
 
 export default UserReviews;

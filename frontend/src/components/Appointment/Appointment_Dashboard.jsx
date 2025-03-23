@@ -48,7 +48,7 @@ const AppointmentDashboard = () => {
   const handleRowClick = (appointment) => {
     setSelectedAppointment(appointment);
     setIsModalOpen(true);
-    setCurrentStage(-1); // Reset progress to empty when opening modal
+    setCurrentStage(appointment.progress || -1); // Reset progress to empty when opening modal
   };
 
   // Handle input change in modal
@@ -370,6 +370,29 @@ const AppointmentDashboard = () => {
               <label>Backup Data:</label>
               <input type="checkbox" name="backupData" checked={selectedAppointment.backupData} onChange={(e) => setSelectedAppointment({ ...selectedAppointment, backupData: e.target.checked })} />
 
+              {/* Display Status and Rejection Reason */}
+              <div className="status-info">
+                <p>
+                  <strong>Status:</strong>{" "}
+                  <span
+                    className={
+                      selectedAppointment.status === "accepted"
+                        ? "status-accepted"
+                        : selectedAppointment.status === "rejected"
+                        ? "status-rejected"
+                        : "status-pending"
+                    }
+                  >
+                    {selectedAppointment.status}
+                  </span>
+                </p>
+                {selectedAppointment.status === "rejected" && (
+                  <p>
+                    <strong>Reason for Rejection:</strong> {selectedAppointment.rejectionReason}
+                  </p>
+                )}
+              </div>
+
               {/* Progress Bar */}
               <div className="progress-bar">
                 <h3>Progress</h3>
@@ -410,19 +433,6 @@ const AppointmentDashboard = () => {
                 onClick={handleDelete}
                 disabled={selectedAppointment.status === "accepted" || selectedAppointment.status === "rejected"}
               >
-                Delete
-              </button>
-            </div>
-              {/* Generate Report Button */}
-              <button className="generate-report-btn" onClick={generateReport}>
-                Generate Report
-              </button>
-            </div>
-            <div className="modal-footer">
-              <button className="btn update-btn" onClick={handleUpdate}>
-                Save Changes
-              </button>
-              <button className="btn delete-btn" onClick={handleDelete}>
                 Delete
               </button>
             </div>
