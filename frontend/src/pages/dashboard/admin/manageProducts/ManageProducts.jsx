@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { FaPlus, FaBoxes } from "react-icons/fa";
 import EditProductModal from "./EditProductModal";
 import InventoryManagement from "../inventoryManagement/InventoryManagement";
-
 
 const ManageProducts = () => {
   const navigate = useNavigate();
@@ -12,6 +12,7 @@ const ManageProducts = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedProductForEdit, setSelectedProductForEdit] = useState(null);
   const [selectedProductForInventory, setSelectedProductForInventory] = useState(null);
+  const [deleteProductId, setDeleteProductId] = useState(null); // For delete confirmation popup
 
   useEffect(() => {
     fetchProducts();
@@ -31,12 +32,16 @@ const ManageProducts = () => {
     }
   };
 
-  const handleDelete = async (productId) => {
+  // Called when user confirms deletion in the popup
+  const confirmDelete = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/products/${productId}`);
+      await axios.delete(`http://localhost:5000/api/products/${deleteProductId}`);
       fetchProducts();
     } catch (error) {
       console.error("Error deleting product:", error);
+      window.alert("Error deleting product.");
+    } finally {
+      setDeleteProductId(null);
     }
   };
 
@@ -89,7 +94,6 @@ const ManageProducts = () => {
         />
       )}
 
-      {/* Render Inventory Management Modal */}
       {selectedProductForInventory && (
         <InventoryManagement
           product={selectedProductForInventory}
@@ -104,8 +108,87 @@ const ManageProducts = () => {
         />
       )}
 
+      {/* Delete confirmation popup */}
+      {deleteProductId && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              background: "white",
+              padding: "20px",
+              borderRadius: "8px",
+              textAlign: "center",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.26)",
+              width: "300px",
+            }}
+          >
+            <p style={{ marginBottom: "20px" }}>
+              Are you sure you want to delete this product?
+            </p>
+            <div style={{ display: "flex", justifyContent: "space-around" }}>
+              <button
+                onClick={() => setDeleteProductId(null)}
+                style={{
+                  padding: "8px 16px",
+                  backgroundColor: "#a0aec0",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                style={{
+                  padding: "8px 16px",
+                  backgroundColor: "#e53e3e",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                Ok
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="min-h-screen bg-gray-50 py-12 px-6">
-        <h2 className="text-4xl font-bold text-center text-gray-800 mb-10">
+        {/* Navigation Buttons */}
+        <div className="flex justify-end mb-6 space-x-4">
+          <button
+            onClick={() => navigate("/dashboard/add-new-product")}
+            className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-500"
+          >
+            <FaPlus className="mr-2" />
+            Add New Product
+          </button>
+          <button
+            onClick={() => navigate("/dashboard/manage-inventory")}
+            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500"
+          >
+            <FaBoxes className="mr-2" />
+            Manage Inventory
+          </button>
+        </div>
+
+        <h2 className="text-4xl font-bold text-center text-blue-800 mb-10">
           Manage Products
         </h2>
         <div className="max-w-7xl mx-auto bg-white shadow-xl rounded-lg p-8">
@@ -173,7 +256,7 @@ const ManageProducts = () => {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDelete(product._id)}
+                          onClick={() => setDeleteProductId(product._id)}
                           className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500"
                         >
                           Delete

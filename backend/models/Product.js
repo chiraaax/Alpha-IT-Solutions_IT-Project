@@ -18,9 +18,9 @@ const productSchema = new Schema({
       return this.price;
     } 
   },
-  stockCount: { type: Number, default: 10 },
-  threshold: { type: Number, default: 1 },
-  displayedStock: { type: Number, default: 5 },
+  stockCount: { type: Number, default: 20 },
+  threshold: { type: Number, default: 3 },
+  displayedStock: { type: Number, default: 10 },
 
   // Existing fields
   availability: {

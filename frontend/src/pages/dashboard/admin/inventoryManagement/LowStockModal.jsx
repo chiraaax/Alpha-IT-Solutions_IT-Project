@@ -33,6 +33,13 @@ const LowStockModal = ({ lowStockProducts, onClose, onSaveProducts }) => {
   // Save updates for all products in local state.
   const handleSave = async () => {
     setIsSaving(true);
+    // Validate: Ensure each product has stock greater than 5.
+    const invalidProducts = products.filter((p) => p.stockCount <= 5);
+    if (invalidProducts.length) {
+      // Instead of alert, you can rely on the red alert message on each row.
+      setIsSaving(false);
+      return;
+    }
     try {
       const updatedProducts = await Promise.all(
         products.map(async (product) => {
@@ -67,51 +74,66 @@ const LowStockModal = ({ lowStockProducts, onClose, onSaveProducts }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white rounded-lg p-6 w-96">
-        <h3 className="text-xl font-bold mb-4">Low Stock Alerts</h3>
-        {products.length ? (
-          <ul>
-            {products.map((p) => (
-              <li key={p._id} className="mb-4 border-b pb-2">
-                <div>
-                  <strong>Product ID:</strong> {p._id} <br />
-                  <strong>Name:</strong> {p.description} <br />
-                  <strong>Stock:</strong> {p.stockCount} (Displayed:{" "}
-                  {getDisplayedStock(p.stockCount)})
-                </div>
-                <div className="flex items-center mt-2 space-x-2">
-                  <button
-                    onClick={() => handleDecrement(p._id)}
-                    className="px-2 py-1 bg-red-600 text-white rounded-md"
-                    disabled={p.stockCount <= 1}
-                  >
-                    -
-                  </button>
-                  <button
-                    onClick={() => handleIncrement(p._id)}
-                    className="px-2 py-1 bg-green-600 text-white rounded-md"
-                  >
-                    +
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>All products are sufficiently stocked.</p>
-        )}
-        <div className="flex justify-end space-x-4 mt-4">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-10 z-10 transition-opacity duration-300">
+      <div className="bg-white rounded-lg shadow-xl w-100 p-6 transform transition-all duration-300 scale-95 animate-fadeIn">
+        {/* Modal Header */}
+        <div className="bg-gradient-to-r from-blue-900 to-purple-900 rounded-t-lg p-4">
+          <h3 className="text-white text-2xl font-bold text-center">Low Stock Alerts</h3>
+        </div>
+        {/* Modal Content */}
+        <div className="mt-4 max-h-80 overflow-y-auto">
+          {products.length ? (
+            <ul className="space-y-4">
+              {products.map((p) => (
+                <li key={p._id} className="border-b pb-2">
+                  <div className="text-gray-800">
+                    <strong>Product Category:</strong> {p.category} <br />
+                    <strong>Product ID:</strong> {p._id} <br />
+                    <strong>Name:</strong> {p.description} <br />
+                    <strong>Stock:</strong> {p.stockCount}{" "}
+                    <span className="text-gray-600">
+                      (Displayed: {getDisplayedStock(p.stockCount)})
+                    </span>
+                  </div>
+                  <div className="flex items-center mt-2 space-x-2">
+                    <button
+                      onClick={() => handleDecrement(p._id)}
+                      className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-1 rounded-md transition-colors"
+                      disabled={p.stockCount <= 1}
+                    >
+                      –
+                    </button>
+                    <button
+                      onClick={() => handleIncrement(p._id)}
+                      className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-1 rounded-md transition-colors"
+                    >
+                      +
+                    </button>
+                  </div>
+                  {p.stockCount <= 5 && (
+                    <p className="mt-1 text-sm font-bold text-red-600">
+                      Stock must be greater than 5.
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-center text-gray-700">All products are sufficiently stocked.</p>
+          )}
+        </div>
+        {/* Modal Actions */}
+        <div className="flex justify-end space-x-4 mt-6">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-300 rounded-md"
+            className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold rounded-md transition-colors"
             disabled={isSaving}
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition-colors"
             disabled={isSaving}
           >
             {isSaving ? "Saving..." : "Save"}
