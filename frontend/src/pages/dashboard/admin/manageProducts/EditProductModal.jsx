@@ -4,17 +4,19 @@ import UploadImage from "../addProduct/UploadImage";
 
 const EditProductModal = ({ product, onClose, onProductUpdated }) => {
   const [configData, setConfigData] = useState(null);
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     price: product.price,
-    availability: product.availability,
-    state: product.state,
-    description: product.description,
+    availability: product.availability || "",
+    state: product.state || "",
+    description: product.description || "",
     image: product.image || "",
     // dynamic fields will be added once config is fetched
   });
   const [additionalSpecs, setAdditionalSpecs] = useState([]);
   const [newSpec, setNewSpec] = useState({ key: "", value: "" });
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   // Fetch configuration for the product's category
   useEffect(() => {
@@ -37,7 +39,7 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
       const dynamicValues = {};
       const additional = [];
 
-      // Go through the product's specs and divide them
+      // Divide product specs between dynamic and additional
       product.specs.forEach((spec) => {
         if (dynamicKeys.includes(spec.key)) {
           dynamicValues[spec.key] = spec.value;
@@ -51,7 +53,7 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
     }
   }, [configData, product.specs]);
 
-  // Update common and dynamic fields in formData
+  // Handle changes for common and dynamic fields
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -73,8 +75,45 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
     setAdditionalSpecs((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // When saving, combine the dynamic specs (from configData.options) and additional specs
+  // Validate required fields and price boundaries
+  const validateFields = () => {
+    const newErrors = {};
+    const price = Number(formData.price);
+    if (isNaN(price) || price <= 0) {
+      newErrors.price = "Price must be greater than 0.";
+    } else if (
+      configData &&
+      configData.priceRange &&
+      price > configData.priceRange.max
+    ) {
+      newErrors.price = `Price cannot exceed ${configData.priceRange.max}.`;
+    }
+    if (!formData.availability) {
+      newErrors.availability = "Please select availability.";
+    }
+    if (!formData.state) {
+      newErrors.state = "Please select a state.";
+    }
+    if (!formData.description) {
+      newErrors.description = "Description is required.";
+    }
+    // Additional validations for dynamic fields if needed
+    if (configData && configData.options) {
+      Object.keys(configData.options).forEach((key) => {
+        if (!formData[key]) {
+          newErrors[key] = `Please select ${key}.`;
+        }
+      });
+    }
+    return newErrors;
+  };
+
+  // When saving, combine dynamic specs and additional specs
   const handleSave = async () => {
+    const fieldErrors = validateFields();
+    setErrors(fieldErrors);
+    if (Object.keys(fieldErrors).length > 0) return;
+
     setIsLoading(true);
 
     const dynamicSpecs =
@@ -106,11 +145,12 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
       );
       if (response.status === 200) {
         onProductUpdated(response.data);
-        onClose();
+        // Instead of closing immediately, show the custom popup
+        setShowSuccessPopup(true);
       }
     } catch (error) {
       console.error("Error updating product:", error);
-      alert("Error updating product.");
+      window.alert("Error updating product.");
     } finally {
       setIsLoading(false);
     }
@@ -118,10 +158,66 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
 
   const inputClass = "w-full p-2 border rounded-md";
 
+  // When the update is successful, display a custom popup overlay.
+  if (showSuccessPopup) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0, 0, 0, 0.9)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000,
+        }}
+      >
+        <div
+          style={{
+            background: "white",
+            padding: "20px",
+            borderRadius: "8px",
+            textAlign: "center",
+            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.6)",
+          }}
+        >
+          <p>Product edited successfully!</p>
+          <button
+            onClick={onClose}
+            style={{
+              marginTop: "10px",
+              padding: "8px 16px",
+              backgroundColor: "#007BFF",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!configData) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-        <div className="bg-white p-8 rounded-md">
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "rgba(0, 0, 0, 0.6)",
+          zIndex: 50,
+        }}
+      >
+        <div style={{ background: "white", padding: "20px", borderRadius: "8px" }}>
           <p>Loading configuration...</p>
         </div>
       </div>
@@ -129,13 +225,35 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 overflow-auto">
-      <div className="bg-white p-8 rounded-md w-7/12 max-h-screen overflow-auto">
-        <h3 className="text-2xl font-bold mb-4">Edit Product</h3>
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
+        zIndex: 50,
+        overflow: "auto",
+      }}
+    >
+      <div
+        style={{
+          background: "white",
+          padding: "32px",
+          borderRadius: "8px",
+          width: "58.33%", // approx. w-7/12
+          maxHeight: "100vh",
+          overflow: "auto",
+        }}
+      >
+        <h3 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "16px" }}>
+          Edit Product
+        </h3>
 
         {/* Price */}
-        <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700">
+        <div style={{ marginBottom: "16px" }}>
+          <label style={{ display: "block", fontSize: "1.125rem", fontWeight: "500", color: "#4a5568" }}>
             Price:
           </label>
           <input
@@ -146,11 +264,14 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
             onChange={handleChange}
             className={inputClass}
           />
+          {errors.price && (
+            <p style={{ color: "red", fontSize: "0.875rem", marginTop: "4px" }}>{errors.price}</p>
+          )}
         </div>
 
         {/* Availability */}
-        <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700">
+        <div style={{ marginBottom: "16px" }}>
+          <label style={{ display: "block", fontSize: "1.125rem", fontWeight: "500", color: "#4a5568" }}>
             Availability:
           </label>
           <select
@@ -166,11 +287,14 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
               </option>
             ))}
           </select>
+          {errors.availability && (
+            <p style={{ color: "red", fontSize: "0.875rem", marginTop: "4px" }}>{errors.availability}</p>
+          )}
         </div>
 
         {/* State */}
-        <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700">
+        <div style={{ marginBottom: "16px" }}>
+          <label style={{ display: "block", fontSize: "1.125rem", fontWeight: "500", color: "#4a5568" }}>
             State:
           </label>
           <select
@@ -186,13 +310,16 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
               </option>
             ))}
           </select>
+          {errors.state && (
+            <p style={{ color: "red", fontSize: "0.875rem", marginTop: "4px" }}>{errors.state}</p>
+          )}
         </div>
 
-        {/* Dynamic Fields from configuration */}
+        {/* Dynamic Fields */}
         {configData.options &&
           Object.keys(configData.options).map((optionKey) => (
-            <div key={optionKey} className="mb-4">
-              <label className="block text-lg font-medium text-gray-700">
+            <div key={optionKey} style={{ marginBottom: "16px" }}>
+              <label style={{ display: "block", fontSize: "1.125rem", fontWeight: "500", color: "#4a5568" }}>
                 {optionKey.charAt(0).toUpperCase() + optionKey.slice(1)}:
               </label>
               <select
@@ -208,12 +335,17 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
                   </option>
                 ))}
               </select>
+              {errors[optionKey] && (
+                <p style={{ color: "red", fontSize: "0.875rem", marginTop: "4px" }}>
+                  {errors[optionKey]}
+                </p>
+              )}
             </div>
           ))}
 
         {/* Description */}
-        <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700">
+        <div style={{ marginBottom: "16px" }}>
+          <label style={{ display: "block", fontSize: "1.125rem", fontWeight: "500", color: "#4a5568" }}>
             Description:
           </label>
           <textarea
@@ -223,59 +355,80 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
             onChange={handleChange}
             className={inputClass}
           ></textarea>
+          {errors.description && (
+            <p style={{ color: "red", fontSize: "0.875rem", marginTop: "4px" }}>{errors.description}</p>
+          )}
         </div>
 
         {/* Additional Specifications */}
-        <div className="mb-4">
-          <h4 className="text-lg font-semibold text-gray-700">
+        <div style={{ marginBottom: "16px" }}>
+          <h4 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#4a5568" }}>
             Additional Specifications
           </h4>
           {additionalSpecs.map((spec, index) => (
-            <div
-              key={index}
-              className="flex items-center space-x-4 mt-2"
-            >
-              <span className="text-gray-700">
+            <div key={index} style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "8px" }}>
+              <span style={{ color: "#4a5568" }}>
                 {spec.key}: {spec.value}
               </span>
               <button
                 type="button"
                 onClick={() => handleDeleteSpec(index)}
-                className="px-2 py-1 bg-red-500 text-white rounded-md text-sm"
+                style={{
+                  padding: "4px 8px",
+                  backgroundColor: "#e53e3e",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  fontSize: "0.875rem",
+                  cursor: "pointer",
+                }}
               >
                 Remove
               </button>
             </div>
           ))}
-          <div className="flex space-x-2 mt-4">
+          <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
             <input
               type="text"
               placeholder="Spec name: e.g., Weight"
               value={newSpec.key}
               onChange={(e) =>
-                setNewSpec((prev) => ({
-                  ...prev,
-                  key: e.target.value,
-                }))
+                setNewSpec((prev) => ({ ...prev, key: e.target.value }))
               }
-              className="flex-1 bg-gray-50 border rounded-lg px-4 py-2"
+              style={{
+                flex: 1,
+                backgroundColor: "#f7fafc",
+                border: "1px solid #e2e8f0",
+                borderRadius: "8px",
+                padding: "8px 16px",
+              }}
             />
             <input
               type="text"
               placeholder="Spec description: e.g., 2.5 kg"
               value={newSpec.value}
               onChange={(e) =>
-                setNewSpec((prev) => ({
-                  ...prev,
-                  value: e.target.value,
-                }))
+                setNewSpec((prev) => ({ ...prev, value: e.target.value }))
               }
-              className="flex-1 bg-gray-50 border rounded-lg px-4 py-2"
+              style={{
+                flex: 1,
+                backgroundColor: "#f7fafc",
+                border: "1px solid #e2e8f0",
+                borderRadius: "8px",
+                padding: "8px 16px",
+              }}
             />
             <button
               type="button"
               onClick={handleAddSpec}
-              className="px-4 py-2 bg-green-500 text-white rounded-md"
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#48bb78",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
             >
               Add
             </button>
@@ -283,7 +436,7 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
         </div>
 
         {/* Image Upload */}
-        <div className="mb-4">
+        <div style={{ marginBottom: "16px" }}>
           <UploadImage
             name="image"
             setImage={(img) =>
@@ -294,23 +447,42 @@ const EditProductModal = ({ product, onClose, onProductUpdated }) => {
             <img
               src={formData.image}
               alt="Product"
-              className="mt-2 h-32 object-cover rounded-md border"
+              style={{
+                marginTop: "8px",
+                height: "128px",
+                objectFit: "cover",
+                borderRadius: "8px",
+                border: "1px solid #e2e8f0",
+              }}
             />
           )}
         </div>
 
         {/* Buttons */}
-        <div className="flex justify-end space-x-4">
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "16px" }}>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-300 rounded-md"
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#a0aec0",
+              borderRadius: "4px",
+              border: "none",
+              cursor: "pointer",
+            }}
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md"
             disabled={isLoading}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#4299e1",
+              color: "white",
+              borderRadius: "4px",
+              border: "none",
+              cursor: "pointer",
+            }}
           >
             {isLoading ? "Saving..." : "Save"}
           </button>

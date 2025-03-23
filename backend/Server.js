@@ -51,6 +51,7 @@ app.use("/api/prebuilds", prebuildRoutes);
 app.use("/api/orders", orderRoutes); // Order Routes
 app.use("/api/successorders", SuccessOrderRoutes); // SuccessOrder Routes
 
+app.use('/api/successorder', orderRoutes);
 
 // Home route
 app.get("/", (req, res) => {

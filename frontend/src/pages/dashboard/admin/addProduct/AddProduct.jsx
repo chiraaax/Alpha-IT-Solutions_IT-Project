@@ -3,25 +3,27 @@ import axios from "axios";
 import UploadImage from "./UploadImage";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../../context/authContext";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddProduct = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [selectedProductType, setSelectedProductType] = useState("");
-  const [configData, setConfigData] = useState(null); // Dynamic config from DB
+  const [configData, setConfigData] = useState(null);
   const [product, setProduct] = useState({
     price: "",
     availability: "",
     state: "",
     description: "",
     additionalSpecs: [],
-    // Other dynamic spec fields will be added as user inputs values
   });
   const [newSpec, setNewSpec] = useState({ key: "", value: "" });
   const [image, setImage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
-  // Fetch configuration for the selected product type from the backend
+  // Fetch configuration for the selected product type
   useEffect(() => {
     if (selectedProductType) {
       axios
@@ -34,7 +36,6 @@ const AddProduct = () => {
         );
     }
   }, [selectedProductType]);
-  
 
   const handleProductTypeSelect = (type) => {
     setSelectedProductType(type);
@@ -44,16 +45,15 @@ const AddProduct = () => {
     }));
   };
 
-  // Update product state as fields change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProduct((prev) => ({
       ...prev,
       [name]: value,
     }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  // Add a new additional specification manually
   const handleAddSpec = () => {
     if (newSpec.key && newSpec.value) {
       setProduct((prev) => ({
@@ -64,7 +64,6 @@ const AddProduct = () => {
     }
   };
 
-  // Remove a manually added specification
   const handleDeleteSpec = (index) => {
     setProduct((prev) => ({
       ...prev,
@@ -72,31 +71,67 @@ const AddProduct = () => {
     }));
   };
 
-  // Submit the product to the backend
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!product.price) {
+      newErrors.price = "Price is required.";
+    } else if (isNaN(product.price) || Number(product.price) <= 0) {
+      newErrors.price = "Enter a valid price greater than 0";
+    } else if (
+      configData &&
+      configData.priceRange &&
+      (Number(product.price) < configData.priceRange.min ||
+        Number(product.price) > configData.priceRange.max)
+    ) {
+      newErrors.price = `Price must be between ${configData.priceRange.min} and ${configData.priceRange.max}.`;
+    }
+
+    if (!product.availability) {
+      newErrors.availability = "Availability is required.";
+    }
+
+    if (!product.state) {
+      newErrors.state = "State is required.";
+    }
+
+    if (!product.description) {
+      newErrors.description = "Product description is required.";
+    }
+
+    if (configData && configData.options) {
+      Object.keys(configData.options).forEach((optionKey) => {
+        if (!product[optionKey]) {
+          newErrors[optionKey] = `${optionKey} is required.`;
+        }
+      });
+    }
+
+    if (!image) {
+      newErrors.image = "Product image is required.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     setIsLoading(true);
 
-    // These fields are handled separately and are not part of the specs
-    const commonFields = ["price", "availability", "state", "description", "category"];
-
-    // Filtering logic: iterate over dynamic options from configData
-    // and add a spec if a value exists in product state.
+    // Combine dynamic options into specs
     const specsFromFields =
       configData && configData.options
         ? Object.keys(configData.options).reduce((acc, key) => {
-            // We assume every key in configData.options is a spec field.
             if (product[key]) {
-              acc.push({
-                key: key,
-                value: product[key],
-              });
+              acc.push({ key: key, value: product[key] });
             }
             return acc;
           }, [])
         : [];
 
-    // Combine specs derived from configData with any manually added specs.
     const combinedSpecs = [...specsFromFields, ...product.additionalSpecs];
 
     const productData = {
@@ -112,12 +147,16 @@ const AddProduct = () => {
     try {
       const response = await axios.post("http://localhost:5000/api/products", productData);
       if (response.status === 201) {
-        alert("Product added successfully!");
-        navigate("/dashboard");
+        toast.success("Product added successfully!");
+        // Delay navigation to allow the user to see the success notification
+        setTimeout(() => {
+          navigate("/dashboard/manage-products");
+          window.scrollTo(0, document.body.scrollHeight);
+        }, 3000); // 3 seconds delay
       }
     } catch (error) {
       console.error("❌ Error adding product:", error);
-      alert("Error adding product.");
+      toast.error("Error adding product.");
     } finally {
       setIsLoading(false);
     }
@@ -133,9 +172,24 @@ const AddProduct = () => {
       <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
         <h2 className="text-3xl text-center font-bold text-gray-800 mb-6">Add New Product</h2>
         {!selectedProductType ? (
-          // Product type selection buttons (you can adjust these as needed)
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-            {["laptop", "motherboard", "processor", "ram", "gpu", "powerSupply", "casings", "monitors", "cpuCoolers", "keyboard", "mouse", "soundSystems", "cablesConnectors", "storage", "externalStorage"].map((type) => (
+            {[
+              "laptop",
+              "motherboard",
+              "processor",
+              "ram",
+              "gpu",
+              "powerSupply",
+              "casings",
+              "monitors",
+              "cpuCoolers",
+              "keyboard",
+              "mouse",
+              "soundSystems",
+              "cablesConnectors",
+              "storage",
+              "externalStorage",
+            ].map((type) => (
               <button
                 key={type}
                 onClick={() => handleProductTypeSelect(type)}
@@ -146,14 +200,12 @@ const AddProduct = () => {
             ))}
           </div>
         ) : (
-          // Render the form for the selected product type
           <form onSubmit={handleSubmit} className="space-y-6">
             <h3 className="text-2xl font-semibold text-gray-700 underline decoration-4 decoration-blue-500">
               {selectedProductType}
             </h3>
             {configData ? (
               <>
-                {/* Price input */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">Price</label>
                   <input
@@ -164,8 +216,8 @@ const AddProduct = () => {
                     onChange={handleChange}
                     className={inputClass}
                   />
+                  {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
                 </div>
-                {/* Availability dropdown */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">Availability</label>
                   <select
@@ -181,8 +233,8 @@ const AddProduct = () => {
                       </option>
                     ))}
                   </select>
+                  {errors.availability && <p className="text-red-500 text-sm">{errors.availability}</p>}
                 </div>
-                {/* State dropdown */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">State</label>
                   <select
@@ -198,8 +250,8 @@ const AddProduct = () => {
                       </option>
                     ))}
                   </select>
+                  {errors.state && <p className="text-red-500 text-sm">{errors.state}</p>}
                 </div>
-                {/* Dynamically render select inputs for each option (e.g. brand, laptopCPU, etc.) */}
                 {configData.options &&
                   Object.keys(configData.options).map((optionKey) => (
                     <div key={optionKey} className="space-y-2">
@@ -219,9 +271,9 @@ const AddProduct = () => {
                           </option>
                         ))}
                       </select>
+                      {errors[optionKey] && <p className="text-red-500 text-sm">{errors[optionKey]}</p>}
                     </div>
                   ))}
-                {/* Additional Specifications Section */}
                 <div>
                   <h4 className="text-lg font-semibold text-gray-700">Additional Specifications</h4>
                   {product.additionalSpecs.map((spec, index) => (
@@ -266,7 +318,6 @@ const AddProduct = () => {
                     </button>
                   </div>
                 </div>
-                {/* Product name/description */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Product Name</label>
                   <textarea
@@ -276,14 +327,14 @@ const AddProduct = () => {
                     onChange={handleChange}
                     className={textAreaClass}
                   ></textarea>
+                  {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
                 </div>
-                {/* Image Upload Component */}
                 <UploadImage name="image" setImage={setImage} />
+                {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
               </>
             ) : (
               <p>Loading configuration...</p>
             )}
-            {/* Form buttons */}
             <div className="flex justify-between items-center mt-6">
               <button
                 type="submit"
@@ -303,6 +354,8 @@ const AddProduct = () => {
           </form>
         )}
       </div>
+      {/* Toast Container for notifications */}
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   );
 };

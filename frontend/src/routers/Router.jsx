@@ -28,14 +28,12 @@ import ManageAppointments from "../pages/dashboard/manage-appointments";
 import GamingBuilds from '../components/CustomBuilds/GamingBuilds';
 import BudgetBuilds from '../components/CustomBuilds/BudgetBuilds';
 import GamingBuildDetail from '../components/CustomBuilds/GamingBuildDetail';
-import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail'; // New Import
+import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail'; 
 import CreateCustomBuild from '../components/CustomBuilds/CreateCustomPreBuild';
-import AICustomizeBuild from '../components/CustomBuilds/AICustomizeBuild'; // ✅ New Import
-import PreBuildDashboard from "../components/CustomBuilds/PreBuildDashboard"; // Updated import for your custom dashboard
-
-import FilterForm from '../pages/dashboard/admin/filterProducts/FilterForm';
-import FiltersList from '../pages/dashboard/admin/filterProducts/FiltersList';
+import AICustomizeBuild from '../components/CustomBuilds/AICustomizeBuild'; 
+import PreBuildDashboard from "../components/CustomBuilds/PreBuildDashboard";
 import EditCustomPreBuild from '../components/CustomBuilds/EditCustomPreBuild';
+import AdminFiltersPage from '../pages/dashboard/admin/filterProducts/AdminFiltersPage';
 
 
 //order management
@@ -102,8 +100,7 @@ const router = createBrowserRouter([
       { path: 'manage-inventory', element: <ProtectedRoute allowedRoles={["admin"]}><ManageInventory /></ProtectedRoute> },
       { path: 'users', element: <ProtectedRoute allowedRoles={["admin"]}><div>Manage Users</div></ProtectedRoute> },
       { path: 'manage-appointments', element: <ProtectedRoute allowedRoles={["admin"]}><ManageAppointments /></ProtectedRoute> },
-      { path: 'manage-filters', element: <ProtectedRoute allowedRoles={["admin"]}><FilterForm /></ProtectedRoute> },
-      { path: 'manage-filters-db', element: <ProtectedRoute allowedRoles={["admin"]}><FiltersList /></ProtectedRoute> },
+      { path: 'filters', element: <ProtectedRoute allowedRoles={["admin"]}>< AdminFiltersPage/></ProtectedRoute> },
       { path: 'create-custom-prebuild', element: <ProtectedRoute allowedRoles={["admin"]}><CreateCustomBuild /></ProtectedRoute> },
       { path: 'prebuild-dashboard', element: <ProtectedRoute allowedRoles={["admin"]}><PreBuildDashboard /></ProtectedRoute>  },
     ]
