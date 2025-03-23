@@ -1,3 +1,4 @@
+/* 
 .checkout-container {
   width: 50%;
   margin: auto;
@@ -12,12 +13,12 @@ h2, h3 {
   text-align: center;
 }
 
-/* Ensuring labels are clearly visible */
+/* Ensuring labels are clearly visible *//*
 label {
   font-size: 16px;
   font-weight: bold;
   margin-top: 10px;
-  display: block; /* Makes sure labels appear above the inputs */
+  display: block; /* Makes sure labels appear above the inputs 
 }
 
 form {
@@ -29,17 +30,16 @@ input {
   margin: 5px 0 15px 0;
   padding: 10px;
   font-size: 16px;
-  background-color: #eaecee;
-  border: 1px solid #000000;
+  border: px solid #000000;
   border-radius: 5px;
 }
 
-/* Style improvement for the order button */
+/* Style improvement for the order button *//*
 .order {
   margin-top: 15px;
   padding: 10px 20px;
   width: fit-content;
-  align-self: center; /* Centers the button inside the form */
+  align-self: center; /* Centers the button inside the form *//*
   background: rgb(2, 209, 2);
   color: black;
   border: none;
@@ -54,3 +54,4 @@ input {
   background: darkgreen;
   color: white;
 }
+*/

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { useParams} from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
-import "../../styles/OrderManagement/CheckoutForm.css";
 import PickupForm from "./pickupForm";
 import CodForm from "./CodForm";
 import { deleteOrder, updateOrder } from "./orderService";
@@ -27,7 +26,6 @@ const CheckoutForm = () => {
 
   const [successOrder, setSuccessOrder] = useState(null);
 
-  // Fetch order details if orderId is provided
   useEffect(() => {
     if (email) {
       axios
@@ -87,27 +85,26 @@ const CheckoutForm = () => {
   const handlePaymentChange = (e) => {
     setFormData({ ...formData, paymentMethod: e.target.value });
   };
+
   const handleDelete = async () => {
     if (!formData.email) {
-        alert("Order not found. Email is required.");
-        return;
+      alert("Order not found. Email is required.");
+      return;
     }
 
     const confirmDelete = window.confirm("Are you sure you want to delete this order?");
     if (!confirmDelete) return;
 
     try {
-        const result = await deleteOrder(formData.email); // Use email instead of id
-        alert(result.message || "Order deleted successfully!");
-
-        // Clear state and navigate away
-        setSuccessOrder(null);
-        // navigate("/orders"); // Redirect to orders list
+      const result = await deleteOrder(formData.email);
+      alert(result.message || "Order deleted successfully!");
+      setSuccessOrder(null);
     } catch (error) {
-        console.error("Error deleting order:", error);
-        alert("Failed to delete order.");
+      console.error("Error deleting order:", error);
+      alert("Failed to delete order.");
     }
-};
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -127,11 +124,6 @@ const CheckoutForm = () => {
   };
 
   const handleUpdate = async (email) => {
-    // if (!successOrder || !email) {
-    //   alert("Order not found.");
-    //   return;
-    // }
-
     const confirmUpdate = window.confirm("Are you sure you want to update this order?");
     if (!confirmUpdate) return;
 
@@ -141,10 +133,8 @@ const CheckoutForm = () => {
     };
 
     try {
-      const result = await updateOrder(email, updatedOrderData); // Pass `email` instead of `id`
+      const result = await updateOrder(email, updatedOrderData);
       alert(result.message || "Order updated successfully!");
-
-      // Update local state with new data after updating
       setSuccessOrder({ ...successOrder, ...updatedOrderData });
     } catch (error) {
       console.error("Error updating order:", error);
@@ -153,38 +143,41 @@ const CheckoutForm = () => {
   };
 
   return (
-    <div className="checkout-container">
-      <h2>Checkout</h2>
+    <div style={{ width: "50%", margin: "50px auto", padding: "20px", background: "#d9e2ee", borderRadius: "10px" }}>
+      <h2 style={{ textAlign: "center" }}>Checkout</h2>
       {!successOrder ? (
-        <form onSubmit={handleSubmit}>
-          <label>Full Name</label>
+        <form style={{ display: "flex", flexDirection: "column" }} onSubmit={handleSubmit}>
+          <label style={{ fontSize: "16px", fontWeight: "bold", marginTop: "10px", display: "block" }}>Full Name</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
             required
+            style={{ margin: "5px 0 15px 0", padding: "10px", fontSize: "16px", border: "1px solid #000000", borderRadius: "5px" }}
           />
-  
-          <label>Phone Number</label>
+
+          <label style={{ fontSize: "16px", fontWeight: "bold", marginTop: "10px", display: "block" }}>Phone Number</label>
           <input
             type="text"
             name="phoneNo"
             value={formData.phoneNo}
             onChange={handleChange}
             required
+            style={{ margin: "5px 0 15px 0", padding: "10px", fontSize: "16px", border: "1px solid #000000", borderRadius: "5px" }}
           />
-  
-          <label>Email Address</label>
+
+          <label style={{ fontSize: "16px", fontWeight: "bold", marginTop: "10px", display: "block" }}>Email Address</label>
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
             required
+            style={{ margin: "5px 0 15px 0", padding: "10px", fontSize: "16px", border: "1px solid #000000", borderRadius: "5px" }}
           />
-  
-          <h3>Payment Options</h3>
+
+          <h3 style={{ textAlign: "center" }}>Payment Options</h3>
           <label>
             <input
               type="radio"
@@ -205,26 +198,41 @@ const CheckoutForm = () => {
             />
             Pick-Up (Self Collect)
           </label>
-  
+
           {formData.paymentMethod === "Pickup" && (
             <PickupForm pickupData={pickupData} handlePickupChange={handlePickupChange} />
           )}
           {formData.paymentMethod === "COD" && (
             <CodForm codData={codData} handleCodChange={handleCodChange} />
           )}
-  
-          <button type="submit" className="order">
+
+          <button
+            type="submit"
+            style={{
+              marginTop: "15px",
+              padding: "10px 20px",
+              width: "fit-content",
+              alignSelf: "center",
+              background: "rgb(2, 209, 2)",
+              color: "black",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+              fontSize: "16px",
+              fontWeight: "bold",
+              transition: "background 0.3s, color 0.3s",
+            }}
+            onMouseOver={(e) => (e.target.style.background = "darkgreen")}
+            onMouseOut={(e) => (e.target.style.background = "rgb(2, 209, 2)")}
+          >
             Save and Place Order
           </button>
         </form>
       ) : (
-        // Success Message with Order Details
-        <div className="mt-4 p-4 border rounded-lg bg-green-100">
-          <h3 className="text-lg font-semibold text-green-700">
-            Order Successfully Placed!
-          </h3>
+        <div style={{ marginTop: "16px", padding: "16px", border: "1px solid #000000", borderRadius: "8px", background: "#d1f7d1" }}>
+          <h3 style={{ fontSize: "18px", fontWeight: "600", color: "#145214" }}>Order Successfully Placed!</h3>
           <p>Thank you for your order. Here are the details:</p>
-          <ul className="mt-2 list-disc pl-5">
+          <ul style={{ marginTop: "8px", listStyleType: "disc", paddingLeft: "20px" }}>
             <li><strong>Name:</strong> {formData.name}</li>
             <li><strong>Phone No:</strong> {formData.phoneNo}</li>
             <li><strong>Email:</strong> {formData.email}</li>
@@ -243,66 +251,117 @@ const CheckoutForm = () => {
               </>
             )}
           </ul>
-  
-          {/* <button onClick={handleUpdate(email)}>Update</button> */}
+
           <button onClick={handleDelete}>Delete</button>
         </div>
       )}
-  
+
       {successOrder && (
-        <div className="order-details-container">
+        <div style={{ marginTop: "20px" }}>
           <h2>Order Details</h2>
-          <div className="order-info">
-            <div className="order-info-row">
+          <div>
+            <div style={{ marginBottom: "10px" }}>
               <strong>Name:</strong>
-              <input type="text" name="name" value={formData.name} onChange={handleChange} />
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                style={{ marginLeft: "10px", padding: "5px" }}
+              />
             </div>
-            <div className="order-info-row">
+            <div style={{ marginBottom: "10px" }}>
               <strong>Phone Number:</strong>
-              <input type="text" name="phoneNo" value={formData.phoneNo} onChange={handleChange} />
+              <input
+                type="text"
+                name="phoneNo"
+                value={formData.phoneNo}
+                onChange={handleChange}
+                style={{ marginLeft: "10px", padding: "5px" }}
+              />
             </div>
-            <div className="order-info-row">
+            <div style={{ marginBottom: "10px" }}>
               <strong>Email:</strong>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} />
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                style={{ marginLeft: "10px", padding: "5px" }}
+              />
             </div>
-            <div className="order-info-row">
+            <div style={{ marginBottom: "10px" }}>
               <strong>Payment Method:</strong>
-              <select name="paymentMethod" value={formData.paymentMethod} onChange={handlePaymentChange}>
+              <select
+                name="paymentMethod"
+                value={formData.paymentMethod}
+                onChange={handlePaymentChange}
+                style={{ marginLeft: "10px", padding: "5px" }}
+              >
                 <option value="COD">Cash On Delivery</option>
                 <option value="Pickup">Pick-Up (Self Collect)</option>
               </select>
             </div>
             {formData.paymentMethod === "COD" && (
               <>
-                <div className="order-info-row">
+                <div style={{ marginBottom: "10px" }}>
                   <strong>Delivery Address:</strong>
-                  <input type="text" name="address" value={codData.address} onChange={handleCodChange} />
+                  <input
+                    type="text"
+                    name="address"
+                    value={codData.address}
+                    onChange={handleCodChange}
+                    style={{ marginLeft: "10px", padding: "5px" }}
+                  />
                 </div>
-                <div className="order-info-row">
+                <div style={{ marginBottom: "10px" }}>
                   <strong>Delivery Date:</strong>
-                  <input type="date" name="deliveryDate" value={codData.deliveryDate} onChange={handleCodChange} />
+                  <input
+                    type="date"
+                    name="deliveryDate"
+                    value={codData.deliveryDate}
+                    onChange={handleCodChange}
+                    style={{ marginLeft: "10px", padding: "5px" }}
+                  />
                 </div>
-                <div className="order-info-row">
+                <div style={{ marginBottom: "10px" }}>
                   <strong>Delivery Time:</strong>
-                  <input type="time" name="deliveryTime" value={codData.deliveryTime} onChange={handleCodChange} />
+                  <input
+                    type="time"
+                    name="deliveryTime"
+                    value={codData.deliveryTime}
+                    onChange={handleCodChange}
+                    style={{ marginLeft: "10px", padding: "5px" }}
+                  />
                 </div>
               </>
             )}
             {formData.paymentMethod === "Pickup" && (
               <>
-                <div className="order-info-row">
+                <div style={{ marginBottom: "10px" }}>
                   <strong>Pickup Date:</strong>
-                  <input type="date" name="pickupDate" value={pickupData.pickupDate} onChange={handlePickupChange} />
+                  <input
+                    type="date"
+                    name="pickupDate"
+                    value={pickupData.pickupDate}
+                    onChange={handlePickupChange}
+                    style={{ marginLeft: "10px", padding: "5px" }}
+                  />
                 </div>
-                <div className="order-info-row">
+                <div style={{ marginBottom: "10px" }}>
                   <strong>Pickup Time:</strong>
-                  <input type="time" name="pickupTime" value={pickupData.pickupTime} onChange={handlePickupChange} />
+                  <input
+                    type="time"
+                    name="pickupTime"
+                    value={pickupData.pickupTime}
+                    onChange={handlePickupChange}
+                    style={{ marginLeft: "10px", padding: "5px" }}
+                  />
                 </div>
               </>
             )}
-            <div className="button-group">
-            <button onClick={() => handleUpdate(formData.email)}>Save Changes</button>
-              {/* <button className="cancel-button" onClick={() => navigate("/checkoutForm")}>Cancel</button> */}
+            <div>
+              <button onClick={() => handleUpdate(formData.email)}>Save Changes</button>
             </div>
           </div>
         </div>

@@ -17,6 +17,7 @@ import filterRoutes from "./routes/filterRoutes.js";
 import orderRoutes from "./routes/OrderManagement/orderRoutes.js"
 import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js"
 
+
 dotenv.config();
 const app = express();
 
@@ -37,7 +38,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 // API Routes
-app.use("/api/appointments", appointmentRoutes);
+app.use('/api/appointments', appointmentRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", userRoutes);
 app.use("/api/faq", faqRoutes);
@@ -49,6 +50,7 @@ app.use("/api/filters", filterRoutes);
 app.use("/api/prebuilds", prebuildRoutes);
 app.use("/api/orders", orderRoutes); // Order Routes
 app.use("/api/successorders", SuccessOrderRoutes); // SuccessOrder Routes
+
 
 // Home route
 app.get("/", (req, res) => {
