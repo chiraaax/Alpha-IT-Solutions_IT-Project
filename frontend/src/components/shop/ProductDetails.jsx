@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams  } from 'react-router-dom';
 import { FiArrowLeft, FiShoppingCart, FiCheckCircle, FiZoomIn, FiX } from 'react-icons/fi';
 
 const ProductDetails = () => {
+  const { productId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const product = location.state?.product;
@@ -106,7 +107,7 @@ const ProductDetails = () => {
               </div>
               <div className="mt-8">
                 <button 
-                  onClick={() => alert('Added to Cart')}
+                  onClick={() => alert(`Added ${product.description} (ID: ${productId}) to Cart`)}
                   className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
                 >
                   <FiShoppingCart className="inline mr-2" />
