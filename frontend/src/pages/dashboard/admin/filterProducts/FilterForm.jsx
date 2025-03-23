@@ -73,6 +73,7 @@ const FilterForm = ({ existingFilter }) => {
             className="w-1/2 p-3 bg-gray-800 text-sky-100 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-sky-500"
           />
         </div>
+<<<<<<< HEAD
       </div>
       <div className="mb-6">
         <label className="block text-sky-300 mb-2">Availability (comma separated):</label>
@@ -106,6 +107,108 @@ const FilterForm = ({ existingFilter }) => {
                 onChange={e => updateOption(key, e.target.value)} 
                 className="w-full p-3 bg-gray-800 text-sky-100 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-sky-500"
               />
+=======
+        <div className="mb-6">
+          <label className="block text-sky-300 mb-2">Price Range:</label>
+          <div className="flex space-x-4">
+            <input
+              type="number"
+              placeholder="Min (-1 or greater)"
+              value={priceRange.min}
+              onChange={(e) =>
+                setPriceRange({ ...priceRange, min: Number(e.target.value) })
+              }
+              required
+              className="w-1/2 p-3 bg-gray-800 text-sky-100 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-sky-500"
+            />
+            <input
+              type="number"
+              placeholder="Max"
+              value={priceRange.max}
+              onChange={(e) =>
+                setPriceRange({ ...priceRange, max: Number(e.target.value) })
+              }
+              required
+              className="w-1/2 p-3 bg-gray-800 text-sky-100 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-sky-500"
+            />
+          </div>
+        </div>
+        <div className="mb-6">
+          <label className="block text-sky-300 mb-2">
+            Availability (comma separated):
+          </label>
+          <input
+            type="text"
+            placeholder="e.g., in stock, out of stock, pre-order"
+            value={availability.join(", ")}
+            onChange={(e) =>
+              setAvailability(e.target.value.split(",").map((v) => v.trim()))
+            }
+            required
+            className="w-full p-3 bg-gray-800 text-sky-100 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-sky-500"
+          />
+        </div>
+        <div className="mb-6">
+          <label className="block text-sky-300 mb-2">
+            State (comma separated):
+          </label>
+          <input
+            type="text"
+            placeholder="e.g.,new , refurbished"
+            value={stateValues.join(", ")}
+            onChange={(e) =>
+              setStateValues(e.target.value.split(",").map((v) => v.trim()))
+            }
+            required
+            className="w-full p-3 bg-gray-800 text-sky-100 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-sky-500"
+          />
+        </div>
+        <div className="mb-8">
+          <label className="block text-sky-300 mb-4">Dynamic Options:</label>
+          <div className="space-y-4">
+            {Object.keys(options).map((key) => (
+              <div key={key}>
+                <label className="block text-sky-400 mb-1 font-medium">
+                  {key}:
+                </label>
+                <input
+                  type="text"
+                  placeholder={`Enter values for ${key} (comma separated)`}
+                  value={options[key].join(", ")}
+                  onChange={(e) => updateOption(key, e.target.value)}
+                  className="w-full p-3 bg-gray-800 text-sky-100 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-sky-500"
+                />
+              </div>
+            ))}
+            <div className="flex flex-col space-y-2">
+              <input
+                type="text"
+                placeholder="eg: brand"
+                id="newKey"
+                className="w-full p-3 bg-gray-800 text-sky-100 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-sky-500"
+              />
+              <input
+                type="text"
+                placeholder="msi, asus, acer"
+                id="newValue"
+                className="w-full p-3 bg-gray-800 text-sky-100 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-sky-500"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const newKey = document.getElementById("newKey").value;
+                  const newValue = document.getElementById("newValue").value;
+                  if (newKey) {
+                    updateOption(newKey, newValue);
+                    document.getElementById("newKey").value = "";
+                    document.getElementById("newValue").value = "";
+                  }
+                }}
+                className="self-start px-4 py-2 bg-sky-600 text-white rounded hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              >
+                Add Option
+              </button>
+>>>>>>> 8fcbe5d6dd40b0c4c9e04cab396ba44aad730508
             </div>
           ))}
           <div className="flex flex-col space-y-2">
