@@ -192,7 +192,10 @@ const GamingBuildDetail = () => {
   const handleAddToCart = () => {
     if (isGamingBuildInCart()) {
       setMessage("Build is already in cart. Adjust quantity in the shopping cart.");
-      setTimeout(() => setMessage(""), 2000);
+      setTimeout(() => {
+        navigate('/ShoppingCart');
+        setMessage('');
+      }, 2000);
       return;
     }
 
@@ -202,7 +205,10 @@ const GamingBuildDetail = () => {
       payload: { _id, description, price, image, quantity: 1 },
     });
     setMessage("Build added to cart!");
-    setTimeout(() => setMessage(""), 2000);
+    setTimeout(() => {
+      navigate('/ShoppingCart');
+      setMessage('');
+    }, 2000);
   };
 
   return (

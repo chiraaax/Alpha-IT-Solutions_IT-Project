@@ -103,6 +103,7 @@ const ProductDetails = () => {
       // If the product is already in the cart, show a message and return.
       setMessage('Product is already in cart. Adjust quantity in the shopping cart.');
       setTimeout(() => {
+        navigate('/ShoppingCart');
         setMessage('');
       }, 2000);
       return;
@@ -132,6 +133,7 @@ const ProductDetails = () => {
     // Set a temporary confirmation message.
     setMessage('Product added to cart!');
     setTimeout(() => {
+      navigate('/ShoppingCart');
       setMessage('');
     }, 2000);
   };
