@@ -24,9 +24,9 @@ const Register = () => {
 
         try {
             await axios.post('http://localhost:5000/api/auth/register', { name, email, password, contactNumber, address });
-            
-            localStorage.setItem('email', email);
 
+            localStorage.setItem('email', email);
+        
             toast.success("Check your email for OTP verification!", { position: "top-right" });
             
             navigate('/verify-otp');
