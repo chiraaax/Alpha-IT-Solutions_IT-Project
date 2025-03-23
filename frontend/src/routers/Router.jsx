@@ -38,6 +38,13 @@ import FiltersList from '../pages/dashboard/admin/filterProducts/FiltersList';
 import EditCustomPreBuild from '../components/CustomBuilds/EditCustomPreBuild';
 
 
+//order management
+import ShoppingCart from '../pages/OrderManagement/ShoppingCart';
+import CheckoutForm from '../components/OrderManagement/CheckoutForm';
+import PickupForm from '../components/OrderManagement/pickupForm';
+import CodForm from '../components/OrderManagement/CodForm';
+// import OrderList from '../components/OrderManagement/OrderList';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -58,6 +65,13 @@ const router = createBrowserRouter([
       { path: 'gaming-builds', element: <GamingBuilds /> },
       { path: 'budget-builds', element: <BudgetBuilds /> },        
       { path: 'gaming-builds/:id', element: <GamingBuildDetail /> },
+      
+      //order routes
+      { path: 'ShoppingCart', element: <ProtectedRoute><ShoppingCart /></ProtectedRoute> },
+      { path: 'CheckoutForm', element: <ProtectedRoute><CheckoutForm /></ProtectedRoute> },
+      { path: 'CheckoutForm/:email', element: <ProtectedRoute><CheckoutForm /></ProtectedRoute> },
+      { path: 'PickupForm', element: <ProtectedRoute><PickupForm /></ProtectedRoute> },
+      { path: 'CodForm', element: <ProtectedRoute><CodForm /></ProtectedRoute> },
       { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },  
       { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, 
        // Updated route for your custom dashboard
