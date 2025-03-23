@@ -3,10 +3,14 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useTheme } from "./ThemeContext";
 import { FaSun, FaMoon } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 
 const GamingBuildDetail = () => {
   const { id } = useParams();
   const { isDark, toggleTheme } = useTheme();
+  const dispatch = useDispatch();
+  // Retrieve cart items from Redux store
+  const cartItems = useSelector((state) => state.cart.cartItems) || [];
 
   const [build, setBuild] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,8 +30,10 @@ const GamingBuildDetail = () => {
   });
   // Local state for the edited build. Initially, we use the fetched build data.
   const [editedBuild, setEditedBuild] = useState(null);
+  // Local state for temporary messages (confirmation or warning)
+  const [message, setMessage] = useState("");
 
-  // Fetch build details and products lookup concurrently
+  // Fetch build details and products lookup concurrently (from prebuilds DB)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -42,7 +48,7 @@ const GamingBuildDetail = () => {
           setError("No data found for this build.");
         }
 
-        // Fetch all products and create a lookup by _id
+        // Fetch all products and create a lookup by _id (if needed for specifications)
         const productsResponse = await axios.get("http://localhost:5000/api/products");
         const lookup = {};
         productsResponse.data.forEach((product) => {
@@ -113,8 +119,6 @@ const GamingBuildDetail = () => {
 
   // Save the changes from the edit modal locally (without updating the global prebuild)
   const handleSaveChanges = () => {
-    // Instead of updating the global prebuild via an API call,
-    // update only the local state to reflect user-specific customizations.
     setBuild(editedBuild);
     setIsEditModalOpen(false);
   };
@@ -179,6 +183,28 @@ const GamingBuildDetail = () => {
     },
   ];
 
+  // Check if the current gaming build (prebuild) is already in the cart
+  const isGamingBuildInCart = () => {
+    return cartItems.some((item) => item._id === build?._id);
+  };
+
+  // Add to Cart functionality using prebuild fields: _id, price, image, description.
+  const handleAddToCart = () => {
+    if (isGamingBuildInCart()) {
+      setMessage("Build is already in cart. Adjust quantity in the shopping cart.");
+      setTimeout(() => setMessage(""), 2000);
+      return;
+    }
+
+    const { _id, description, price, image } = build;
+    dispatch({
+      type: "ADD_TO_CART",
+      payload: { _id, description, price, image, quantity: 1 },
+    });
+    setMessage("Build added to cart!");
+    setTimeout(() => setMessage(""), 2000);
+  };
+
   return (
     <div className={`min-h-screen py-10 px-4 ${isDark ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-800"}`}>
       {/* Theme Toggle Button */}
@@ -229,7 +255,11 @@ const GamingBuildDetail = () => {
 
           {/* Action Buttons */}
           <div className="mt-6 flex flex-col md:flex-row gap-4 justify-center md:justify-start">
-            <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+            <button
+              onClick={handleAddToCart}
+              disabled={isGamingBuildInCart()}
+              className={`bg-blue-600 text-white px-6 py-2 rounded-lg transition hover:bg-blue-700 ${isGamingBuildInCart() ? "opacity-50 cursor-not-allowed" : ""}`}
+            >
               🛒 Add to Cart
             </button>
             <button
@@ -249,6 +279,13 @@ const GamingBuildDetail = () => {
           No reviews yet. Be the first to leave a review!
         </p>
       </div>
+
+      {/* Temporary message for Add to Cart actions */}
+      {message && (
+        <div className="fixed top-5 right-5 bg-green-500 text-white py-2 px-4 rounded shadow-md">
+          {message}
+        </div>
+      )}
 
       {/* Edit Modal */}
       {isEditModalOpen && editedBuild && (
