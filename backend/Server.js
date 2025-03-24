@@ -14,10 +14,11 @@ import path from "path";
 import prebuildRoutes from "./routes/prebuildRoutes.js"; 
 import filterRoutes from "./routes/filterRoutes.js";
 //order
-// import orderRoutes from "./routes/OrderManagement/orderRoutes.js"
-// import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js"
+import orderRoutes from "./routes/OrderManagement/orderRoutes.js"
+import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js"
 import reportRoutes from './routes/reportRoutesShop.js';
-import orderRoutes from "./routes/orderRoutes.js";
+// import orderRoutes from "./routes/orderRoutes.js";
+import ExpenseRoutes from "./routes/Finance/ExpenseRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -49,9 +50,10 @@ app.use("/api", uploadRoutes);
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/filters", filterRoutes);
 app.use("/api/prebuilds", prebuildRoutes);
-// app.use("/api/orders", orderRoutes); // Order Routes
-// app.use("/api/successorders", SuccessOrderRoutes); // SuccessOrder Routes
+app.use("/api/orders", orderRoutes); // Order Routes
+app.use("/api/successorders", SuccessOrderRoutes); // SuccessOrder Routes
 app.use('/api/successorder', orderRoutes);
+app.use('/api/expenses', ExpenseRoutes);
 
 // app.use('/api/successorder', orderRoutes);
 app.use('/api/reports', reportRoutes);

@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 const ExpensePage = () => {
     const [expenses, setExpenses] = useState([]);
     const [error, setError] = useState(null);
+    const [formData, setFormData] = useState({ amount: "", category: "", date: "", description: "" });
+    const [editingExpense, setEditingExpense] = useState(null);
 
-    // Fetch all expenses
     useEffect(() => {
         fetchExpenses();
     }, []);
@@ -16,67 +17,130 @@ const ExpensePage = () => {
             setExpenses(data);
         } catch (error) {
             setError("Error fetching expenses");
-            console.error("Error fetching expenses:", error);
+            console.error(error);
         }
     };
 
-    // Add Expense (Create)
-    const addExpense = async () => {
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const addExpense = async (e) => {
+        e.preventDefault();
         try {
-            const newExpense = { category: "Utilities", amount: 50, date: "2025-03-17" };
-            const res = await fetch("http://localhost:5000/api/expenses/add", {
+            await fetch("http://localhost:5000/api/expenses/add", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newExpense),
+                body: JSON.stringify(formData),
             });
-
-            const result = await res.json();
-            console.log(result.message);
-            fetchExpenses(); // Refresh list
+            setFormData({ amount: "", category: "", date: "", description: "" });
+            fetchExpenses();
         } catch (error) {
             setError("Error adding expense");
-            console.error("Error adding expense:", error);
+            console.error(error);
         }
     };
 
-    // Delete Expense
     const deleteExpense = async (id) => {
         try {
             await fetch(`http://localhost:5000/api/expenses/${id}`, { method: "DELETE" });
-            setExpenses(expenses.filter(expense => expense._id !== id)); // Remove from UI
+            setExpenses(expenses.filter(expense => expense._id !== id));
         } catch (error) {
             setError("Error deleting expense");
-            console.error("Error deleting expense:", error);
+            console.error(error);
         }
     };
 
-    // Update Expense
-    const updateExpense = async (id) => {
+    const handleEditClick = (expense) => {
+        setEditingExpense(expense._id);
+        setFormData({
+            amount: expense.amount,
+            category: expense.category,
+            date: expense.date.split("T")[0],
+            description: expense.description,
+        });
+    };
+
+    const updateExpense = async (e) => {
+        e.preventDefault();
         try {
-            const updatedData = { amount: 120, category: "Office Supplies" };
-            await fetch(`http://localhost:5000/api/expenses/${id}`, {
+            await fetch(`http://localhost:5000/api/expenses/${editingExpense}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(updatedData),
+                body: JSON.stringify(formData),
             });
-            fetchExpenses(); // Refresh list
+            setEditingExpense(null);
+            setFormData({ amount: "", category: "", date: "", description: "" });
+            fetchExpenses();
         } catch (error) {
             setError("Error updating expense");
-            console.error("Error updating expense:", error);
+            console.error(error);
         }
     };
 
     return (
-        <div>
+        <div style={styles.container}>
+            <style>
+                {`
+                    input {
+                        background: #333;
+                        border: 1px solid #444;
+                        color: #fff;
+                        padding: 8px;
+                        border-radius: 5px;
+                        width: 100%;
+                    }
+                    input::placeholder {
+                        color: white;
+                    }
+                    button {
+                        padding: 10px;
+                        background: #bb86fc;
+                        color:rgb(87, 87, 87);
+                        border: none;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-weight: bold;
+                        margin-top: 10px;
+                    }
+                    button:hover {
+                        background: #9c68e3;
+                    }
+                    .edit-btn {
+                        background: #ff9800 !important;
+                    }
+                    .edit-btn:hover {
+                        background: #e68900 !important;
+                    }
+                    .delete-btn {
+                        background: #ff5555;
+                    }
+                    .delete-btn:hover {
+                        background: #ff3333;
+                    }
+                `}
+            </style>
+            
             <h1>Expenses of <b>Alpha IT Solutions</b></h1>
             {error && <p style={{ color: "red" }}>{error}</p>}
-            <button onClick={addExpense}>Add Expense</button>
-            <ul>
+
+            <form onSubmit={editingExpense ? updateExpense : addExpense} style={styles.form}>
+                <input type="number" name="amount" value={formData.amount} onChange={handleChange} placeholder="Amount" required />
+                <input type="text" name="category" value={formData.category} onChange={handleChange} placeholder="Category" required />
+                <input type="date" name="date" value={formData.date} onChange={handleChange} required />
+                <input type="text" name="description" value={formData.description} onChange={handleChange} placeholder="Description" required />
+                <button type="submit">{editingExpense ? "Update Expense" : "Add Expense"}</button>
+                {editingExpense && <button type="button" onClick={() => setEditingExpense(null)}>Cancel</button>}
+            </form>
+
+            <ul style={styles.list}>
                 {expenses.map(expense => (
-                    <li key={expense._id}>
-                        {expense.category}: ${expense.amount} - {expense.date}
-                        <button onClick={() => updateExpense(expense._id)}>Update</button>
-                        <button onClick={() => deleteExpense(expense._id)}>Delete</button>
+                    <li key={expense._id} style={styles.listItem}>
+                        <span>{expense.category}: ${expense.amount} - {expense.date.split("T")[0]} - {expense.description}</span>
+                        <div>
+                            <button className="edit-btn" onClick={() => handleEditClick(expense)}>Edit</button>
+                            <button className="delete-btn" onClick={() => deleteExpense(expense._id)}>Delete</button>
+                        </div>
                     </li>
                 ))}
             </ul>
@@ -84,40 +148,39 @@ const ExpensePage = () => {
     );
 };
 
+// Internal Styles as JavaScript Object
+const styles = {
+    container: {
+        maxWidth: "600px",
+        margin: "20px auto",
+        padding: "20px",
+        background: "#1e1e1e",
+        borderRadius: "10px",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.5)",
+        textAlign: "center",
+    },
+    form: {
+        display: "flex",
+        flexDirection: "column",
+        gap: "10px",
+        background: "#232323",
+        padding: "15px",
+        borderRadius: "8px",
+    },
+    list: {
+        listStyleType: "none",
+        padding: "0",
+    },
+    listItem: {
+        background: "#2a2a2a",
+        padding: "10px",
+        borderRadius: "5px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        margin: "8px 0",
+        color: "white",
+    },
+};
+
 export default ExpensePage;
-
-
-
-// import { useEffect, useState } from "react";
-// // import Expense from "../../../../backend/models/Finance/Expense";
-
-// const Dashboard = () => {
-//     const [data, setData] = useState({ income: 0, expenses: 0 });
-
-//     useEffect(() => {
-//         const fetchFinanceData = async () => {
-//             const incomeRes = await fetch('/api/income/all');
-//             const expenseRes = await fetch('/api/expenses/all');
-//             const incomes = await incomeRes.json();
-//             const expenses = await expenseRes.json();
-
-//             setData({
-//                 income: incomes.reduce((acc, inc) => acc + inc.amount, 0),
-//                 expenses: expenses.reduce((acc, exp) => acc + exp.amount, 0)
-//             });
-//         };
-
-//         fetchFinanceData();
-//     }, []);
-
-//     return (
-//         <div>
-//             <h2>Finance Dashboard</h2>
-//             <p>Income: ${data.income}</p>
-//             <p>Expenses: ${data.expenses}</p>
-//             <p>Profit: ${data.income - data.expenses}</p>
-//         </div>
-//     );
-// };
-
-// export default Dashboard;
