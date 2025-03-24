@@ -1,10 +1,21 @@
+/** 
+ * 
+ *  Fetches category-specific filters from an API.
+    Fetches products based on the selected filters and pagination settings.
+    Allows users to filter products by price range and other attributes.
+    Implements pagination to navigate through multiple pages of products.
+    Handles loading states and errors gracefully
+ * 
+ */
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import qs from "qs";
 import ProductList from "./ProductList";
+import { FiLoader } from "react-icons/fi";
 
 const ProductCategory = () => {
+  //get product category from url
   const { category } = useParams();
   const navigate = useNavigate();
 
@@ -13,7 +24,17 @@ const ProductCategory = () => {
   const [loadingFilters, setLoadingFilters] = useState(false);
   const [filtersError, setFiltersError] = useState(null);
 
-  // Fetch filter configuration from the database based on the category.
+  // States related to products
+  const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [productsError, setProductsError] = useState(null);
+  
+  // Loader helper state for delayed icon display (1.5 seconds)
+  const [showLoader, setShowLoader] = useState(false);
+
+  /*
+     Fetch filter configuration from the database based on the category.
+  **/ 
   useEffect(() => {
     const fetchCategoryFilters = async () => {
       setLoadingFilters(true);
@@ -34,6 +55,20 @@ const ProductCategory = () => {
     fetchCategoryFilters();
   }, [category]);
 
+  // Set a 1.5 seconds delay before showing the loading spinner icon
+  // This avoids flickering when products load very quickly.
+  useEffect(() => {
+    let timer;
+    if (loadingProducts) {
+      timer = setTimeout(() => {
+        setShowLoader(true);
+      },99900000099999999999999999999);
+    } else {
+      setShowLoader(false);
+    }
+    return () => clearTimeout(timer);
+  }, [loadingProducts]);
+
   // Compute the initial price range from the fetched configuration.
   const initialPriceRange = useMemo(() => {
     return categoryFilters.priceRange
@@ -43,10 +78,6 @@ const ProductCategory = () => {
 
   const [priceRange, setPriceRange] = useState(initialPriceRange);
   const [selectedFilters, setSelectedFilters] = useState({});
-  const [products, setProducts] = useState([]);
-  const [loadingProducts, setLoadingProducts] = useState(false);
-  const [productsError, setProductsError] = useState(null);
-
   const [page, setPage] = useState(1);
   const limit = 12; // 12 products per page
   const [totalPages, setTotalPages] = useState(1);
@@ -54,9 +85,12 @@ const ProductCategory = () => {
   // Fetch products based on filters and pagination.
   useEffect(() => {
     const fetchProducts = async () => {
+      //Shows a loading spinner to indicate data is being fetched.
       setLoadingProducts(true);
+      // Resets any previous error messages.
       setProductsError(null);
 
+      // This section builds the query parameters dynamically for filtering products.
       const params = {
         category,
         page,
@@ -71,19 +105,28 @@ const ProductCategory = () => {
         ),
       };
 
-      console.log("Serialized Params:", qs.stringify(params, { arrayFormat: "repeat" }));
-      console.log("Final API Request Params:", params);
+      // Log the serialized parameters for debugging.
+      // console.log(
+      //   "Serialized Params:",
+      //   qs.stringify(params, { arrayFormat: "repeat" })
+      // );
+      // console.log("Final API Request Params:", params);
 
       try {
+        // Make the API request to fetch products.
         const response = await axios.get(`http://localhost:5000/api/products`, {
           params,
-          paramsSerializer: (params) => qs.stringify(params, { arrayFormat: "repeat" }),
+          paramsSerializer: (params) =>
+            qs.stringify(params, { arrayFormat: "repeat" }),
         });
 
         console.log("API Response:", response.data);
         setProducts(response.data);
 
+        // Calculate the total number of pages based on the total count of products.
         const totalCountHeader =
+        //If the header is available, it extracts and parses the total product count.
+        //The backend may send the total number of products in a custom header (X-Total-Count).
           response.headers["x-total-count"] || response.headers["X-Total-Count"];
         const totalCount = totalCountHeader
           ? parseInt(totalCountHeader, 10)
@@ -100,11 +143,13 @@ const ProductCategory = () => {
       }
     };
 
-    // Only fetch products if the filter configuration has been loaded.
+    // Only fetch products if filter configuration is loaded.
     if (!loadingFilters) {
       fetchProducts();
     }
   }, [category, page, priceRange, selectedFilters, loadingFilters]);
+
+
 
   // Reset filters and price range when the category changes.
   useEffect(() => {
@@ -118,7 +163,7 @@ const ProductCategory = () => {
     setPage(1);
   }, [priceRange, selectedFilters]);
 
-  // Scroll to top whenever filters change.
+  // Scroll to the top whenever the filters change.
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [selectedFilters, priceRange]);
@@ -240,10 +285,13 @@ const ProductCategory = () => {
               {!loadingFilters &&
                 !filtersError &&
                 categoryFilters.options &&
+                //  Map over the options object and render each filter group
                 Object.keys(categoryFilters.options).map((filterKey) => {
+                  // Extract the options array from the options object
                   const options = categoryFilters.options[filterKey];
                   if (!Array.isArray(options)) return null;
                   return (
+                    // Render each filter group as a separate section
                     <div key={filterKey} className="bg-gray-700 p-3 rounded-lg">
                       <h4 className="text-lg font-semibold text-white mb-2">
                         {filterKey.charAt(0).toUpperCase() + filterKey.slice(1)}
@@ -274,9 +322,12 @@ const ProductCategory = () => {
 
           {/* Product Cards Section */}
           <div className="md:w-3/4">
-            {loadingProducts && (
-              <p className="text-white">Loading products...</p>
-            )}
+            {loadingProducts && showLoader && (
+            <div className="flex justify-center items-center py-4">
+              <FiLoader className="text-white animate-spin text-3xl" />
+            </div>
+          )}
+          
             {productsError && (
               <p className="text-red-500">{productsError}</p>
             )}

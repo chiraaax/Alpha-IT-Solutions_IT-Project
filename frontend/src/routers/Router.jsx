@@ -43,8 +43,21 @@ import ReviewForm from '../components/Reviews/ReviewForm';
 import GamingBuilds from '../components/CustomBuilds/GamingBuilds';
 import BudgetBuilds from '../components/CustomBuilds/BudgetBuilds';
 import GamingBuildDetail from '../components/CustomBuilds/GamingBuildDetail';
-import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail';
+import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail'; 
 import CreateCustomBuild from '../components/CustomBuilds/CreateCustomPreBuild';
+import AICustomizeBuild from '../components/CustomBuilds/AICustomizeBuild'; 
+import PreBuildDashboard from "../components/CustomBuilds/PreBuildDashboard";
+import EditCustomPreBuild from '../components/CustomBuilds/EditCustomPreBuild';
+import AdminFiltersPage from '../pages/dashboard/admin/filterProducts/AdminFiltersPage';
+
+
+//order management
+import ShoppingCart from '../pages/OrderManagement/ShoppingCart';
+import CheckoutForm from '../components/OrderManagement/CheckoutForm';
+import PickupForm from '../components/OrderManagement/pickupForm';
+import CodForm from '../components/OrderManagement/CodForm';
+import CatalogReportInline from '../pages/dashboard/user/shop/report/CatalogReportInline ';
+// import OrderList from '../components/OrderManagement/OrderList';
 import CustomizeBuild from '../components/CustomBuilds/CustomizeBuild'; // ✅ New Import
 import FilterForm from '../pages/dashboard/admin/filterProducts/FilterForm';
 import FiltersList from '../pages/dashboard/admin/filterProducts/FiltersList';
@@ -75,9 +88,19 @@ const router = createBrowserRouter([
       { path: 'gaming-builds', element: <GamingBuilds /> },
       { path: 'budget-builds', element: <BudgetBuilds /> },        
       { path: 'gaming-builds/:id', element: <GamingBuildDetail /> },
+      
+      //order routes
+      { path: 'ShoppingCart', element: <ProtectedRoute><ShoppingCart /></ProtectedRoute> },
+      { path: 'CheckoutForm', element: <ProtectedRoute><CheckoutForm /></ProtectedRoute> },
+      { path: 'CheckoutForm/:email', element: <ProtectedRoute><CheckoutForm /></ProtectedRoute> },
+      { path: 'PickupForm', element: <ProtectedRoute><PickupForm /></ProtectedRoute> },
+      { path: 'CodForm', element: <ProtectedRoute><CodForm /></ProtectedRoute> },
       { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },  
-      { path: 'customize-build/:id', element: <CustomizeBuild /> }, 
-
+      { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, 
+       // Updated route for your custom dashboard
+      { path: 'ai-customize-build', element: <AICustomizeBuild /> }, 
+      { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, // ✅ New Route
+      { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, // Updated route for your custom dashboard
     ]
   },
   
@@ -94,6 +117,10 @@ const router = createBrowserRouter([
     children: [
       // Customer routes
       { path: '', element: <div>Dashboard Home</div> },
+      { path: 'profile', element: <div>Profile</div> },
+      { path: 'reviews', element: <div>Reviews</div> },
+      { path: 'report-shop', element: <CatalogReportInline/> },
+      
       { path: 'profile', element: <div><Profile/></div> },
       { path: 'UserInquiries', element: <div><UserInquiries/></div> },
       { path: 'UserReviews', element:<div><UserReviews/></div>},
@@ -105,9 +132,9 @@ const router = createBrowserRouter([
       { path: 'manage-inventory', element: <ProtectedRoute allowedRoles={["admin"]}><ManageInventory /></ProtectedRoute> },
       { path: 'UserManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><UserManage/></div></ProtectedRoute> },
       { path: 'manage-appointments', element: <ProtectedRoute allowedRoles={["admin"]}><ManageAppointments /></ProtectedRoute> },
-      { path: 'manage-filters', element: <ProtectedRoute allowedRoles={["admin"]}><FilterForm /></ProtectedRoute> },
-      { path: 'manage-filters-db', element: <ProtectedRoute allowedRoles={["admin"]}><FiltersList /></ProtectedRoute> },
+      { path: 'filters', element: <ProtectedRoute allowedRoles={["admin"]}>< AdminFiltersPage/></ProtectedRoute> },
       { path: 'create-custom-prebuild', element: <ProtectedRoute allowedRoles={["admin"]}><CreateCustomBuild /></ProtectedRoute> },
+      { path: 'prebuild-dashboard', element: <ProtectedRoute allowedRoles={["admin"]}><PreBuildDashboard /></ProtectedRoute>  },
       { path: 'ReviewManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><ReviewManage/></div></ProtectedRoute> },
       { path: 'InquiryManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><InquiryManage/></div></ProtectedRoute>},
       { path: 'FAQManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><FAQManage/></div></ProtectedRoute>},
