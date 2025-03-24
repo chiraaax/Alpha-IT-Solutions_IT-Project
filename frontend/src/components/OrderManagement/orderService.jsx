@@ -1,8 +1,17 @@
-export const deleteOrder = async (id) => {
+export const deleteOrder = async (email) => {
     try {
-        const res = await fetch(`http://localhost:5000/api/orders/orders/${id}`, {
+        console.log("Sending DELETE request for email:", email); // Debugging
+
+        const res = await fetch(`http://localhost:5000/api/orders/orders/${encodeURIComponent(email)}`, {
             method: "DELETE",
+            headers: { "Content-Type": "application/json" },
         });
+
+        if (!res.ok) {
+            const errorText = await res.text(); // Read response even if it's not JSON
+            console.error("Server response:", errorText);
+            throw new Error(`Failed to delete order: ${res.statusText}`);
+        }
 
         const result = await res.json();
         return result;
@@ -12,14 +21,14 @@ export const deleteOrder = async (id) => {
     }
 };
 
-export const updateOrder = async (id, updatedData) => {
-    if (!id) {
-        console.error("Order ID is missing in updateOrder function");
+export const updateOrder = async (email, updatedData) => {
+    if (!email) {
+        console.error("Email is missing in updateOrder function");
         return;
     }
 
     try {
-        const response = await fetch(`http://localhost:5000/api/orders/orders/${id}`, {
+        const response = await fetch(`http://localhost:5000/api/orders/orders/${encodeURIComponent(email)}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(updatedData),
@@ -31,6 +40,3 @@ export const updateOrder = async (id, updatedData) => {
         console.error("Error updating order:", error);
     }
 };
-
-
-  

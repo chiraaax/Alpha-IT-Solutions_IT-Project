@@ -81,10 +81,12 @@ router.get('/orders/all', async (req, res) => {
 });
 
 // GET a single order by ID
-router.get("/orders/:id", async (req, res) => {
+router.get("/orders/:email", async (req, res) => {
   try {
-    const id = req.params.id;
-    const order = await Order.findById(id);
+    const email = decodeURIComponent(req.params.email); // Decode email from URL
+    console.log("Received GET request for email:", email);
+
+    const order = await Order.findById(email);
     if (!order) {
       return res.status(404).json({ errorMessage: error.message });
     }
@@ -94,40 +96,52 @@ router.get("/orders/:id", async (req, res) => {
   }
 });
 
-// Delete order if it's within 24 hours
-router.delete("/orders/:id", async (req, res) => {
+router.delete("/orders/:email", async (req, res) => {
+  const email = decodeURIComponent(req.params.email); // Decode email from URL
+  console.log("Received DELETE request for email:", email);
+
   try {
-    const id  = req.params.id
-    const order = await Order.findById(id);
+    const order = await Order.findOne({ email });
+
+    // Check if the order exists
     if (!order) {
-      return res.status(404).json({ message: "Order not found" });
+      return res.status(404).send("Order not found.");
     }
 
-    const orderTime = new Date(order.createdAt);
-    const currentTime = new Date();
-    const diffHours = (currentTime - orderTime) / (1000 * 60 * 60);
+    // Get the current time and the order's creation time
+    const now = new Date();
+    const orderCreatedAt = new Date(order.createdAt);
+    
+    // Calculate the difference in milliseconds
+    const timeDifference = now - orderCreatedAt;
 
-    if (diffHours > 24) {
-      return res
-        .status(400)
-        .json({ message: "Order cannot be deleted after 24 hours" });
+    // Check if the order is older than 24 hours
+    if (timeDifference > 24 * 60 * 60 * 1000) {  // 24 hours in milliseconds
+      return res.status(400).send("Orders can only be deleted within 24 hours of creation.");
     }
 
-    await Order.findByIdAndDelete(id);
-    res.json({ message: "Order deleted successfully" });
+    // Delete the order if it's within 24 hours
+    await Order.deleteOne({ email });
+    res.send({ message: "Order deleted successfully!" });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting order" });
+    res.status(500).send("Error deleting order.");
   }
 });
 
-router.put("/orders/:id", async (req, res) => {
+
+// Update an order if it's within 24 hours
+router.put("/orders/:email", async (req, res) => {
   try {
-    const id = req.params.id
-    const order = await Order.findById(id);
+    const email = decodeURIComponent(req.params.email); // Decode email from URL
+    console.log("Received Update request for email:", email);
+
+    // Find order by email instead of ID
+    const order = await Order.findOne({ email: email }); // Assuming 'email' is a field in the Order model
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
+    // Check if it's within 24 hours
     const orderTime = new Date(order.createdAt);
     const currentTime = new Date();
     const diffHours = (currentTime - orderTime) / (1000 * 60 * 60);
@@ -138,14 +152,17 @@ router.put("/orders/:id", async (req, res) => {
         .json({ message: "Order cannot be updated after 24 hours" });
     }
 
-    const updatedOrder = await Order.findByIdAndUpdate(
-      id,
+    // Update the order with the new data
+    const updatedOrder = await Order.findOneAndUpdate(
+      { email: email }, // Update by email instead of ID
       req.body,
-      { new: true }
+      { new: true, runValidators: true } // Ensures validation rules are applied
     );
+
     res.json(updatedOrder);
   } catch (error) {
-    res.status(500).json({ message: "Error updating order" });
+    console.error("Error updating order:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 

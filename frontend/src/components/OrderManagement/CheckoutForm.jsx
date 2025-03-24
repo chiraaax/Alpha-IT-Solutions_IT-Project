@@ -1,41 +1,35 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
-import "../../styles/OrderManagement/CheckoutForm.css";
 import PickupForm from "./pickupForm";
 import CodForm from "./CodForm";
-import { deleteOrder/*, updateOrder*/ } from "./orderService";
+import { deleteOrder, updateOrder } from "./orderService";
 
 const CheckoutForm = () => {
-  const navigate = useNavigate();
-  const { id } = useParams();
+  const { email } = useParams();
   const [formData, setFormData] = useState({
     name: "",
     phoneNo: "",
     email: "",
     paymentMethod: "COD",
   });
-
   const [codData, setCodData] = useState({
     address: "",
     deliveryDate: "",
     deliveryTime: "",
     saveAddress: false,
   });
-
   const [pickupData, setPickupData] = useState({
     pickupDate: "",
     pickupTime: "",
   });
 
   const [successOrder, setSuccessOrder] = useState(null);
-  // const [canModify, setCanModify] = useState(false);
 
-  // Fetch order details if orderId is provided
   useEffect(() => {
-    if (id) {
+    if (email) {
       axios
-        .get(`http://localhost:5000/api/orders/orders/${id}`)
+        .get(`http://localhost:5000/api/orders/orders/${email}`)
         .then((response) => {
           const order = response.data;
           setSuccessOrder(order);
@@ -66,7 +60,7 @@ const CheckoutForm = () => {
           console.error("Error fetching order:", error);
         });
     }
-  }, [id]);
+  }, [email]);
 
   const checkTimeLimit = (order) => {
     if (!order) return;
@@ -88,45 +82,22 @@ const CheckoutForm = () => {
     setPickupData({ ...pickupData, [e.target.name]: e.target.value });
   };
 
-  // const handleUpdate = async () => {
-  //   if (!successOrder) {
-  //     alert("Order not found.");
-  //     return;
-  //   }
+  const handlePaymentChange = (e) => {
+    setFormData({ ...formData, paymentMethod: e.target.value });
+  };
 
-  //   const updatedOrderData = {
-  //     ...formData,
-  //     ...(formData.paymentMethod === "COD" ? codData : pickupData),
-  //   };
-
-  //   try {
-  //     const result = await updateOrder(successOrder, updatedOrderData);
-  //     alert(result.message || "Order updated successfully!");
-
-  //     // Update local state with new data after updating
-  //     setSuccessOrder({ ...successOrder, ...updatedOrderData });
-  //   } catch (error) {
-  //     console.error("Error updating order:", error);
-  //     alert("Failed to update order.");
-  //   }
-  // };
-
-  // console.log("order ID : " , id);
   const handleDelete = async () => {
-    if (!id) {
-      alert("Order not found.");
+    if (!formData.email) {
+      alert("Order not found. Email is required.");
       return;
     }
 
     const confirmDelete = window.confirm("Are you sure you want to delete this order?");
     if (!confirmDelete) return;
-  
 
     try {
-      const result = await deleteOrder(id);
-      alert(result.message);
-
-      // Clear order data after deletion
+      const result = await deleteOrder(formData.email);
+      alert(result.message || "Order deleted successfully!");
       setSuccessOrder(null);
     } catch (error) {
       console.error("Error deleting order:", error);
@@ -145,48 +116,68 @@ const CheckoutForm = () => {
     try {
       const response = await axios.post("http://localhost:5000/api/orders/orders", orderData);
       setSuccessOrder(response.data);
-      // navigate(`/checkout/${response.data.id}`);
       alert("Order placed successfully!");
     } catch (error) {
       console.error("Error placing order:", error.response?.data || error.message);
       alert("Failed to place order. Please check your details and try again.");
     }
   };
-  
+
+  const handleUpdate = async (email) => {
+    const confirmUpdate = window.confirm("Are you sure you want to update this order?");
+    if (!confirmUpdate) return;
+
+    const updatedOrderData = {
+      ...formData,
+      ...(formData.paymentMethod === "COD" ? codData : pickupData),
+    };
+
+    try {
+      const result = await updateOrder(email, updatedOrderData);
+      alert(result.message || "Order updated successfully!");
+      setSuccessOrder({ ...successOrder, ...updatedOrderData });
+    } catch (error) {
+      console.error("Error updating order:", error);
+      alert("Failed to update order.");
+    }
+  };
 
   return (
-    <div className="checkout-container">
-      <h2>Checkout</h2>
+    <div style={{ width: "50%", margin: "50px auto", padding: "20px", background: "#d9e2ee", borderRadius: "10px" }}>
+      <h2 style={{ textAlign: "center" }}>Checkout</h2>
       {!successOrder ? (
-        <form onSubmit={handleSubmit}>
-          <label>Full Name</label>
+        <form style={{ display: "flex", flexDirection: "column" }} onSubmit={handleSubmit}>
+          <label style={{ fontSize: "16px", fontWeight: "bold", marginTop: "10px", display: "block" }}>Full Name</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
             required
+            style={{ margin: "5px 0 15px 0", padding: "10px", fontSize: "16px", border: "1px solid #000000", borderRadius: "5px" }}
           />
 
-          <label>Phone Number</label>
+          <label style={{ fontSize: "16px", fontWeight: "bold", marginTop: "10px", display: "block" }}>Phone Number</label>
           <input
             type="text"
             name="phoneNo"
             value={formData.phoneNo}
             onChange={handleChange}
             required
+            style={{ margin: "5px 0 15px 0", padding: "10px", fontSize: "16px", border: "1px solid #000000", borderRadius: "5px" }}
           />
 
-          <label>Email Address</label>
+          <label style={{ fontSize: "16px", fontWeight: "bold", marginTop: "10px", display: "block" }}>Email Address</label>
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
             required
+            style={{ margin: "5px 0 15px 0", padding: "10px", fontSize: "16px", border: "1px solid #000000", borderRadius: "5px" }}
           />
 
-          <h3>Payment Options</h3>
+          <h3 style={{ textAlign: "center" }}>Payment Options</h3>
           <label>
             <input
               type="radio"
@@ -215,19 +206,33 @@ const CheckoutForm = () => {
             <CodForm codData={codData} handleCodChange={handleCodChange} />
           )}
 
-          <button type="submit" className="order">
+          <button
+            type="submit"
+            style={{
+              marginTop: "15px",
+              padding: "10px 20px",
+              width: "fit-content",
+              alignSelf: "center",
+              background: "rgb(2, 209, 2)",
+              color: "black",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+              fontSize: "16px",
+              fontWeight: "bold",
+              transition: "background 0.3s, color 0.3s",
+            }}
+            onMouseOver={(e) => (e.target.style.background = "darkgreen")}
+            onMouseOut={(e) => (e.target.style.background = "rgb(2, 209, 2)")}
+          >
             Save and Place Order
           </button>
         </form>
       ) : (
-        // Success Message with Order Details
-        <div className="mt-4 p-4 border rounded-lg bg-green-100">
-          <h3 className="text-lg font-semibold text-green-700">
-            Order Successfully Placed!
-            {console.log(id)}
-          </h3>
+        <div style={{ marginTop: "16px", padding: "16px", border: "1px solid #000000", borderRadius: "8px", background: "#d1f7d1" }}>
+          <h3 style={{ fontSize: "18px", fontWeight: "600", color: "#145214" }}>Order Successfully Placed!</h3>
           <p>Thank you for your order. Here are the details:</p>
-          <ul className="mt-2 list-disc pl-5">
+          <ul style={{ marginTop: "8px", listStyleType: "disc", paddingLeft: "20px" }}>
             <li><strong>Name:</strong> {formData.name}</li>
             <li><strong>Phone No:</strong> {formData.phoneNo}</li>
             <li><strong>Email:</strong> {formData.email}</li>
@@ -247,16 +252,118 @@ const CheckoutForm = () => {
             )}
           </ul>
 
-          <button onClick={() => navigate(`/updateOrder/${id}`)}>Update</button>
-          {/* <button onClick={handleUpdate}>Update</button> */}
           <button onClick={handleDelete}>Delete</button>
+        </div>
+      )}
 
-          {/* {canModify && (
-            <>
-              <button onClick={handleUpdate}>Update</button>
-              <button onClick={handleDelete}>Delete</button>
-            </>
-          )} */}
+      {successOrder && (
+        <div style={{ marginTop: "20px" }}>
+          <h2>Order Details</h2>
+          <div>
+            <div style={{ marginBottom: "10px" }}>
+              <strong>Name:</strong>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                style={{ marginLeft: "10px", padding: "5px" }}
+              />
+            </div>
+            <div style={{ marginBottom: "10px" }}>
+              <strong>Phone Number:</strong>
+              <input
+                type="text"
+                name="phoneNo"
+                value={formData.phoneNo}
+                onChange={handleChange}
+                style={{ marginLeft: "10px", padding: "5px" }}
+              />
+            </div>
+            <div style={{ marginBottom: "10px" }}>
+              <strong>Email:</strong>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                style={{ marginLeft: "10px", padding: "5px" }}
+              />
+            </div>
+            <div style={{ marginBottom: "10px" }}>
+              <strong>Payment Method:</strong>
+              <select
+                name="paymentMethod"
+                value={formData.paymentMethod}
+                onChange={handlePaymentChange}
+                style={{ marginLeft: "10px", padding: "5px" }}
+              >
+                <option value="COD">Cash On Delivery</option>
+                <option value="Pickup">Pick-Up (Self Collect)</option>
+              </select>
+            </div>
+            {formData.paymentMethod === "COD" && (
+              <>
+                <div style={{ marginBottom: "10px" }}>
+                  <strong>Delivery Address:</strong>
+                  <input
+                    type="text"
+                    name="address"
+                    value={codData.address}
+                    onChange={handleCodChange}
+                    style={{ marginLeft: "10px", padding: "5px" }}
+                  />
+                </div>
+                <div style={{ marginBottom: "10px" }}>
+                  <strong>Delivery Date:</strong>
+                  <input
+                    type="date"
+                    name="deliveryDate"
+                    value={codData.deliveryDate}
+                    onChange={handleCodChange}
+                    style={{ marginLeft: "10px", padding: "5px" }}
+                  />
+                </div>
+                <div style={{ marginBottom: "10px" }}>
+                  <strong>Delivery Time:</strong>
+                  <input
+                    type="time"
+                    name="deliveryTime"
+                    value={codData.deliveryTime}
+                    onChange={handleCodChange}
+                    style={{ marginLeft: "10px", padding: "5px" }}
+                  />
+                </div>
+              </>
+            )}
+            {formData.paymentMethod === "Pickup" && (
+              <>
+                <div style={{ marginBottom: "10px" }}>
+                  <strong>Pickup Date:</strong>
+                  <input
+                    type="date"
+                    name="pickupDate"
+                    value={pickupData.pickupDate}
+                    onChange={handlePickupChange}
+                    style={{ marginLeft: "10px", padding: "5px" }}
+                  />
+                </div>
+                <div style={{ marginBottom: "10px" }}>
+                  <strong>Pickup Time:</strong>
+                  <input
+                    type="time"
+                    name="pickupTime"
+                    value={pickupData.pickupTime}
+                    onChange={handlePickupChange}
+                    style={{ marginLeft: "10px", padding: "5px" }}
+                  />
+                </div>
+              </>
+            )}
+            <div>
+              <button onClick={() => handleUpdate(formData.email)}>Save Changes</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

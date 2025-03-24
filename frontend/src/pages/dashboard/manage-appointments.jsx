@@ -4,13 +4,15 @@ import "../../styles/appointment_dashboard.css";
 
 const Admin_AppointmentDashboard = () => {
   const [appointments, setAppointments] = useState([]);
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentStage, setCurrentStage] = useState(-1); // Initial stage is empty
-  const [rejectionReason, setRejectionReason] = useState(""); // Reason for rejection
+  const [currentStage, setCurrentStage] = useState(-1);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const navigate = useNavigate();
 
-  // Progress stages
   const progressStages = [
     "Device Handover",
     "Diagnosis",
@@ -19,98 +21,112 @@ const Admin_AppointmentDashboard = () => {
     "Device Ready to Pick",
   ];
 
-  // Fetch appointments from the backend
+  // Fetch all appointments (Admin only)
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/appointments");
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("No authentication token found. Redirecting to login...");
+          navigate("/login");
+          return;
         }
+
+        const response = await fetch("http://localhost:5000/api/appointments/all", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch appointments: ${response.status}`);
+        }
+
         const data = await response.json();
         setAppointments(data);
+        setFilteredAppointments(data);
       } catch (error) {
         console.error("Error fetching appointments:", error);
       }
     };
 
     fetchAppointments();
-  }, []);
+  }, [navigate]);
+
+  // Handle search input change
+  useEffect(() => {
+    const filtered = appointments.filter(
+      (appointment) =>
+        appointment.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        appointment.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        appointment.issueDescription.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredAppointments(filtered);
+  }, [searchQuery, appointments]);
 
   // Handle row click to open modal
   const handleRowClick = (appointment) => {
     setSelectedAppointment(appointment);
     setIsModalOpen(true);
-    setCurrentStage(appointment.progress || -1); // Set current progress stage
-    setRejectionReason(appointment.rejectionReason || ""); // Set rejection reason
+    setCurrentStage(appointment.progress || -1);
+    setRejectionReason(appointment.rejectionReason || "");
+    setIsButtonDisabled(appointment.status === "accepted" || appointment.status === "rejected");
   };
 
-  // Handle accept appointment
-  const handleAccept = async () => {
+  // Update appointment status (accept/reject)
+  const updateAppointmentStatus = async (status, reason = "") => {
     try {
-      const updatedAppointment = { ...selectedAppointment, status: "accepted", rejectionReason: "" };
-      const response = await fetch(`http://localhost:5000/api/appointments/${selectedAppointment._id}/status`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: "accepted" }),
-      });
+      setIsButtonDisabled(true);
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `http://localhost:5000/api/appointments/${selectedAppointment._id}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status, rejectionReason: reason }),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error("Failed to update appointment");
+        throw new Error("Failed to update appointment status");
       }
 
-      const updatedAppointmentData = await response.json();
+      const updatedAppointment = await response.json();
       setAppointments((prev) =>
-        prev.map((app) => (app._id === updatedAppointmentData._id ? updatedAppointmentData : app))
+        prev.map((app) => (app._id === updatedAppointment._id ? updatedAppointment : app))
+      );
+      setFilteredAppointments((prev) =>
+        prev.map((app) => (app._id === updatedAppointment._id ? updatedAppointment : app))
       );
       setIsModalOpen(false);
     } catch (error) {
-      console.error("Error accepting appointment:", error);
+      console.error("Error updating appointment status:", error);
+      setIsButtonDisabled(false);
     }
   };
 
-  // Handle reject appointment
-  const handleReject = async () => {
-    if (!rejectionReason) {
-      alert("Please provide a reason for rejection.");
-      return;
-    }
-
-    try {
-      const updatedAppointment = { ...selectedAppointment, status: "rejected", rejectionReason };
-      const response = await fetch(`http://localhost:5000/api/appointments/${selectedAppointment._id}/status`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: "rejected", rejectionReason }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update appointment");
-      }
-
-      const updatedAppointmentData = await response.json();
-      setAppointments((prev) =>
-        prev.map((app) => (app._id === updatedAppointmentData._id ? updatedAppointmentData : app))
-      );
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error("Error rejecting appointment:", error);
-    }
-  };
-
-  // Handle updating progress stage
+  // Update appointment progress
   const updateProgress = async (stageIndex) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/appointments/${selectedAppointment._id}/progress`, {
+      const token = localStorage.getItem("token");
+      const url = `http://localhost:5000/api/appointments/${selectedAppointment._id}/progress`;
+      const payload = JSON.stringify({ progress: stageIndex });
+
+      console.log("Request URL:", url);
+      console.log("Request Payload:", payload);
+
+      const response = await fetch(url, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ progress: stageIndex }),
+        body: payload,
       });
 
       if (!response.ok) {
@@ -118,9 +134,17 @@ const Admin_AppointmentDashboard = () => {
       }
 
       const updatedAppointment = await response.json();
+      console.log("Updated Appointment:", updatedAppointment);
+
+      // Update local state
       setSelectedAppointment(updatedAppointment);
       setCurrentStage(stageIndex);
+
+      // Update appointments list
       setAppointments((prev) =>
+        prev.map((app) => (app._id === updatedAppointment._id ? updatedAppointment : app))
+      );
+      setFilteredAppointments((prev) =>
         prev.map((app) => (app._id === updatedAppointment._id ? updatedAppointment : app))
       );
     } catch (error) {
@@ -130,11 +154,23 @@ const Admin_AppointmentDashboard = () => {
 
   return (
     <div className="dashboard-container">
-      {/* Header with Action Buttons */}
       <div className="header">
         <h1>Appointment Dashboard</h1>
+        <input
+          type="text"
+          placeholder="Search by name, email, or issue..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{
+            padding: "8px",
+            width: "300px",
+            borderRadius: "4px",
+            border: "1px solid #ccc",
+            marginBottom: "20px",
+          }}
+          className="search-bar"
+        />
       </div>
-      {/* Appointment Details Section */}
       <div className="appointment-details">
         <h2>Appointment Details</h2>
         <table>
@@ -149,8 +185,8 @@ const Admin_AppointmentDashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {appointments.length > 0 ? (
-              appointments.map((appointment, index) => (
+            {filteredAppointments.length > 0 ? (
+              filteredAppointments.map((appointment, index) => (
                 <tr key={appointment._id} onClick={() => handleRowClick(appointment)}>
                   <td>{index + 1}</td>
                   <td>{appointment.name}</td>
@@ -170,109 +206,77 @@ const Admin_AppointmentDashboard = () => {
           </tbody>
         </table>
       </div>
-
-      {/* Modal for Detailed View */}
       {isModalOpen && selectedAppointment && (
         <div className="modal-overlay">
           <div className="modal">
             <div className="modal-header">
               <h2>Appointment Details</h2>
-              <button className="close-btn" onClick={() => setIsModalOpen(false)}>
-                &times;
-              </button>
+              <button className="close-btn" onClick={() => setIsModalOpen(false)}>&times;</button>
             </div>
             <div className="modal-body">
-              {/* Display Appointment Details */}
-              <div className="appointment-info">
-                <p>
-                  <strong>Name:</strong> {selectedAppointment.name}
-                </p>
-                <p>
-                  <strong>Email:</strong> {selectedAppointment.email}
-                </p>
-                <p>
-                  <strong>Phone:</strong> {selectedAppointment.phone}
-                </p>
-                <p>
-                  <strong>Device Type:</strong> {selectedAppointment.deviceType}
-                </p>
-                <p>
-                  <strong>Issue Description:</strong> {selectedAppointment.issueDescription}
-                </p>
-                <p>
-                  <strong>Contact Method:</strong> {selectedAppointment.contactMethod}
-                </p>
-                <p>
-                  <strong>Date:</strong> {selectedAppointment.date}
-                </p>
-                <p>
-                  <strong>Time Slot:</strong> {selectedAppointment.timeSlot}
-                </p>
-                <p>
-                  <strong>Problem Type:</strong> {selectedAppointment.problemType}
-                </p>
-                <p>
-                  <strong>Pickup/Dropoff:</strong> {selectedAppointment.pickupOrDropoff}
-                </p>
-                <p>
-                  <strong>Chip-Level Repair:</strong> {selectedAppointment.chipLevelRepair ? "Yes" : "No"}
-                </p>
-                <p>
-                  <strong>Attempted Fixes:</strong> {selectedAppointment.attemptedFixes ? "Yes" : "No"}
-                </p>
-                <p>
-                  <strong>Backup Data:</strong> {selectedAppointment.backupData ? "Yes" : "No"}
-                </p>
-              </div>
-
-         {/* Progress Bar (Conditional Rendering) */}
-{selectedAppointment.status === "accepted" && (
-  <div className="progress-bar">
-    <h3>Progress</h3>
-    <div className="progress-stages">
-      {progressStages.map((stage, index) => (
-        <div
-          key={index}
-          className={`progress-stage ${index <= currentStage ? "active" : ""}`}
-          onClick={() => updateProgress(index)}
-        >
-          <div className="circle"></div>
-          <span>{stage}</span>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
-
-              {/* Reason for Rejection */}
-              {selectedAppointment.status === "pending" && (
-                <div className="rejection-reason">
-                  <label>Reason for Rejection:</label>
-                  <textarea
-                    value={rejectionReason}
-                    onChange={(e) => setRejectionReason(e.target.value)}
-                    placeholder="Provide a reason for rejection"
-                  />
+              <p><strong>Name:</strong> {selectedAppointment.name}</p>
+              <p><strong>Email:</strong> {selectedAppointment.email}</p>
+              <p><strong>Phone:</strong> {selectedAppointment.phone}</p>
+              <p><strong>Device Type:</strong> {selectedAppointment.deviceType}</p>
+              <p><strong>Issue Description:</strong> {selectedAppointment.issueDescription}</p>
+              <p><strong>Contact Method:</strong> {selectedAppointment.contactMethod}</p>
+              <p><strong>Date:</strong> {selectedAppointment.date}</p>
+              <p><strong>Time Slot:</strong> {selectedAppointment.timeSlot}</p>
+              <p><strong>Problem Type:</strong> {selectedAppointment.problemType}</p>
+              <p><strong>Pickup/Dropoff:</strong> {selectedAppointment.pickupOrDropoff}</p>
+              <p><strong>Chip Level Repair:</strong> {selectedAppointment.chipLevelRepair ? "Yes" : "No"}</p>
+              <p><strong>Attempted Fixes:</strong> {selectedAppointment.attemptedFixes}</p>
+              <p><strong>Backup Data:</strong> {selectedAppointment.backupData ? "Yes" : "No"}</p>
+              {selectedAppointment.status === "accepted" && (
+                <div className="progress-bar">
+                  <h3>Progress</h3>
+                  <div className="progress-stages">
+                    {progressStages.map((stage, index) => (
+                      <div
+                        key={index}
+                        className={`progress-stage ${index <= currentStage ? "active" : ""}`}
+                        onClick={() => updateProgress(index)}
+                      >
+                        <div className="circle"></div>
+                        <span>{stage}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
-
-              {/* Accept/Reject Buttons */}
-<div className="accept-reject-buttons">
-  <button
-    className="btn accept-btn"
-    onClick={handleAccept}
-    disabled={selectedAppointment.status === "accepted" || selectedAppointment.status === "rejected"}
-  >
-    Accept
-  </button>
-  <button
-    className="btn reject-btn"
-    onClick={handleReject}
-    disabled={selectedAppointment.status === "accepted" || selectedAppointment.status === "rejected"}
-  >
-    Reject
-  </button>
-</div>
+              {selectedAppointment.status === "pending" && (
+                <textarea
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  placeholder="Provide a reason for rejection"
+                />
+              )}
+              <div className="modal-actions" style={{ display: "flex", gap: "10px", margin: "4px" }}>
+                <button
+                  className="btn accept-btn"
+                  onClick={() => updateAppointmentStatus("accepted")}
+                  disabled={isButtonDisabled}
+                  style={{
+                    backgroundColor: isButtonDisabled ? "#ccc" : "#4CAF50",
+                    color: isButtonDisabled ? "#666" : "#fff",
+                    cursor: isButtonDisabled ? "not-allowed" : "pointer",
+                  }}
+                >
+                  Accept
+                </button>
+                <button
+                  className="btn reject-btn"
+                  onClick={() => updateAppointmentStatus("rejected", rejectionReason)}
+                  disabled={isButtonDisabled}
+                  style={{
+                    backgroundColor: isButtonDisabled ? "#ccc" : "#f44336",
+                    color: isButtonDisabled ? "#666" : "#fff",
+                    cursor: isButtonDisabled ? "not-allowed" : "pointer",
+                  }}
+                >
+                  Reject
+                </button>
+              </div>
             </div>
           </div>
         </div>

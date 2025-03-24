@@ -1,237 +1,490 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { productFields, stateField } from "../addProduct/productConfig";
 import UploadImage from "../addProduct/UploadImage";
 
-// Normalize specs to an array of key/value objects
-const normalizeSpecs = (specs) => {
-  if (!specs) return [];
-  if (Array.isArray(specs)) return specs;
-  if (typeof specs === "object") return [specs];
-  return [];
-};
-
 const EditProductModal = ({ product, onClose, onProductUpdated }) => {
-  // Use product.category (e.g., "laptop") to look up field configuration
-  const productTypeFields = productFields[product.category] || [];
-
-  // Get the availability field configuration from the product type config.
-  const availabilityFieldConfig = productTypeFields.find(
-    (field) => field.name === "availability"
-  );
-
-  // Set up state
-  const [description, setDescription] = useState(product.description);
-  const [availability, setAvailability] = useState(product.availability);
-  const [stateValue, setStateValue] = useState(product.state);
-  const [price, setPrice] = useState(product.price);
-  const [specs, setSpecs] = useState(normalizeSpecs(product.specs));
-  const [image, setImage] = useState(product.image || "");
+  const [configData, setConfigData] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [formData, setFormData] = useState({
+    price: product.price,
+    availability: product.availability || "",
+    state: product.state || "",
+    description: product.description || "",
+    image: product.image || "",
+    // dynamic fields will be added once config is fetched
+  });
+  const [additionalSpecs, setAdditionalSpecs] = useState([]);
+  const [newSpec, setNewSpec] = useState({ key: "", value: "" });
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-  // Exclude common fields that are managed separately (price, availability, state)
-  const specFieldOptions = productTypeFields.filter(
-    (field) =>
-      field.name !== "price" &&
-      field.name !== "availability" &&
-      field.name !== "state"
-  );
+  // Fetch configuration for the product's category
+  useEffect(() => {
+    if (product.category) {
+      axios
+        .get(`http://localhost:5000/api/filters/${product.category}`)
+        .then((res) => {
+          setConfigData(res.data);
+        })
+        .catch((err) =>
+          console.error("Error fetching filter configuration:", err)
+        );
+    }
+  }, [product.category]);
 
-  // Find field config for a given spec key.
-  const getFieldConfigForKey = (key) =>
-    specFieldOptions.find((field) => field.name === key);
+  // Initialize dynamic fields and separate additional specs once configData is available
+  useEffect(() => {
+    if (configData && configData.options) {
+      const dynamicKeys = Object.keys(configData.options);
+      const dynamicValues = {};
+      const additional = [];
 
-  const handleSpecChange = (index, field, value) => {
-    setSpecs((prevSpecs) => {
-      const updated = [...prevSpecs];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
-    });
+      // Divide product specs between dynamic and additional
+      product.specs.forEach((spec) => {
+        if (dynamicKeys.includes(spec.key)) {
+          dynamicValues[spec.key] = spec.value;
+        } else {
+          additional.push(spec);
+        }
+      });
+
+      setFormData((prev) => ({ ...prev, ...dynamicValues }));
+      setAdditionalSpecs(additional);
+    }
+  }, [configData, product.specs]);
+
+  // Handle changes for common and dynamic fields
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSave = async () => {
+  // Add a new additional spec
+  const handleAddSpec = () => {
+    if (newSpec.key && newSpec.value) {
+      setAdditionalSpecs((prev) => [...prev, newSpec]);
+      setNewSpec({ key: "", value: "" });
+    }
+  };
 
-    // Prepare updated product data
+  // Remove an additional spec
+  const handleDeleteSpec = (index) => {
+    setAdditionalSpecs((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Validate required fields and price boundaries
+  const validateFields = () => {
+    const newErrors = {};
+    const price = Number(formData.price);
+    if (isNaN(price) || price <= 0) {
+      newErrors.price = "Price must be greater than 0.";
+    } else if (
+      configData &&
+      configData.priceRange &&
+      price > configData.priceRange.max
+    ) {
+      newErrors.price = `Price cannot exceed ${configData.priceRange.max}.`;
+    }
+    if (!formData.availability) {
+      newErrors.availability = "Please select availability.";
+    }
+    if (!formData.state) {
+      newErrors.state = "Please select a state.";
+    }
+    if (!formData.description) {
+      newErrors.description = "Description is required.";
+    }
+    // Additional validations for dynamic fields if needed
+    if (configData && configData.options) {
+      Object.keys(configData.options).forEach((key) => {
+        if (!formData[key]) {
+          newErrors[key] = `Please select ${key}.`;
+        }
+      });
+    }
+    return newErrors;
+  };
+
+  // When saving, combine dynamic specs and additional specs
+  const handleSave = async () => {
+    const fieldErrors = validateFields();
+    setErrors(fieldErrors);
+    if (Object.keys(fieldErrors).length > 0) return;
+
+    setIsLoading(true);
+
+    const dynamicSpecs =
+      configData && configData.options
+        ? Object.keys(configData.options).reduce((acc, key) => {
+            if (formData[key]) {
+              acc.push({ key, value: formData[key] });
+            }
+            return acc;
+          }, [])
+        : [];
+
+    const combinedSpecs = [...dynamicSpecs, ...additionalSpecs];
+
     const updatedProduct = {
       ...product,
-      description,
-      availability,
-      state: stateValue,
-      price,
-      specs,
-      image,
+      price: formData.price,
+      availability: formData.availability,
+      state: formData.state,
+      description: formData.description,
+      image: formData.image,
+      specs: combinedSpecs,
     };
 
     try {
-      //  used product._id to target the correct document
       const response = await axios.patch(
         `http://localhost:5000/api/products/${product._id}`,
         updatedProduct
       );
       if (response.status === 200) {
         onProductUpdated(response.data);
-        onClose();
+        // Instead of closing immediately, show the custom popup
+        setShowSuccessPopup(true);
       }
     } catch (error) {
       console.error("Error updating product:", error);
+      window.alert("Error updating product.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const inputClass = "w-full p-2 border rounded-md";
+
+  // When the update is successful, display a custom popup overlay.
+  if (showSuccessPopup) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0, 0, 0, 0.9)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000,
+        }}
+      >
+        <div
+          style={{
+            background: "white",
+            padding: "20px",
+            borderRadius: "8px",
+            textAlign: "center",
+            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.6)",
+          }}
+        >
+          <p>Product edited successfully!</p>
+          <button
+            onClick={onClose}
+            style={{
+              marginTop: "10px",
+              padding: "8px 16px",
+              backgroundColor: "#007BFF",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!configData) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "rgba(0, 0, 0, 0.6)",
+          zIndex: 50,
+        }}
+      >
+        <div style={{ background: "white", padding: "20px", borderRadius: "8px" }}>
+          <p>Loading configuration...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 overflow-auto">
-  <div className="bg-white p-8 rounded-md w-7/12 max-h-screen overflow-auto">
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
+        zIndex: 50,
+        overflow: "auto",
+      }}
+    >
+      <div
+        style={{
+          background: "white",
+          padding: "32px",
+          borderRadius: "8px",
+          width: "58.33%", // approx. w-7/12
+          maxHeight: "100vh",
+          overflow: "auto",
+        }}
+      >
+        <h3 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "16px" }}>
+          Edit Product
+        </h3>
 
-        <h3 className="text-2xl font-bold mb-4">Edit Product</h3>
-
-        {/* Description */}
-        <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700">
-            Description:
+        {/* Price */}
+        <div style={{ marginBottom: "16px" }}>
+          <label style={{ display: "block", fontSize: "1.125rem", fontWeight: "500", color: "#4a5568" }}>
+            Price:
           </label>
           <input
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full p-2 border rounded-md"
+            name="price"
+            type="number"
+            placeholder={`Min: ${configData.priceRange.min} - Max: ${configData.priceRange.max}`}
+            value={formData.price}
+            onChange={handleChange}
+            className={inputClass}
           />
+          {errors.price && (
+            <p style={{ color: "red", fontSize: "0.875rem", marginTop: "4px" }}>{errors.price}</p>
+          )}
         </div>
 
         {/* Availability */}
-        <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700">
+        <div style={{ marginBottom: "16px" }}>
+          <label style={{ display: "block", fontSize: "1.125rem", fontWeight: "500", color: "#4a5568" }}>
             Availability:
           </label>
-          {availabilityFieldConfig && availabilityFieldConfig.type === "select" ? (
-            <select
-              value={availability}
-              onChange={(e) => setAvailability(e.target.value)}
-              className="w-full p-2 border rounded-md"
-            >
-              {availabilityFieldConfig.options.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <input
-              type="text"
-              value={availability}
-              onChange={(e) => setAvailability(e.target.value)}
-              className="w-full p-2 border rounded-md"
-            />
+          <select
+            name="availability"
+            value={formData.availability}
+            onChange={handleChange}
+            className={inputClass}
+          >
+            <option value="">Select Availability</option>
+            {configData.availability.map((avail) => (
+              <option key={avail} value={avail}>
+                {avail}
+              </option>
+            ))}
+          </select>
+          {errors.availability && (
+            <p style={{ color: "red", fontSize: "0.875rem", marginTop: "4px" }}>{errors.availability}</p>
           )}
         </div>
 
         {/* State */}
-        <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700">
+        <div style={{ marginBottom: "16px" }}>
+          <label style={{ display: "block", fontSize: "1.125rem", fontWeight: "500", color: "#4a5568" }}>
             State:
           </label>
           <select
-            value={stateValue}
-            onChange={(e) => setStateValue(e.target.value)}
-            className="w-full p-2 border rounded-md"
+            name="state"
+            value={formData.state}
+            onChange={handleChange}
+            className={inputClass}
           >
-            {stateField.options.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
+            <option value="">Select State</option>
+            {configData.state.map((st) => (
+              <option key={st} value={st}>
+                {st}
               </option>
             ))}
           </select>
-        </div>
-
-        {/* Price */}
-        <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700">
-            Price:
-          </label>
-          <input
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            className="w-full p-2 border rounded-md"
-          />
-        </div>
-
-        {/* Specs */}
-        <div className="mb-4">
-          <label className="block text-lg font-medium text-gray-700 mb-2">
-            Specs:
-          </label>
-          {specs.map((spec, idx) => {
-            const fieldConfig = getFieldConfigForKey(spec.key);
-            return (
-              <div key={spec._id || idx} className="flex space-x-2 mb-2 items-center">
-                {/* Editable spec key */}
-                <input
-                  type="text"
-                  value={spec.key || ""}
-                  onChange={(e) =>
-                    handleSpecChange(idx, "key", e.target.value)
-                  }
-                  placeholder="Key"
-                  className="w-1/2 p-2 border rounded-md"
-                />
-
-                {/* Spec value: dropdown if configured, or text input */}
-                {fieldConfig && fieldConfig.type === "select" ? (
-                  <select
-                    value={spec.value || ""}
-                    onChange={(e) =>
-                      handleSpecChange(idx, "value", e.target.value)
-                    }
-                    className="w-1/2 p-2 border rounded-md"
-                  >
-                    <option value="">Select Option</option>
-                    {fieldConfig.options.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type="text"
-                    placeholder="Value"
-                    value={spec.value || ""}
-                    onChange={(e) =>
-                      handleSpecChange(idx, "value", e.target.value)
-                    }
-                    className="w-1/2 p-2 border rounded-md"
-                  />
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="bg-white p-0 rounded-md w-7/12">
-
-        {/* Image Upload Using UploadImage Component */}
-        <div className="mb-4">
-          <UploadImage name="product-image" setImage={setImage} />
-          {image && (
-            <img src={image} alt="Product" className="mt-2 h-32 object-cover rounded-md border" />
+          {errors.state && (
+            <p style={{ color: "red", fontSize: "0.875rem", marginTop: "4px" }}>{errors.state}</p>
           )}
         </div>
 
-       
-      </div>
+        {/* Dynamic Fields */}
+        {configData.options &&
+          Object.keys(configData.options).map((optionKey) => (
+            <div key={optionKey} style={{ marginBottom: "16px" }}>
+              <label style={{ display: "block", fontSize: "1.125rem", fontWeight: "500", color: "#4a5568" }}>
+                {optionKey.charAt(0).toUpperCase() + optionKey.slice(1)}:
+              </label>
+              <select
+                name={optionKey}
+                value={formData[optionKey] || ""}
+                onChange={handleChange}
+                className={inputClass}
+              >
+                <option value="">Select {optionKey}</option>
+                {configData.options[optionKey].map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+              {errors[optionKey] && (
+                <p style={{ color: "red", fontSize: "0.875rem", marginTop: "4px" }}>
+                  {errors[optionKey]}
+                </p>
+              )}
+            </div>
+          ))}
+
+        {/* Description */}
+        <div style={{ marginBottom: "16px" }}>
+          <label style={{ display: "block", fontSize: "1.125rem", fontWeight: "500", color: "#4a5568" }}>
+            Description:
+          </label>
+          <textarea
+            name="description"
+            placeholder="Product Description"
+            value={formData.description}
+            onChange={handleChange}
+            className={inputClass}
+          ></textarea>
+          {errors.description && (
+            <p style={{ color: "red", fontSize: "0.875rem", marginTop: "4px" }}>{errors.description}</p>
+          )}
+        </div>
+
+        {/* Additional Specifications */}
+        <div style={{ marginBottom: "16px" }}>
+          <h4 style={{ fontSize: "1.125rem", fontWeight: "600", color: "#4a5568" }}>
+            Additional Specifications
+          </h4>
+          {additionalSpecs.map((spec, index) => (
+            <div key={index} style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "8px" }}>
+              <span style={{ color: "#4a5568" }}>
+                {spec.key}: {spec.value}
+              </span>
+              <button
+                type="button"
+                onClick={() => handleDeleteSpec(index)}
+                style={{
+                  padding: "4px 8px",
+                  backgroundColor: "#e53e3e",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  fontSize: "0.875rem",
+                  cursor: "pointer",
+                }}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
+            <input
+              type="text"
+              placeholder="Spec name: e.g., Weight"
+              value={newSpec.key}
+              onChange={(e) =>
+                setNewSpec((prev) => ({ ...prev, key: e.target.value }))
+              }
+              style={{
+                flex: 1,
+                backgroundColor: "#f7fafc",
+                border: "1px solid #e2e8f0",
+                borderRadius: "8px",
+                padding: "8px 16px",
+              }}
+            />
+            <input
+              type="text"
+              placeholder="Spec description: e.g., 2.5 kg"
+              value={newSpec.value}
+              onChange={(e) =>
+                setNewSpec((prev) => ({ ...prev, value: e.target.value }))
+              }
+              style={{
+                flex: 1,
+                backgroundColor: "#f7fafc",
+                border: "1px solid #e2e8f0",
+                borderRadius: "8px",
+                padding: "8px 16px",
+              }}
+            />
+            <button
+              type="button"
+              onClick={handleAddSpec}
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#48bb78",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              Add
+            </button>
+          </div>
+        </div>
+
+        {/* Image Upload */}
+        <div style={{ marginBottom: "16px" }}>
+          <UploadImage
+            name="image"
+            setImage={(img) =>
+              setFormData((prev) => ({ ...prev, image: img }))
+            }
+          />
+          {formData.image && (
+            <img
+              src={formData.image}
+              alt="Product"
+              style={{
+                marginTop: "8px",
+                height: "128px",
+                objectFit: "cover",
+                borderRadius: "8px",
+                border: "1px solid #e2e8f0",
+              }}
+            />
+          )}
+        </div>
 
         {/* Buttons */}
-        <div className="flex justify-end space-x-4">
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "16px" }}>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-300 rounded-md"
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#a0aec0",
+              borderRadius: "4px",
+              border: "none",
+              cursor: "pointer",
+            }}
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md"
+            disabled={isLoading}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#4299e1",
+              color: "white",
+              borderRadius: "4px",
+              border: "none",
+              cursor: "pointer",
+            }}
           >
-            Save
+            {isLoading ? "Saving..." : "Save"}
           </button>
         </div>
       </div>

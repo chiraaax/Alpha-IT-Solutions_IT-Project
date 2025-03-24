@@ -32,7 +32,7 @@ const OrderList = ({ customerId }) => {
           {orders.map((order) => (
             <li key={order._id}>
               <strong>Order ID:</strong> {order._id} <br />
-              <strong>Order Type:</strong> {order.paymentMethod === "COD" ? "Cash On Delivery" : "Pickup (Self Collect)"} <br />
+              {/* <strong>Order Type:</strong> {order.paymentMethod === "COD" ? "Cash On Delivery" : "Pickup (Self Collect)"} <br /> */}
               <strong>Total Amount:</strong> ${order.totalAmount} <br />
               <strong>Order Status:</strong> {order.status} <br />
               <hr />

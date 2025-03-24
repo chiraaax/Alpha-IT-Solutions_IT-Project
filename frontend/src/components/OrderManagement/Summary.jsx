@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import axios from "axios";  // Import axios for API requests
-import CheckoutForm from "./CheckoutForm"
+import axios from "axios";
 
 const Summary = ({ cart }) => {
     const navigate = useNavigate(); // React Router navigation
@@ -14,20 +13,30 @@ const Summary = ({ cart }) => {
 
     const handleCheckout = async () => {
         try {
-            // Prepare the data you want to send
+            // if (!userId) {
+            //     alert("Please log in first.");
+            //     navigate("/login");
+            //     return;
+            // }
+
+            if (!total || isNaN(total)) {
+                alert("Invalid total amount!");
+                return;
+            }
+
             const orderData = {
+                customerId: "67deced64f3bc4a00af20c0c",  // Assuming userId is stored in localStorage
                 totalAmount: total,
-                // Add other fields if necessary, such as userId, orderId, etc.
+                status: "Pending",  // Optional: Adjust according to your needs
+                // orderId: "someOrderId", // Replace with an actual order ID generation if necessary
             };
 
-            // Make a POST request to save the total amount to your database
-            const response = await axios.post("api/successorders/create", orderData);
+            const response = await axios.post("http://localhost:5000/api/successorders/create", orderData);
             console.log("SuccessOrder saved:", response.data);
-            
-            // After saving, navigate to the checkout form
-            navigate("/CheckoutForm"); // Ensure this matches your route definition
+
+            navigate("/CheckoutForm"); // Ensure this route exists and navigate to the checkout form
         } catch (error) {
-            console.error("Error saving order:", error);
+            console.error("Error saving order:", error.response ? error.response.data : error.message);
         }
     };
 
