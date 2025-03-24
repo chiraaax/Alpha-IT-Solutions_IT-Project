@@ -1,5 +1,4 @@
 import express from "express";
-// import { create } from "../../controller/orderController";
 import SuccessOrder from "../../models/OrderManagement/SuccessOrder.js";
 import User from "../../models/userModel.js";
 // import Order from "../../models/OrderManagement/Order.js";
@@ -40,5 +39,40 @@ router.get("/successorder/:id", async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 });
+
+// GET all orders
+router.get('/successorder/all', async (req, res) => {
+  try {
+      const order = await SuccessOrder.find();
+      if(!order || order.length === 0) {
+        return res.status(404).json({message:"Order data not found"});
+      }
+      res.status(200).json(order);
+  } catch (error) {
+      res.status(500).json({ errorMessage: error.message });
+  }
+});
+
+// PUT successorder
+router.put("/successorders/successorder/:id", authMiddleware, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const updatedOrder = await SuccessOrder.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.json(updatedOrder);
+  } catch (err) {
+    console.error("Update order error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 
 export default router;

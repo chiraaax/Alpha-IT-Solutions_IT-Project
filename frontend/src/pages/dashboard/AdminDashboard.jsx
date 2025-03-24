@@ -13,6 +13,7 @@ const navItems = [
   { path: '/dashboard/filters', label: 'Add Filters' },
   { path: '/dashboard/create-custom-prebuild', label: 'Create Custom Prebuild' },
   { path: '/dashboard/prebuild-dashboard', label: 'Manage Custom Prebuild' },
+  { path: '/dashboard/manageOrder', label: 'Manage Order' },
   
   
 ];
