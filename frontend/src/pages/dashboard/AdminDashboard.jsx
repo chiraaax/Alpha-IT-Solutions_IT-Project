@@ -11,6 +11,7 @@ const navItems = [
   { path: '/dashboard/users', label: 'Users' },
   { path: '/dashboard/manage-appointments', label: 'Manage Appointments' },
   { path: '/dashboard/expensePage', label: 'Expense' },
+  { path: '/dashboard/incomePage', label: 'Income' },
   { path: '/dashboard/filters', label: 'Add Filters' },
   { path: '/dashboard/create-custom-prebuild', label: 'Create Custom Prebuild' },
   { path: '/dashboard/prebuild-dashboard', label: 'Manage Custom Prebuild' },

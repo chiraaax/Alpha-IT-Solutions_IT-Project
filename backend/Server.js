@@ -19,6 +19,8 @@ import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js"
 import reportRoutes from './routes/reportRoutesShop.js';
 // import orderRoutes from "./routes/orderRoutes.js";
 import ExpenseRoutes from "./routes/Finance/ExpenseRoutes.js";
+import IncomeRoutes from "./routes/Finance/IncomeRoutes.js";
+import InvoiceRoutes from "./routes/Finance/InvoiceRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -54,6 +56,8 @@ app.use("/api/orders", orderRoutes); // Order Routes
 app.use("/api/successorders", SuccessOrderRoutes); // SuccessOrder Routes
 app.use('/api/successorder', orderRoutes);
 app.use('/api/expenses', ExpenseRoutes);
+app.use('/api/income', IncomeRoutes);
+app.use('/api/invoice', InvoiceRoutes);
 
 // app.use('/api/successorder', orderRoutes);
 app.use('/api/reports', reportRoutes);
