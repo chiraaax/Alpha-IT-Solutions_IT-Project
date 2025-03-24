@@ -97,6 +97,74 @@ const OrderList = () => {
     }
   };
 
+  const handleGenerateFullReport = () => {
+    const reportWindow = window.open("", "_blank");
+  
+    const tableRows = filteredOrders.map((order, index) => {
+      return `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${order.customerId}</td>
+          <td>$${order.totalAmount.toFixed(2)}</td>
+          <td>${order.status}</td>
+          <td>${new Date(order.createdAt).toLocaleString()}</td>
+        </tr>
+      `;
+    }).join("");
+  
+    const htmlContent = `
+      <html>
+        <head>
+          <title>All Orders Report</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              padding: 20px;
+            }
+            h2 {
+              text-align: center;
+              margin-bottom: 20px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+            }
+            th, td {
+              padding: 10px;
+              border: 1px solid #ccc;
+              text-align: left;
+            }
+            th {
+              background-color: #f2f2f2;
+            }
+          </style>
+        </head>
+        <body>
+          <h2>All Orders Report</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Customer ID</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Created At</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRows}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
+  
+    reportWindow.document.write(htmlContent);
+    reportWindow.document.close();
+    reportWindow.print();
+  };
+  
+
   return (
     <div className="dashboard-container">
       <div className="header">
@@ -108,6 +176,23 @@ const OrderList = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="search-bar"
         />
+      </div>
+
+      <div>
+        <button
+          onClick={handleGenerateFullReport}
+          style={{
+            padding: "8px 16px",
+            marginTop: "10px",
+            backgroundColor: "#2196F3",
+            color: "#fff",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer"
+          }}
+        >
+          Generate Full Report
+        </button>
       </div>
 
       <div className="order-details">
@@ -159,20 +244,41 @@ const OrderList = () => {
               <p><strong>Status:</strong> {selectedOrder.status}</p>
               <p><strong>Created At:</strong> {new Date(selectedOrder.createdAt).toLocaleString()}</p>
 
-              <div className="modal-actions" style={{ marginTop: "12px" }}>
-                <button
-                  className="btn approve-btn"
-                  onClick={() => updateOrderStatus("Approved")}
-                  disabled={isButtonDisabled}
-                  style={{
-                    backgroundColor: isButtonDisabled ? "#ccc" : "#4CAF50",
-                    color: isButtonDisabled ? "#666" : "#fff",
-                    cursor: isButtonDisabled ? "not-allowed" : "pointer",
-                  }}
-                >
-                  Approve
-                </button>
-              </div>
+              <div className="modal-actions" style={{ marginTop: "12px", display: "flex", gap: "10px" }}>
+              <button
+                className="btn approve-btn"
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to approve this order?")) {
+                    updateOrderStatus("Approved");
+                  }
+                }}
+                disabled={isButtonDisabled}
+              style={{
+                backgroundColor: isButtonDisabled ? "#ccc" : "#4CAF50",
+                color: isButtonDisabled ? "#666" : "#fff",
+                cursor: isButtonDisabled ? "not-allowed" : "pointer",
+              }}
+            >
+              Approve
+            </button>
+
+            <button
+              className="btn disapprove-btn"
+              onClick={() => {
+                if (window.confirm("Are you sure you want to cancel this order?")) {
+                  updateOrderStatus("Cancelled");
+                }
+              }}
+              disabled={isButtonDisabled}
+              style={{
+                backgroundColor: isButtonDisabled ? "#ccc" : "#f44336",
+                color: isButtonDisabled ? "#666" : "#fff",
+                cursor: isButtonDisabled ? "not-allowed" : "pointer",
+              }}
+            >
+              Cancel
+            </button>
+            </div>
             </div>
           </div>
         </div>
@@ -182,101 +288,3 @@ const OrderList = () => {
 };
 
 export default OrderList;
-
-
-// import React, { useEffect, useState } from 'react';
-// // import { useParams } from "react-router-dom";
-// import axios from 'axios';
-
-// const OrderList = () => {
-//   // const {id} = useParams();
-//   const [orders, setOrders] = useState([]);
-
-//   useEffect(() => {
-//     axios.get('api/successorders/successorder/all')
-//       .then(res => {
-//         const data = res.data;
-//         console.log("Orders Response:", data);
-//         if (Array.isArray(data)) {
-//           setOrders(data);
-//         } else if (Array.isArray(data.orders)) {
-//           setOrders(data.orders);
-//         } else {
-//           setOrders([]); // fallback
-//         }
-//       })
-//       .catch(err => {
-//         console.error("Error fetching orders:", err);
-//         setOrders([]);
-//       });
-//   }, []);
-  
-// //   useEffect(() => {
-// //     axios.get('/api//successorder/:id')
-// //       .then(res => setOrders(res.data))
-// //       .catch(err => console.error(err));
-// //   }, []);
-
-//   const handleApprove = async (id) => {
-//     try {
-//       const res = await axios.put(`api/successorders/successorder/${id}`);
-//       setOrders(prevOrders =>
-//         prevOrders.map(order =>
-//           order._id === id ? { ...order, status: res.data.status } : order
-//         )
-//       );
-//     } catch (err) {
-//       console.error('Error approving order:', err);
-//     }
-//   };
-
-//   return (
-//     <div className="p-4">
-//       <h2 style={{ color: 'white', marginBottom: '1rem' }}>Success Orders</h2>
-//       <table style={{ width: '100%', backgroundColor: '#000', color: '#fff', borderCollapse: 'collapse' }}>
-//         <thead>
-//           <tr>
-//             <th style={{ padding: '10px', borderBottom: '1px solid #555' }}>Customer</th>
-//             <th style={{ padding: '10px', borderBottom: '1px solid #555' }}>Total</th>
-//             <th style={{ padding: '10px', borderBottom: '1px solid #555' }}>Status</th>
-//             <th style={{ padding: '10px', borderBottom: '1px solid #555' }}>Action</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {orders.map(order => (
-//             <tr key={order._id}>
-//               <td style={{ padding: '10px', borderBottom: '1px solid #333' }}>
-//                 {order.customerId?.name || 'N/A'}
-//               </td>
-//               <td style={{ padding: '10px', borderBottom: '1px solid #333' }}>
-//                 ${order.totalAmount}
-//               </td>
-//               <td style={{ padding: '10px', borderBottom: '1px solid #333' }}>
-//                 {order.status}
-//               </td>
-//               <td style={{ padding: '10px', borderBottom: '1px solid #333' }}>
-//                 {order.status === 'Pending' && (
-//                   <button
-//                     style={{
-//                       backgroundColor: '#007bff',
-//                       color: 'white',
-//                       padding: '6px 12px',
-//                       border: 'none',
-//                       borderRadius: '5px',
-//                       cursor: 'pointer'
-//                     }}
-//                     onClick={() => handleApprove(order._id)}
-//                   >
-//                     Approve
-//                   </button>
-//                 )}
-//               </td>
-//             </tr>
-//           ))}
-//         </tbody>
-//       </table>
-//     </div>
-//   );
-// };
-
-// export default OrderList;

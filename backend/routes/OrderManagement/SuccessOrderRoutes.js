@@ -54,7 +54,7 @@ router.get('/successorder/all', async (req, res) => {
 });
 
 // PUT successorder
-router.put("/successorders/successorder/:id", authMiddleware, async (req, res) => {
+router.put("/successorder/:id", async (req, res) => {
   try {
     const { status } = req.body;
     const updatedOrder = await SuccessOrder.findByIdAndUpdate(
