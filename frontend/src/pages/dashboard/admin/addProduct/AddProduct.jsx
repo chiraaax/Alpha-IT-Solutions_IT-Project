@@ -10,6 +10,7 @@ const AddProduct = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [selectedProductType, setSelectedProductType] = useState("");
+  const [filtersList, setFiltersList] = useState([]); // For dynamic product type selection
   const [configData, setConfigData] = useState(null);
   const [product, setProduct] = useState({
     price: "",
@@ -22,6 +23,17 @@ const AddProduct = () => {
   const [image, setImage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+
+  // Fetch the list of all filters for dynamic product type selection
+  useEffect(() => {
+    axios.get("http://localhost:5000/api/filters")
+      .then((res) => {
+        setFiltersList(res.data);
+      })
+      .catch((err) =>
+        console.error("Error fetching filters list:", err)
+      );
+  }, []);
 
   // Fetch configuration for the selected product type
   useEffect(() => {
@@ -170,34 +182,31 @@ const AddProduct = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 py-12 px-6">
       <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+        {/* Add New Filter Button */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => navigate("/dashboard/filters")}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+          >
+            Add New Filter
+          </button>
+        </div>
         <h2 className="text-3xl text-center font-bold text-gray-800 mb-6">Add New Product</h2>
         {!selectedProductType ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-            {[
-              "laptop",
-              "motherboard",
-              "processor",
-              "ram",
-              "gpu",
-              "powerSupply",
-              "casings",
-              "monitors",
-              "cpuCoolers",
-              "keyboard",
-              "mouse",
-              "soundSystems",
-              "cablesConnectors",
-              "storage",
-              "externalStorage",
-            ].map((type) => (
-              <button
-                key={type}
-                onClick={() => handleProductTypeSelect(type)}
-                className="px-6 py-4 text-lg font-semibold bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 transition transform hover:scale-105"
-              >
-                {type}
-              </button>
-            ))}
+            {filtersList.length > 0 ? (
+              filtersList.map((filter) => (
+                <button
+                  key={filter._id}
+                  onClick={() => handleProductTypeSelect(filter.category)}
+                  className="px-6 py-4 text-lg font-semibold bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg shadow-md hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 transition transform hover:scale-105"
+                >
+                  {filter.category}
+                </button>
+              ))
+            ) : (
+              <p>Loading product types...</p>
+            )}
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">

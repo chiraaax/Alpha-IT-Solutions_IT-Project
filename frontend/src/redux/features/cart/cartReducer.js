@@ -1,8 +1,12 @@
 // reducers/cartReducer.js
+//this is the cart reducer
+//used to add, update and clear cart items
+
 const initialState = {
     cartItems: [],
   };
   
+  // Reducer function to handle cart actions
   const cartReducer = (state = initialState, action) => {
     switch (action.type) {
       case 'ADD_TO_CART':
