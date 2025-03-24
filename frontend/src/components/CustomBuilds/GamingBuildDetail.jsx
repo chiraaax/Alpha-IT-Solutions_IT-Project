@@ -14,8 +14,7 @@ const GamingBuildDetail = () => {
   const [error, setError] = useState(null);
   // State for storing validation messages
   const [validationMessages, setValidationMessages] = useState([]);
-  // Example cart state; replace with your cart context or API call as needed.
-  const [cart, setCart] = useState([]);
+
   // Products lookup state for mapping product IDs to details
   const [productsLookup, setProductsLookup] = useState({});
   // Modal state for editing build details
@@ -330,13 +329,7 @@ const GamingBuildDetail = () => {
 
           {/* Action Buttons */}
           <div className="mt-8 flex flex-col md:flex-row gap-4 justify-center md:justify-start">
-    <button 
-      onClick={handleAddToCart}
-      className="bg-gradient-to-r from-cyan-600 to-cyan-700 text-white px-6 py-3 rounded-md hover:from-cyan-500 hover:to-cyan-600 transition-all duration-300 font-medium shadow-lg shadow-cyan-700/30 flex items-center justify-center gap-2 group"
-    >
-      <span className="text-cyan-300 group-hover:scale-110 transition-transform">🛒</span> 
-      <span>ADD TO CART</span>
-    </button>
+
     
     <button
       onClick={() => setIsEditModalOpen(true)}
@@ -375,7 +368,7 @@ const GamingBuildDetail = () => {
   <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-blue-800 to-purple-800 bg-size-200 bg-pos-0 hover:bg-pos-100 transition-all duration-500 flex items-center justify-center z-50">
 
     <div 
-      className={`relative w-full max-w-xl border border-cyan-500 rounded-lg shadow-2xl overflow-hidden
+      className={`relative w-full max-w-lg border border-cyan-500 rounded-lg shadow-2xl overflow-hidden
         ${isDark ? "bg-gray-900 text-white" : "bg-gray-800 text-gray-100"}
         animate-fadeIn transform transition-all duration-300`}
     >
@@ -389,14 +382,14 @@ const GamingBuildDetail = () => {
           <div className="mr-2 w-3 h-3 rounded-full bg-red-500 shadow-glow-red"></div>
           <div className="mr-2 w-3 h-3 rounded-full bg-yellow-500 shadow-glow-yellow"></div>
           <div className="mr-4 w-3 h-3 rounded-full bg-green-500 shadow-glow-green"></div>
-          <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500">
+          <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500">
             CUSTOMIZE YOUR BUILD
           </h2>
         </div>
       </div>
       
       {/* Modal content with tech styling */}
-      <div className="relative p-5 max-h-[70vh] overflow-y-auto custom-scrollbar">
+      <div className="relative p-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
         {/* Circuit board background effect */}
         <div className="absolute inset-0 opacity-5 pointer-events-none">
           <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXR0ZXJuIGlkPSJjaXJjdWl0IiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwZmZmZiIgc3Ryb2tlLXdpZHRoPSIwLjUiIGQ9Ik0xMCwxMCBMMzAsMTAgTDMwLDMwIEwxMCwzMCBaIj48L3BhdGg+PHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBmZmZmIiBzdHJva2Utd2lkdGg9IjAuNSIgZD0iTTAgMjAgTDEwIDIwIj48L3BhdGg+PHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBmZmZmIiBzdHJva2Utd2lkdGg9IjAuNSIgZD0iTTMwIDIwIEw0MCAyMCI+PC9wYXRoPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwZmZmZiIgc3Ryb2tlLXdpZHRoPSIwLjUiIGQ9Ik0yMCAwIEwyMCAxMCI+PC9wYXRoPjxwYXRoIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwZmZmZiIgc3Ryb2tlLXdpZHRoPSIwLjUiIGQ9Ik0yMCAzMCBMMjAgNDAiPjwvcGF0aD48L3BhdHRlcm4+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNjaXJjdWl0KSI+PC9yZWN0Pjwvc3ZnPg==')]"></div>
@@ -406,13 +399,13 @@ const GamingBuildDetail = () => {
         {[
           { field: "processor", label: "PROCESSOR", options: compatibilityOptions.processor, icon: "⚡" },
           { field: "gpu", label: "GRAPHICS", options: compatibilityOptions.gpu, icon: "🎮" },
-          { field: "ram", label: "MEMORY", options: compatibilityOptions.ram, icon: "💾" },
+          { field: "ram", label: "RAM", options: compatibilityOptions.ram, icon: "💾" },
           { field: "storage", label: "STORAGE", options: compatibilityOptions.storage, icon: "💿" },
-          { field: "powerSupply", label: "POWER", options: compatibilityOptions.powerSupply, icon: "⚡" },
-          { field: "casings", label: "CHASSIS", options: compatibilityOptions.casings, icon: "🖥️" },
+          { field: "powerSupply", label: "PSU", options: compatibilityOptions.powerSupply, icon: "⚡" },
+          { field: "casings", label: "CASING", options: compatibilityOptions.casings, icon: "🖥️" },
         ].map(({ field, label, options, icon }) => (
           <div key={field} className="mb-5 group">
-            <label className="flex items-center font-bold text-lg tracking-wider mb-2 text-cyan-400">
+            <label className="flex items-center font-bold text-sm tracking-wider mb-2 text-cyan-400">
               <span className="mr-2">{icon}</span>
               {label}
             </label>
@@ -442,7 +435,7 @@ const GamingBuildDetail = () => {
                   group-hover:opacity-30 blur transition duration-500 pointer-events-none"></div>
               </div>
             ) : (
-              <p className="text-lg text-red-400 italic bg-gray-800 bg-opacity-50 p-4 rounded border border-red-900">
+              <p className="text-sm text-red-400 italic bg-gray-800 bg-opacity-50 p-3 rounded border border-red-900">
                 No components available in this category
               </p>
             )}
@@ -451,7 +444,7 @@ const GamingBuildDetail = () => {
         
         {/* Price display with tech styling */}
         <div className="mb-6 relative group">
-          <label className="flex items-center font-bold text-lg tracking-wider mb-2 text-cyan-400">
+          <label className="flex items-center font-bold text-sm tracking-wider mb-2 text-cyan-400">
             <span className="mr-2">💰</span>
             TOTAL COST
           </label>
@@ -460,7 +453,7 @@ const GamingBuildDetail = () => {
               type="text"
               value={formatPrice(editedBuild.price)}
               readOnly
-              className="w-full p-3 bg-gray-800 text-cyan-300 font-mono text-xl tracking-wider rounded border border-gray-700
+              className="w-full p-3 bg-gray-800 text-cyan-300 font-mono text-lg tracking-wider rounded border border-gray-700
                 focus:outline-none focus:ring-1 focus:ring-cyan-500 text-right pr-12"
             />
             <div className="absolute right-3 inset-y-0 flex items-center text-cyan-400 font-bold">

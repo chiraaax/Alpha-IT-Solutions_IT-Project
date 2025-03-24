@@ -14,8 +14,7 @@ const GamingBuildDetail = () => {
   const [error, setError] = useState(null);
   // State for storing validation messages
   const [validationMessages, setValidationMessages] = useState([]);
-  // Example cart state; replace with your cart context or API call as needed.
-  const [cart, setCart] = useState([]);
+
   // Products lookup state for mapping product IDs to details
   const [productsLookup, setProductsLookup] = useState({});
   // Modal state for editing build details
@@ -330,13 +329,7 @@ const GamingBuildDetail = () => {
 
           {/* Action Buttons */}
           <div className="mt-8 flex flex-col md:flex-row gap-4 justify-center md:justify-start">
-    <button 
-      onClick={handleAddToCart}
-      className="bg-gradient-to-r from-cyan-600 to-cyan-700 text-white px-6 py-3 rounded-md hover:from-cyan-500 hover:to-cyan-600 transition-all duration-300 font-medium shadow-lg shadow-cyan-700/30 flex items-center justify-center gap-2 group"
-    >
-      <span className="text-cyan-300 group-hover:scale-110 transition-transform">🛒</span> 
-      <span>ADD TO CART</span>
-    </button>
+
     
     <button
       onClick={() => setIsEditModalOpen(true)}
@@ -406,10 +399,10 @@ const GamingBuildDetail = () => {
         {[
           { field: "processor", label: "PROCESSOR", options: compatibilityOptions.processor, icon: "⚡" },
           { field: "gpu", label: "GRAPHICS", options: compatibilityOptions.gpu, icon: "🎮" },
-          { field: "ram", label: "MEMORY", options: compatibilityOptions.ram, icon: "💾" },
+          { field: "ram", label: "RAM", options: compatibilityOptions.ram, icon: "💾" },
           { field: "storage", label: "STORAGE", options: compatibilityOptions.storage, icon: "💿" },
-          { field: "powerSupply", label: "POWER", options: compatibilityOptions.powerSupply, icon: "⚡" },
-          { field: "casings", label: "CHASSIS", options: compatibilityOptions.casings, icon: "🖥️" },
+          { field: "powerSupply", label: "PSU", options: compatibilityOptions.powerSupply, icon: "⚡" },
+          { field: "casings", label: "CASING", options: compatibilityOptions.casings, icon: "🖥️" },
         ].map(({ field, label, options, icon }) => (
           <div key={field} className="mb-5 group">
             <label className="flex items-center font-bold text-sm tracking-wider mb-2 text-cyan-400">
