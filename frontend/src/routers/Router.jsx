@@ -19,6 +19,7 @@ import ProtectedRoute from "../routers/ProtectedRoute";
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
 import ExpensePage from "../pages/dashboard/Finance/ExpensePage";
 import IncomePage from "../pages/dashboard/Finance/IncomePage";
+import InvoicePage from "../pages/dashboard/Finance/InvoicePage";
 
 import AddProduct from '../pages/dashboard/admin/addProduct/AddProduct';
 import ManageProducts from '../pages/dashboard/admin/manageProducts/ManageProducts';
@@ -108,6 +109,7 @@ const router = createBrowserRouter([
       { path: 'manage-appointments', element: <ProtectedRoute allowedRoles={["admin"]}><ManageAppointments /></ProtectedRoute> },
       { path: 'expensePage', element: <ExpensePage /> },
       { path: 'incomePage', element: <IncomePage /> },
+      { path: 'invoicePage', element: <InvoicePage /> },
       { path: 'filters', element: <ProtectedRoute allowedRoles={["admin"]}>< AdminFiltersPage/></ProtectedRoute> },
       { path: 'create-custom-prebuild', element: <ProtectedRoute allowedRoles={["admin"]}><CreateCustomBuild /></ProtectedRoute> },
       { path: 'prebuild-dashboard', element: <ProtectedRoute allowedRoles={["admin"]}><PreBuildDashboard /></ProtectedRoute>  },
