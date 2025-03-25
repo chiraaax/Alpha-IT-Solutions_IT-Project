@@ -1,5 +1,3 @@
-//This is the product card common component
-//child component - reusable
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,10 +14,6 @@ const ProductCards = ({ products = [] }) => {
     return cartItems.some((item) => item._id === productId);
   };
 
-
-  /*
-  Add to cart functionality
-  */
   const handleAddToCart = (product) => {
     // If product is already in the cart, do nothing (or you can show a message)
     if (isProductInCart(product._id)) return;

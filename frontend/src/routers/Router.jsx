@@ -24,6 +24,7 @@ import ProductDetails from '../components/shop/ProductDetails';
 import SearchPage from '../components/shop/search/SearchPage';
 import ManageAppointments from "../pages/dashboard/manage-appointments";
 
+
 // CustomBuilds Components
 import GamingBuilds from '../components/CustomBuilds/GamingBuilds';
 import BudgetBuilds from '../components/CustomBuilds/BudgetBuilds';
@@ -94,8 +95,7 @@ const router = createBrowserRouter([
       { path: '', element: <div>Dashboard Home</div> },
       { path: 'profile', element: <div>Profile</div> },
       { path: 'reviews', element: <div>Reviews</div> },
-      { path: 'report-shop', element: <CatalogReportInline/> },
-      
+      { path: 'report-shop', element: <CatalogReportInline/> },
       // Admin routes
       { path: 'admin', element: <ProtectedRoute allowedRoles={["admin"]}><div>Admin Panel</div></ProtectedRoute> },
       { path: 'add-new-product', element: <ProtectedRoute allowedRoles={["admin"]}><AddProduct /></ProtectedRoute> },
