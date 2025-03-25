@@ -10,9 +10,12 @@ body {
   max-width: 1200px;
   margin: 20px auto;
   padding: 20px;
+  background:linear-gradient(135deg, #00008B, #000000); /* Red to blue gradient */
   background-color: black; /* Card is now black */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
+  color: #ffffff; /* White text inside the card */
+  margin-bottom: 120px;
   color: white; /* Ensure text inside the card is white */
 }
 
