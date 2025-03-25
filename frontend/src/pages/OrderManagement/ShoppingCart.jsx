@@ -39,13 +39,13 @@ const ShoppingCart = () => {
           {/* Buttons below cart items */}
           <div className="flex space-x-6 mt-6">
             <button
-              className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 focus:outline-none shadow-lg"
+              className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 focus:outline-none shadow-md"
               onClick={clearCart}
             >
               Clear Shopping Cart
             </button>
             <button
-              className="bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-800 focus:outline-none shadow-lg"
+              className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 focus:outline-none shadow-md"
               onClick={() => window.location.href = "/"}
             >
               Continue Shopping
@@ -53,10 +53,9 @@ const ShoppingCart = () => {
           </div>
         </div>
         
-        <div className="bg-gray-600 p-6 rounded-lg shadow-lg">
+        <div className="bg-gray-100 p-6 rounded-lg shadow-md">
           <Summary cart={cartItems} />
         </div>
-
       </div>
       <div className="flex gap-4 mt-6">
         {/* Input Field */}
@@ -69,7 +68,7 @@ const ShoppingCart = () => {
         {/* Contact Us Button */}
         <button
           onClick={() => window.location.href = "/contact"}
-          className="bg-green-900 text-white py-2 px-4 rounded hover:bg-green-600 focus:outline-none"
+          className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 focus:outline-none"
         >
           Contact Us
         </button>

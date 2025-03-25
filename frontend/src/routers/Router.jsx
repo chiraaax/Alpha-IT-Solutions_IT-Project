@@ -29,6 +29,7 @@ import ExpensePage from "../pages/dashboard/Finance/ExpensePage";
 import IncomePage from "../pages/dashboard/Finance/IncomePage";
 import InvoicePage from "../pages/dashboard/Finance/InvoicePage";
 
+
 // CustomBuilds Components
 import GamingBuilds from '../components/CustomBuilds/GamingBuilds';
 import BudgetBuilds from '../components/CustomBuilds/BudgetBuilds';
@@ -46,6 +47,7 @@ import ShoppingCart from '../pages/OrderManagement/ShoppingCart';
 import CheckoutForm from '../components/OrderManagement/CheckoutForm';
 import PickupForm from '../components/OrderManagement/pickupForm';
 import CodForm from '../components/OrderManagement/CodForm';
+import CatalogReportInline from '../pages/dashboard/user/shop/report/CatalogReportInline ';
 // import OrderList from '../components/OrderManagement/OrderList';
 
 const router = createBrowserRouter([
@@ -98,6 +100,7 @@ const router = createBrowserRouter([
       { path: '', element: <div>Dashboard Home</div> },
       { path: 'profile', element: <div>Profile</div> },
       { path: 'reviews', element: <div>Reviews</div> },
+      { path: 'report-shop', element: <CatalogReportInline/> },
       // Admin routes
       { path: 'admin', element: <ProtectedRoute allowedRoles={["admin"]}><div>Admin Panel</div></ProtectedRoute> },
       { path: 'add-new-product', element: <ProtectedRoute allowedRoles={["admin"]}><AddProduct /></ProtectedRoute> },

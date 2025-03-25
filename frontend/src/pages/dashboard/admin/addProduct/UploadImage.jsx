@@ -19,7 +19,8 @@ const UploadImage = ({ name, setImage }) => {
             // Send to backend
             const res = await axios.post(`${getBaseURL()}/api/uploadImage`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
-            });
+              });
+              
 
             console.log("Upload Response:", res.data);
 
