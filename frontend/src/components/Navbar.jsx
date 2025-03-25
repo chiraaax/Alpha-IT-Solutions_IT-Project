@@ -100,10 +100,10 @@ const Navbar = () => {
   </div>
   
   {/* Navigation Links - Added whitespace-nowrap */}
-  <ul className='nav__links flex gap-4 flex-1 justify-center ml-50'>  {/* Reduced gap to 4 */}
+  <ul className='nav__links flex gap-4 flex-1 justify-center ml-10'>  {/* Reduced gap to 4 */}
     <li className='link whitespace-nowrap'><Link to="/about">About</Link></li>
     <li className='link whitespace-nowrap'><Link to="/appointment">Services</Link></li>
-    <li className='link whitespace-nowrap'><Link to="/custom-prebuilds">Custom Pre-Builds</Link></li>
+    <li className='link whitespace-nowrap'><Link to="/custom-prebuilds">Custom <br />Pre-<br />Builds</Link></li>
     <li className='link whitespace-nowrap'><Link to="/">Reviews</Link></li>
     <li className='link whitespace-nowrap'><Link to="/contact">Contact</Link></li>
   </ul>
