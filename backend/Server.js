@@ -15,10 +15,14 @@ import productsRoutes from "./routes/productsRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import prebuildRoutes from "./routes/prebuildRoutes.js"; 
 import filterRoutes from "./routes/filterRoutes.js";
-// import orderRoutes from "./routes/OrderManagement/orderRoutes.js";
-// import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js";
+import orderRoutes from "./routes/OrderManagement/orderRoutes.js";
+import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js";
 import reportRoutes from './routes/reportRoutesShop.js';
-import orderRoutes from "./routes/orderRoutes.js";
+// import orderRoutes from "./routes/orderRoutes.js";
+
+import ExpenseRoutes from "./routes/Finance/ExpenseRoutes.js";
+import IncomeRoutes from "./routes/Finance/IncomeRoutes.js";
+import InvoiceRoutes from "./routes/Finance/InvoiceRoutes.js";
 
 
 dotenv.config();
@@ -51,11 +55,13 @@ app.use("/api/products", productsRoutes);
 app.use("/api/filters", filterRoutes);
 app.use("/api/prebuilds", prebuildRoutes);
 app.use("/api", uploadRoutes);
-// app.use("/api/orders", orderRoutes);
-// app.use("/api/successorders", SuccessOrderRoutes);
-// app.use('/api/reports', reportRoutes);
-app.use('/api/reports', reportRoutes);
-app.use('/api/successorder', orderRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/successorders", SuccessOrderRoutes);
+app.use("/api/reports", reportRoutes);
+app.use('/api/expenses', ExpenseRoutes);
+app.use('/api/income', IncomeRoutes);
+app.use('/api/invoice', InvoiceRoutes);
+// app.use('/api/successorder', orderRoutes);
 
 // Home Route
 app.get("/", (req, res) => {

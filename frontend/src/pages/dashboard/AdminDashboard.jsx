@@ -13,6 +13,13 @@ const navItems = [
   { path: '/dashboard/filters', label: 'Add Filters' },
   { path: '/dashboard/create-custom-prebuild', label: 'Create Custom Prebuild' },
   { path: '/dashboard/prebuild-dashboard', label: 'Manage Custom Prebuild' },
+  { path: '/dashboard/manageOrder', label: 'Manage Order' },
+  { path: '/dashboard/customerOrder', label: 'Manage Customer Orders' },
+  { path: '/dashboard/expensePage', label: 'Expense' },
+  { path: '/dashboard/incomePage', label: 'Income' },
+  { path: '/dashboard/invoicePage', label: 'Invoice' },
+  
+  
 ];
 
 const AdminDashboard = () => {

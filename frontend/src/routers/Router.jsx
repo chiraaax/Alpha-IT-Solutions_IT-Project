@@ -23,6 +23,11 @@ import ManageInventory from '../pages/dashboard/admin/inventoryManagement/Manage
 import ProductDetails from '../components/shop/ProductDetails';
 import SearchPage from '../components/shop/search/SearchPage';
 import ManageAppointments from "../pages/dashboard/manage-appointments";
+import ManageOrder from "../pages/dashboard/admin/manageOrder/OrderList";
+import CustomerOrder from "../pages/dashboard/admin/manageOrder/CustomerOrderList";
+import ExpensePage from "../pages/dashboard/Finance/ExpensePage";
+import IncomePage from "../pages/dashboard/Finance/IncomePage";
+import InvoicePage from "../pages/dashboard/Finance/InvoicePage";
 
 
 // CustomBuilds Components
@@ -106,6 +111,11 @@ const router = createBrowserRouter([
       { path: 'filters', element: <ProtectedRoute allowedRoles={["admin"]}>< AdminFiltersPage/></ProtectedRoute> },
       { path: 'create-custom-prebuild', element: <ProtectedRoute allowedRoles={["admin"]}><CreateCustomBuild /></ProtectedRoute> },
       { path: 'prebuild-dashboard', element: <ProtectedRoute allowedRoles={["admin"]}><PreBuildDashboard /></ProtectedRoute>  },
+      { path: 'manageOrder', element: <ProtectedRoute allowedRoles={["admin"]}><ManageOrder /></ProtectedRoute>  },
+      { path: 'customerOrder', element: <ProtectedRoute allowedRoles={["admin"]}><CustomerOrder /></ProtectedRoute>  },
+      { path: 'expensePage', element: <ExpensePage /> },
+      { path: 'incomePage', element: <IncomePage /> },
+      { path: 'invoicePage', element: <InvoicePage /> },
     ]
   }
 ]);

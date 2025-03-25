@@ -65,7 +65,7 @@ router.post("/orders", async (req, res) => {
       .status(500)
       .json({ message: "Failed to place order. Please check again." });
   }
-});
+}); 
 
 // GET all orders
 router.get('/orders/all', async (req, res) => {
