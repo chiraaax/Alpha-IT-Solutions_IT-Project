@@ -5,6 +5,8 @@ import { FaSun, FaMoon } from 'react-icons/fa';  // Import Sun and Moon icons fo
 import logo from '../assets/AlphaITSolutionsLogo.jpg';
 import { AuthContext } from '../context/authContext';
 import { useTheme } from './CustomBuilds/ThemeContext';  // Import the useTheme hook
+import { useDispatch } from 'react-redux';
+import { persistor } from '../redux/store';
 
 const adminDropDownMenus = [
   { label: "Dashboard", path: "/dashboard/admin" },
@@ -26,7 +28,9 @@ const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
+  
+  const dispatch = useDispatch();
 
   // Access user and logout from AuthContext
   const { user, logout } = useContext(AuthContext);
@@ -53,16 +57,22 @@ const Navbar = () => {
   }, [lastScrollY]);
 
   const handleDropDownToggle = () => {
-    setIsDropDownOpen(prev => !prev);
+    setIsDropDownOpen((prev) => !prev);
   };
 
   const handleLogout = () => {
+    // Clear the cart by dispatching a CLEAR_CART action.
+    dispatch({ type: 'CLEAR_CART' });
+    // Purge persisted Redux state.
+    persistor.purge();
+    // Call the logout function from AuthContext.
     if (logout) {
       logout();
     } else {
       console.log('Logging out...');
     }
     setIsDropDownOpen(false);
+    // Redirect the user to the login page.
     navigate('/login');
   };
 
@@ -105,7 +115,7 @@ const Navbar = () => {
           </Link>
           
           {/* Cart Icon */}
-          <Link to="/cart" className="relative">
+          <Link to="/shoppingCart" className="relative">
             <MdShoppingCart size={24} />
             <sup className='absolute -top-2 -right-2 text-xs inline-block px-1.5 text-white rounded-full bg-primary'>
               {/* Optionally show the number of products */}

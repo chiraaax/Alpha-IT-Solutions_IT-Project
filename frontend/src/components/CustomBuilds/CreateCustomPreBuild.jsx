@@ -320,24 +320,40 @@ const CreateCustomPreBuild = () => {
   </div>
 
              {/* Additional Admin Price input */}
-  <div className="space-y-2 group">
-    <label className="block text-sm font-medium text-blue-400 group-hover:text-blue-300 transition-colors">
-      Additional Price (Admin Preference)
-    </label>
-    <div className="relative">
-      <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-        <span className="text-blue-500 font-medium">LKR </span>
-      </div>
-      <input
-        type="number"
-        value={additionalPrice}
-        onChange={(e) => setAdditionalPrice(e.target.value)}
-        className="w-full pl-12 pr-5 py-3 bg-gray-900 border border-gray-700 rounded-lg text-red-100 transition-all duration-300 hover:border-blue-600 shadow-sm"
-        placeholder="0.00"
-      />
-      <div className="absolute inset-0 rounded-lg bg-blue-500/5 pointer-events-none"></div>
+             <div className="space-y-2 group">
+  <label className="block text-sm font-medium text-blue-400 group-hover:text-blue-300 transition-colors">
+    Additional Price (Admin Preference)
+  </label>
+  <div className="relative">
+    <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+      <span className="text-blue-500 font-medium">LKR </span>
     </div>
+    <input
+      type="number"
+      value={additionalPrice}
+      onChange={(e) => {
+        const input = e.target.value;
+        // Allow empty input
+        if (input === "") {
+          setAdditionalPrice("");
+          return;
+        }
+        // Convert input to a number for validation
+        const value = parseFloat(input);
+        if (!isNaN(value) && value < 0) {
+          // Optionally display an error notification
+          toast.error("Negative value is not allowed");
+          return;
+        }
+        setAdditionalPrice(input);
+      }}
+      className="w-full pl-12 pr-5 py-3 bg-gray-900 border border-gray-700 rounded-lg text-red-100 transition-all duration-300 hover:border-blue-600 shadow-sm"
+      placeholder="0.00"
+    />
+    <div className="absolute inset-0 rounded-lg bg-blue-500/5 pointer-events-none"></div>
   </div>
+</div>
+
 
    {/* Total Build Price (read-only, sum of component and additional price) */}
    <div className="space-y-2 group">

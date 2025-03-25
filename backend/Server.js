@@ -15,9 +15,10 @@ import productsRoutes from "./routes/productsRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import prebuildRoutes from "./routes/prebuildRoutes.js"; 
 import filterRoutes from "./routes/filterRoutes.js";
+// import orderRoutes from "./routes/OrderManagement/orderRoutes.js";
+// import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js";
 import reportRoutes from './routes/reportRoutesShop.js';
-import orderRoutes from "./routes/OrderManagement/orderRoutes.js";
-import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 
 dotenv.config();
@@ -47,12 +48,14 @@ app.use("/api/profile", userRoutes);
 app.use("/api/faq", faqRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/products", productsRoutes);
-app.use("/api/uploads", uploadRoutes);
 app.use("/api/filters", filterRoutes);
 app.use("/api/prebuilds", prebuildRoutes);
-app.use("/api/orders", orderRoutes);
-app.use("/api/successorders", SuccessOrderRoutes);
+app.use("/api", uploadRoutes);
+// app.use("/api/orders", orderRoutes);
+// app.use("/api/successorders", SuccessOrderRoutes);
+// app.use('/api/reports', reportRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/successorder', orderRoutes);
 
 // Home Route
 app.get("/", (req, res) => {
