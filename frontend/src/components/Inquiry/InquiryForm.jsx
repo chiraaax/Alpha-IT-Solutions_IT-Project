@@ -172,8 +172,8 @@ const InquiryForm = () => {
             toast.success("Your inquiry PDF has been downloaded!");
         } catch (error) {
             toast.error("Error downloading PDF. Please try again.");
-        }
-    };
+         }
+     };
 
     return (
         <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-900 via-gray-900 to-black p-6">
