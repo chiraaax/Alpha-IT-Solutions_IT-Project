@@ -64,28 +64,4 @@ export const incrementFAQViews = async(req, res) => {
     }catch(error){
         res.status(500).json({ message: "Error updating FAQ views", error: error.message });
     }
-};
-
-export const getSimilarFAQs = async (req, res) => {
-    try {
-        console.log("Received request:", req.query); // Debugging
-
-        const { query } = req.query;
-        if (!query) {
-            return res.status(400).json({ message: "Query is required." });
-        }
-
-        // Fetch FAQs matching the query using case-insensitive regex
-        const similarFAQs = await FAQ.find({ question: new RegExp(query, 'i') });
-
-        // Return only relevant fields (_id, question, and answer)
-        res.status(200).json(similarFAQs.map(faq => ({
-            _id: faq._id,
-            question: faq.question,
-            answer: faq.answer
-        })));
-    } catch (error) {
-        console.error("Error in getSimilarFAQs:", error);
-        res.status(500).json({ message: "Error fetching similar FAQs", error: error.message });
-    }
-};
+}

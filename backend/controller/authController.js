@@ -5,27 +5,15 @@ import sendEmail from '../config/nodemailer.js';
 import { otpTemplate } from '../emailTemplates/otpTemplate.js';
 import { welcomeTemplate } from '../emailTemplates/welcomeTemplate.js';
 import { forgotPasswordTemplate } from '../emailTemplates/forgotPasswordTemplate.js';
+import { forgotPasswordTemplate } from '../emailTemplates/forgotPasswordTemplate.js';
 import {forgotPasswordTemplate} from '../emailTemplates/forgotPasswordTemplate.js';
 import { body, validationResult } from 'express-validator';
 
 export const register = async (req, res) => {
     try {
-        // Validate request body
-        await Promise.all([
-            body('name').notEmpty().withMessage('Name is required').run(req),
-            body('email').isEmail().withMessage('Invalid email format').run(req),
-            body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long').run(req),
-            body('contactNumber').isMobilePhone().withMessage('Invalid contact number').run(req),
-            body('address').notEmpty().withMessage('Address is required').run(req)
-        ]);
-
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-
         const { name, email, password, contactNumber, address } = req.body;
         console.log("Received registration request:", req.body); // Debug log
+
 
         console.log("Received registration request:", req.body); // Debugging log
 
@@ -79,7 +67,7 @@ export const verifyOTP = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        const { email, password, contactNumber, address } = req.body;
+        const { email, password } = req.body;
         const user = await User.findOne({ email });
 
         if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -87,7 +75,7 @@ export const login = async (req, res) => {
         }
 
         const token = jwt.sign(
-            { id: user._id, role: user.role, name: user.name, email: user.email, contactNumber: user.contactNumber, address: user.address },
+            { id: user._id, role: user.role, name: user.name, email: user.email },
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
         );
@@ -96,7 +84,7 @@ export const login = async (req, res) => {
         return res.json({
             message: "Login Successful", 
             token, 
-            user: { role: user.role, name: user.name, email: user.email, contactNumber: user.contactNumber, address: user.address } 
+            user: { role: user.role, name: user.name, email: user.email } 
         });
     } catch (error) {
         return res.status(500).json({ message: 'Error logging in', error: error.message });

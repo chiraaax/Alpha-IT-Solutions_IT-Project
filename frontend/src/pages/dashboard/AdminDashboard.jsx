@@ -1,17 +1,18 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/authContext';
+import '../../styles/admin_dashboard.css'; // Import the CSS file
 
 const navItems = [
   { path: '/dashboard/admin', label: 'Dashboard' },
-  { path: '/dashboard/AdminProfile', label: 'Profile'},
-  { path: '/dashboard/UserManage', label: 'Users' },
   { path: '/dashboard/add-new-product', label: 'Add Product' },
   { path: '/dashboard/manage-products', label: 'Manage Products' },
   { path: '/dashboard/manage-inventory', label: 'Manage Products Inventory' },
+  { path: '/dashboard/users', label: 'Users' },
   { path: '/dashboard/manage-appointments', label: 'Manage Appointments' },
   { path: '/dashboard/filters', label: 'Add Filters' },
   { path: '/dashboard/create-custom-prebuild', label: 'Create Custom Prebuild' },
+  { path: '/dashboard/prebuild-dashboard', label: 'Manage Custom Prebuild' },
   { path: '/dashboard/prebuild-dashboard', label: 'Manage Custom Prebuild' },
   
   
@@ -24,24 +25,46 @@ const AdminDashboard = () => {
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  // Clock state and effect for updating time
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timerID = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+
+    return () => {
+      clearInterval(timerID);
+    };
+  }, []);
+
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
   return (
-    <div className='space-y-5 bg-white p-8 md:h-screen flex flex-col justify-between'>
-      <div>
-        <div className='nav__logo'>
-          <Link to="/">Alpha IT Solutions<span>.</span></Link>
-          <p className='italic mt-4 text-gray-500'>Admin dashboard</p>
+    <div className="admin-dashboard bg-sky-100 rounded-lg shadow-lg border border-sky-400 p-6 text-gray-800">
+      <div className="dashboard-header">
+        <div className="nav__logo mb-4">
+          <Link to="/" className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-800 hover:from-indigo-600 hover:to-blue-700 transition-all duration-300">
+            Alpha IT Solutions<span className="text-indigo-600">.</span>
+          </Link>
+          <hr className="border-t border-gray-200 my-2" />
+          <p className="mt-4 text-gray-600 text-sm tracking-wider">
+            <span className="text-sm inline-block px-2 py-1 bg-gray-100 rounded border-l-2 border-indigo-500 font-bold">ADMIN DASHBOARD</span>
+          </p>
         </div>
-        <hr className='mt-5 text-gray-300' />
-        <ul className='space-y-5 pt-5'>
+        <hr className="border-t border-gray-200 my-4" />
+        <ul className="nav-items flex flex-col gap-2">
           {navItems.map((item) => (
-            <li key={item.path}>
-              <NavLink 
-                className={({ isActive }) => isActive ? "text-blue-600 font-bold" : 'text-black'} 
+            <li key={item.path} className="relative">
+              <NavLink
+                className={({ isActive }) =>
+                  isActive
+                    ? "flex items-center px-4 py-2 rounded-md bg-gradient-to-r from-blue-400 to-red-200 text-sky-100 font-medium shadow-md transition-all duration-300"
+                    : "flex items-center px-4 py-2 rounded-md bg-sky-50 hover:bg-red-200 text-gray-300 hover:text-indigo-700 font-medium hover:shadow-sm transform hover:translate-x-1 transition-all duration-300"
+                }
                 end
                 to={item.path}
               >
@@ -51,21 +74,24 @@ const AdminDashboard = () => {
           ))}
         </ul>
       </div>
-      <div className='mb-3'>
-        <hr className='mb-3 text-gray-300'/>
-        <button
-          onClick={handleLogout}
-          className="text-white font-medium px-5 py-2 rounded-md shadow-md transition duration-300 transform hover:scale-105"
-          style={{
-            textAlign: "center",
-            background: "linear-gradient(to right, #d12222, #0245ff)",
-            border: "none",
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
-        >
-          Logout
-        </button>
+      <div className="mt-auto">
+        <hr className="border-t border-gray-200 my-4" />
+        <div className="flex flex-col gap-4">
+          <div className="clock-container bg-fuchsia-200 border border-sky-300 rounded-md p-3 text-center shadow-sm">
+            <div className="text-indigo-700 font-mono text-xl tracking-wide">
+              {/* Time and Date */}
+              <div>{time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })}</div>
+              <div>{time.toLocaleDateString([], { year: 'numeric', month: '2-digit', day: '2-digit' })}</div>
+            </div>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="logout-button w-full py-2 px-4 rounded-md bg-gradient-to-r from-gray-200 to-gray-300 hover:from-red-500 hover:to-red-600 text-gray-700 hover:text-white font-medium transition-all duration-300 shadow-sm flex items-center justify-center"
+            aria-label="Logout"
+          >
+            <span>Logout</span>
+          </button>
+        </div>
       </div>
     </div>
   );

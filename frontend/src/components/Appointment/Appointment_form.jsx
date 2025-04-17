@@ -78,14 +78,19 @@ export default function AppointmentDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-black to-gray-900 text-white">
-      <header className="bg-blue-800 text-white py-4 text-center shadow-lg">
+      <header className="bg-gradient-to-r from-red-600 to-blue-600 text-white py-4 text-center shadow-lg">
         <h1 className="text-3xl font-bold">Computer Repair Appointment Booking</h1>
       </header>
       <main className="flex-grow p-6 max-w-4xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="p-6 rounded-lg shadow-lg border border-gray-700 bg-gray-900 bg-opacity-90">
             <h2 className="text-xl font-semibold mb-4">Select a Date</h2>
-            <Calendar onChange={setDate} value={date} minDate={new Date()} className="custom-calendar" />
+            <Calendar
+              onChange={setDate}
+              value={date}
+              minDate={new Date()}
+              className="custom-calendar"
+            />
           </div>
           <div className="p-6 rounded-lg shadow-lg border border-gray-700 bg-gray-900 bg-opacity-90">
             <h2 className="text-xl font-semibold mb-4">Select a Time Slot</h2>
@@ -95,7 +100,11 @@ export default function AppointmentDashboard() {
                   key={slot}
                   variant={selectedTime === slot ? "default" : "outline"}
                   onClick={() => setSelectedTime(slot)}
-                  className={`rounded-lg p-3 transition-all ${selectedTime === slot ? "bg-blue-600 text-white" : "bg-white text-black"}`}
+                  className={`rounded-lg p-3 transition-all ${
+                    selectedTime === slot
+                      ? "bg-gradient-to-r from-red-600 to-blue-600 text-white"
+                      : "bg-white text-black"
+                  }`}
                 >
                   {slot}
                 </Button>
@@ -239,7 +248,7 @@ export default function AppointmentDashboard() {
           </div>
 
           <Button
-            className="w-full p-3 rounded-lg bg-blue-600 text-white font-semibold transition-all hover:bg-blue-700"
+            className="w-full p-3 rounded-lg bg-gradient-to-r from-red-600 to-blue-600 text-white font-semibold transition-all hover:from-red-700 hover:to-blue-700"
             onClick={handleBooking}
           >
             Book Appointment

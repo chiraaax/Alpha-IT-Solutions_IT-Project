@@ -20,10 +20,6 @@ const ProductCards = ({ products = [] }) => {
     return cartItems.some((item) => item._id === productId);
   };
 
-
-  /*
-  Add to cart functionality
-  */
   const handleAddToCart = (product) => {
     // If product is already in the cart, do nothing (or you can show a message)
     if (isProductInCart(product._id)) return;
@@ -156,7 +152,9 @@ const ProductCards = ({ products = [] }) => { // Provide default empty array
                 ))
             }
         </div>
-    )
-}
+      ))}
+    </div>
+  );
+};
 
-export default ProductCards
+export default ProductCards;

@@ -11,17 +11,19 @@ const Register = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [contactNumber, setContactNumber] = useState('');
     const [address, setAddress] = useState('');
+    const [error, setError] = useState('');
     const navigate = useNavigate(); 
-
-    const [nameError, setNameError] = useState('');
-    const [emailError, setEmailError] = useState('');
-    const [passwordError, setPasswordError] = useState('');
-    const [confirmPasswordError, setConfirmPasswordError] = useState('');
-    const [contactNumberError, setContactNumberError] = useState('');
-    const [addressError, setAddressError] = useState('');
 
     const handleRegister = async (e) => {
         e.preventDefault();
+
+        if(password !== confirmPassword){
+            setError("Passwords do not match");
+            return;
+        }
+
+        try {
+            await axios.post('http://localhost:5000/api/auth/register', { name, email, password, contactNumber, address });
 
         if(password !== confirmPassword){
             setError("Passwords do not match");
@@ -94,8 +96,7 @@ const Register = () => {
             navigate('/verify-otp');
         } catch (error) {
             console.error('Registration failed:', error);
-            const errorMessage = error.response?.data?.message || "Registration failed. Please try again.";
-            toast.error(errorMessage, { position: "top-right" });
+            toast.error("Registration failed. Please try again.", { position: "top-right" });
         }
     };
 
@@ -125,7 +126,6 @@ const Register = () => {
                             placeholder="Enter your name"
                             className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
                         />
-                        {nameError && <p className="text-red-500 text-sm mt-1">{nameError}</p>}
                     </div>
                     <div>
                         <label className="block text-gray-300 mb-3 mt-5">EMAIL</label>
@@ -137,7 +137,6 @@ const Register = () => {
                             placeholder="Enter your email"
                             className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
                         />
-                        {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
                     </div>
                     <div>
                         <label className="block text-gray-300 mb-3  mt-5">PASSWORD</label>
@@ -149,7 +148,6 @@ const Register = () => {
                             placeholder="Enter your password"
                             className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
                         />
-                        {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
                     </div>
                     <div>
                         <label className="block text-gray-300 mb-3  mt-5">CONFIRM PASSWORD</label>
@@ -161,7 +159,7 @@ const Register = () => {
                             placeholder="Confirm your password"
                             className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
                         />
-                        {confirmPasswordError && <p className="text-red-500 text-sm mt-1">{confirmPasswordError}</p>}
+                        {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
                     </div>
                     <div>
                         <label className="block text-gray-300 mb-3 mt-5">CONTACT NUMBER</label>
@@ -173,7 +171,6 @@ const Register = () => {
                             placeholder="Enter your contact number"
                             className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
                         />
-                        {contactNumberError && <p className="text-red-500 text-sm mt-1">{contactNumberError}</p>}
                     </div>
                     <div>
                         <label className="block text-gray-300 mb-3  mt-5">ADDRESS</label>
@@ -185,7 +182,6 @@ const Register = () => {
                             placeholder="Enter your address"
                             className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
                         />
-                        {addressError && <p className="text-red-500 text-sm mt-1">{addressError}</p>}
                     </div>
                     <button 
                         type="submit" 
