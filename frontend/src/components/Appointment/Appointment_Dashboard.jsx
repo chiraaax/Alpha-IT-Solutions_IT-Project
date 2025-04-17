@@ -436,19 +436,6 @@ const AppointmentDashboard = () => {
                 Delete
               </button>
             </div>
-              {/* Generate Report Button */}
-              <button className="generate-report-btn" onClick={generateReport}>
-                Generate Report
-              </button>
-            </div>
-            <div className="modal-footer">
-              <button className="btn update-btn" onClick={handleUpdate}>
-                Save Changes
-              </button>
-              <button className="btn delete-btn" onClick={handleDelete}>
-                Delete
-              </button>
-            </div>
           </div>
         </div>
       )}

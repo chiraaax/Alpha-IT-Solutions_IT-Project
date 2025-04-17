@@ -1,9 +1,11 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function FAQ() { 
     const [faqs, setFaqs] = useState([]);
     const [openIndex, setOpenIndex] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchFAQs();
@@ -18,23 +20,20 @@ function FAQ() {
         }
     };
 
-    
     const handleFAQClick = async (index, id) => {
         if (openIndex === index) {
-            setOpenIndex(null); // Close the answer
+            setOpenIndex(null);
             return;
         }
 
-        setOpenIndex(index); // Open the selected FAQ
+        setOpenIndex(index);
 
-        // Update view count locally without re-fetching data
         setFaqs((prevFaqs) =>
             prevFaqs.map((faq) =>
                 faq._id === id ? { ...faq, views: faq.views + 1 } : faq
             )
         );
 
-        // Send API request to update views count
         try {
             await axios.put(`http://localhost:5000/api/faq/increment-views/${id}`);
         } catch (error) {
@@ -42,22 +41,30 @@ function FAQ() {
         }
     };
 
-  return (
-    <div>
-        <div className="max-w-3xl mx-auto my-10 p-6 bg-gray-900 text-white shadow-lg rounded-lg">
-        <h1 className="text-3xl font-bold text-center mb-6 text-cyan-400">Need Help? Find Answers Below</h1>
-        <ul className="space-y-4">
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-[#0a192f] via-[#020c1b] to-[#001f3f] text-white px-6">
+    {/* Header Section */}
+    <div className="text-center py-12">
+        <h1 className="text-5xl font-extrabold text-cyan-400 drop-shadow-lg neon-glow">Frequently Asked Questions</h1>
+        <p className="text-gray-300 mt-3 text-lg">Find answers to common questions below.</p>
+    </div>
+
+    {/* FAQ Section */}
+    <div className="max-w-4xl mx-auto p-8 bg-white/10 backdrop-blur-md shadow-2xl rounded-xl border border-cyan-500 neon-border">
+        <ul className="space-y-6">
             {faqs.map((faq, index) => (
-                <li key={faq._id} className="border-b border-gray-700 pb-3">
+                <li key={faq._id} className="border-b border-cyan-500 pb-4 last:border-none">
                     <button
                         onClick={() => handleFAQClick(index, faq._id)}
-                        className="w-full flex justify-between items-center font-semibold text-lg text-gray-300 hover:text-cyan-300 transition duration-300 cursor-pointer"
+                        className="w-full flex justify-between items-center text-xl font-semibold text-gray-200 hover:text-cyan-300 transition-all duration-300 cursor-pointer"
                     >
                         {faq.question}
-                        <span className="text-cyan-400 text-xl">{openIndex === index ? "−" : "+"}</span>
+                        <span className="text-cyan-400 text-2xl transition-transform transform hover:scale-125">
+                            {openIndex === index ? "−" : "+"}
+                        </span>
                     </button>
                     {openIndex === index && (
-                        <p className="mt-2 text-gray-200 bg-gray-800 p-4 rounded-lg transition-all duration-300">
+                        <p className="mt-4 text-gray-200 bg-blue-900/50 p-5 rounded-lg shadow-lg border border-cyan-500 transition-all duration-500">
                             {faq.answer}
                         </p>
                     )}
@@ -66,8 +73,25 @@ function FAQ() {
         </ul>
     </div>
 
+    {/* Call-to-Action Buttons */}
+    <div className="flex justify-center gap-8 mt-14">
+        <button
+            onClick={() => navigate('/InquiryForm')}
+            className="bg-cyan-500 hover:bg-cyan-400 text-white font-bold py-3 px-10 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-110 pulse"
+        >
+            Add An Inquiry
+        </button>
+        <button
+            onClick={() => navigate('/ReviewForm')}
+            className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-10 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-110 pulse"
+        >
+            Add A Review
+        </button>
     </div>
-  )
-}
+</div>
 
-export default FAQ
+
+
+)};
+
+export default FAQ;

@@ -24,6 +24,19 @@ import ProductDetails from '../components/shop/ProductDetails';
 import SearchPage from '../components/shop/search/SearchPage';
 import ManageAppointments from "../pages/dashboard/manage-appointments";
 
+import Profile from '../components/Register/Profile';
+import UserManage from '../components/Register/UserManage';
+import AdminProfile from '../components/Register/AdminProfile';
+
+//Inquiry Components
+import InquiryForm from '../components/Inquiry/InquiryForm';
+import InquiryManage from '../components/Inquiry/InquiryManage';
+import UserInquiries from '../components/Inquiry/UserInquiries';
+
+//Review Components
+import UserReviews from '../components/Reviews/UserReviews';
+import ReviewManage from '../components/Reviews/ReviewManage';
+import ReviewForm from '../components/Reviews/ReviewForm';
 
 // CustomBuilds Components
 import GamingBuilds from '../components/CustomBuilds/GamingBuilds';
@@ -44,9 +57,7 @@ import PickupForm from '../components/OrderManagement/pickupForm';
 import CodForm from '../components/OrderManagement/CodForm';
 import CatalogReportInline from '../pages/dashboard/user/shop/report/CatalogReportInline ';
 // import OrderList from '../components/OrderManagement/OrderList';
-import CustomizeBuild from '../components/CustomBuilds/CustomizeBuild'; // ✅ New Import
-import FilterForm from '../pages/dashboard/admin/filterProducts/FilterForm';
-import FiltersList from '../pages/dashboard/admin/filterProducts/FiltersList';
+
 
 const router = createBrowserRouter([
   {
@@ -59,8 +70,13 @@ const router = createBrowserRouter([
       { path: 'AppointmenentAI', element: <ProtectedRoute><AppointmenentAI /></ProtectedRoute> },
       { path: 'draftedTechnicianReport', element: <ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
       { path: 'appointment-form', element: <ProtectedRoute><AppointmentForm /></ProtectedRoute> },
-      { path: 'faq-manage', element: <ProtectedRoute element={<FAQManage />} allowedRoles={["admin"]} /> },
+
       { path: 'faq', element: <FAQ /> },
+      { path: 'ReviewForm', element:<ReviewForm/>},
+      { path: 'UserReviews', element:<UserReviews/>},
+      { path: 'InquiryForm', element:<InquiryForm/>},
+      { path: 'UserInquiries', element:<UserInquiries/>},
+
       // CustomBuilds routes
       { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
       { path: 'shop/:productId', element: <ProductDetails /> },
@@ -96,12 +112,10 @@ const router = createBrowserRouter([
     children: [
       // Customer routes
       { path: '', element: <div>Dashboard Home</div> },
-      { path: 'profile', element: <div>Profile</div> },
       { path: 'reviews', element: <div>Reviews</div> },
       { path: 'report-shop', element: <CatalogReportInline/> },
-      { path: 'report-shop', element: <CatalogReportInline/> },
       
-      { path: 'profile', element: <div><Profile/></div> },
+      { path: 'Profile', element: <div><Profile/></div> },
       { path: 'UserInquiries', element: <div><UserInquiries/></div> },
       { path: 'UserReviews', element:<div><UserReviews/></div>},
 
@@ -110,7 +124,7 @@ const router = createBrowserRouter([
       { path: 'add-new-product', element: <ProtectedRoute allowedRoles={["admin"]}><AddProduct /></ProtectedRoute> },
       { path: 'manage-products', element: <ProtectedRoute allowedRoles={["admin"]}><ManageProducts /></ProtectedRoute> },
       { path: 'manage-inventory', element: <ProtectedRoute allowedRoles={["admin"]}><ManageInventory /></ProtectedRoute> },
-      { path: 'users', element: <ProtectedRoute allowedRoles={["admin"]}><div>Manage Users</div></ProtectedRoute> },
+      { path: 'UserManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><UserManage/></div></ProtectedRoute> },
       { path: 'manage-appointments', element: <ProtectedRoute allowedRoles={["admin"]}><ManageAppointments /></ProtectedRoute> },
       { path: 'filters', element: <ProtectedRoute allowedRoles={["admin"]}>< AdminFiltersPage/></ProtectedRoute> },
       { path: 'create-custom-prebuild', element: <ProtectedRoute allowedRoles={["admin"]}><CreateCustomBuild /></ProtectedRoute> },

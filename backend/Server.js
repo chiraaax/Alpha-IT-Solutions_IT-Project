@@ -17,13 +17,8 @@ import prebuildRoutes from "./routes/prebuildRoutes.js";
 import filterRoutes from "./routes/filterRoutes.js";
 // import orderRoutes from "./routes/OrderManagement/orderRoutes.js";
 // import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js";
-//order
-// import orderRoutes from "./routes/OrderManagement/orderRoutes.js"
-// import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js"
 import reportRoutes from './routes/reportRoutesShop.js';
 import orderRoutes from "./routes/orderRoutes.js";
-
-
 import inquiryRoutes from "./routes/inquiryRoute.js";
 import reviewRoutes from "./routes/reviewRoute.js";
 
@@ -40,25 +35,12 @@ const corsOptions = {
 
 // Apply Middlewares
 app.use(cors(corsOptions));
-// Middleware
-app.use(cors());
 app.use(express.json());
-app.use(cookieParser());
-
-// Middleware for parsing JSON, cookies, and URL-encoded data
-app.use(express.json());
-app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Serve Static Uploads Folder
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
-app.use(cors({
-  origin:  'http://localhost:5173'||  PORT, // Replace with the frontend URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-}));
-app.use(express.json()); // Parse JSON request body
-app.use(cookieParser()); // Parse cookies
-
 
 // API Routes
 app.use('/api/appointments', appointmentRoutes);
@@ -75,6 +57,8 @@ app.use("/api", uploadRoutes);
 // app.use('/api/reports', reportRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/successorder', orderRoutes);
+app.use("/api/inquiries", inquiryRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 // Home Route
 app.get("/", (req, res) => {
@@ -96,31 +80,6 @@ mongoose
   .then(() => console.log("✅ MongoDB Connected Successfully"))
   .catch((err) => {
     console.error("❌ MongoDB Connection Error:", err.message);
-    console.error("MongoDB Connection Error:", err.message);
-    process.exit(1); // Exit process on failure
-  });
-
-// Middleware for routes
-app.use("/api/filters", filterRoutes);
-app.use("/api/prebuilds", prebuildRoutes);
-
-
-app.get("/", (req, res) => {
-  res.send("API is running...");
-});
-
-// Global Error Handler
-app.use((err, req, res, next) => {
-  console.error("Global Error: ", err.stack);
-  res.status(500).send("Something went wrong!");
-});
-
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => {
-    console.error("MongoDB Connection Error:", err.message);
     process.exit(1);
   });
 

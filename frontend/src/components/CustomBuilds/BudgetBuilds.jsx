@@ -17,7 +17,6 @@ const formatPrice = (price) => {
 };
 
 const GamingBuilds = () => {
-const BudgetBuilds = () => {
   const { isDark, toggleTheme } = useTheme();
   const [gamingBuilds, setGamingBuilds] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -128,7 +127,6 @@ const BudgetBuilds = () => {
       }
     }
   };
-  const { isDark, toggleTheme } = useTheme(); // Get dark mode state and toggle function
 
   return (
     <div className={`min-h-screen ${isDark ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
@@ -284,52 +282,6 @@ const BudgetBuilds = () => {
           </motion.div>
         )}
       </div>
-      <h1 className="text-4xl font-bold mb-4 text-center">Budget Builds</h1>
-      <p className="text-lg text-gray-500 mb-8 text-center">
-        Discover Premium Budget Builds Perfect for Everyday Work!
-      </p>
-      <p className="text-lg mb-10 text-center">
-        Click on a build to view more details and customize it to your liking.
-      </p>
-
-      {/* Loading, Error, and Empty States */}
-      {loading ? (
-        <p className="text-center text-lg font-semibold">Loading...</p>
-      ) : error ? (
-        <p className="text-red-500 text-center">{error}</p>
-      ) : budgetBuilds.length === 0 ? (
-        <p className="text-center text-xl">No budget builds available at the moment.</p>
-      ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {budgetBuilds.map((build) => (
-            <div
-              key={build._id}
-              onClick={() => handleNavigate(build._id)} // Adding the navigation here
-              className={`cursor-pointer p-4 rounded-lg shadow-lg transition-all hover:shadow-2xl ${isDark ? "bg-gray-800 text-white" : "bg-white text-black"}`}
-            >
-              <img
-                src={build.image || "https://via.placeholder.com/300"}
-                alt={build.category}
-                className="w-full h-48 object-cover rounded-lg mb-4"
-              />
-              <h2 className="text-2xl font-semibold">{build.category}</h2>
-              <p>{build.description}</p>
-              <p className="text-xl font-bold text-blue-600">{formatPrice(build.price)}</p>
-
-              {/* Comparison Button */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent triggering navigation on button click
-                  handleCompareClick(build);
-                }}
-                className={`mt-4 p-2 rounded-full transition-all ${isBuildSelected(build._id) ? "bg-blue-600 text-white" : "bg-gray-300 text-black"}`}
-              >
-                {isBuildSelected(build._id) ? "Selected" : "Compare"}
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* Comparison Modal */}
       {selectedBuilds.length === 2 && (
@@ -405,23 +357,6 @@ const BudgetBuilds = () => {
           </motion.div>
         </div>
       )}
-      <h1 className="text-4xl font-bold mb-4">Budget Builds</h1>
-      <p className="text-gray-700 mb-8">Discover our affordable and efficient budget builds!</p>
-      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-        {budgetBuilds.map(build => (
-          <Link 
-            key={build.id} 
-            to={`/budget-builds/budget/${build.id}`} // Updated path here
-            className="bg-white rounded-lg shadow-lg p-4 transition-transform transform hover:scale-105 hover:shadow-2xl"
-          >
-            <img src={build.image} alt={build.name} className="w-full h-48 object-cover rounded-lg mb-4" />
-            <h2 className="text-2xl font-semibold mb-2">{build.name}</h2>
-            <p>{build.description}</p>
-            <p className="font-bold">{build.components}</p>
-            <p className="text-xl text-blue-600">{formatPrice(build.price)}</p>
-          </Link>
-        ))}
-      </div>
     </div>
   );
 };

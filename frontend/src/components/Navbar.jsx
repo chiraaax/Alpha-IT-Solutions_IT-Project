@@ -10,18 +10,23 @@ import { persistor } from '../redux/store';
 
 const adminDropDownMenus = [
   { label: "Dashboard", path: "/dashboard/admin" },
+  { label: "AdminProfile", path: "/dashboard/AdminProfile" },
   { label: "Manage Items", path: "/dashboard/manage-products" },
   { label: "Add Product", path: "/dashboard/add-new-product" },
   { label: "Manage filters", path: "/dashboard/manage-filters" },
   { label: "Manage appointments", path: "/dashboard/manage-appointments" },
   { label: "Manage Pre-Builds", path: "/dashboard/prebuild-dashboard" },
   { label: "Setup Pre-Builds", path: "/dashboard/create-custom-prebuild" },
-
+  { label: "Manage Inquiry", path: "/dashboard/InquiryManage"},
+  { label: "Manage Review", path: "/dashboard/ReviewManage"},
+  { label: "FAQ Manage", path: "/dashboard/FAQManage"},
 ];
 
 const userDropDownMenus = [
   { label: "Dashboard", path: "/dashboard" },
   { label: "Profile", path: "/dashboard/profile" },
+  { label: "My Inquiries", path: "/dashboard/UserInquiries"},
+  { label: "My Reviews", path: "/dashboard/UserReviews"}
 ];
 
 const Navbar = () => {
@@ -104,7 +109,7 @@ const Navbar = () => {
     <li className='link whitespace-nowrap'><Link to="/about">About</Link></li>
     <li className='link whitespace-nowrap'><Link to="/appointment">Services</Link></li>
     <li className='link whitespace-nowrap'><Link to="/custom-prebuilds">Custom Pre-Builds</Link></li>
-    <li className='link whitespace-nowrap'><Link to="/">Reviews</Link></li>
+    <li className='link'><Link to="/faq">FAQ</Link></li>
     <li className='link whitespace-nowrap'><Link to="/contact">Contact</Link></li>
   </ul>
 

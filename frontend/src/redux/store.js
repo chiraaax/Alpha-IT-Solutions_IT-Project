@@ -1,9 +1,4 @@
 // src/redux/store.js
-//this is the redux store
-//used to combine reducers and persist the cart slice
-
-
-// configureStore handles setting up the store with sensible default middleware and settings.
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import cartReducer from './features/cart/cartReducer';
 import { persistStore, persistReducer } from 'redux-persist';
@@ -20,18 +15,9 @@ const rootReducer = combineReducers({
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
-import { configureStore } from '@reduxjs/toolkit';
-import cartReducer from './features/cart/cartSlice'; 
-import productsApi from './features/products/productsApi';
-
 
 const store = configureStore({
   reducer: persistedReducer,
-  reducer: {
-    cart: cartReducer,
-    [productsApi.reducerPath] : productsApi.reducer,
-
-  },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
@@ -46,7 +32,6 @@ const store = configureStore({
         ],
       },
     }),
-    getDefaultMiddleware().concat(productsApi.middleware),
 });
 
 export const persistor = persistStore(store);
