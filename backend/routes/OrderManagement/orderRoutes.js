@@ -3,10 +3,9 @@ import Order from "../../models/OrderManagement/Order.js";
 // import { useParams } from "react-router-dom";
 const router = express.Router();
 
-router.post("/orders", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    console.log("Incoming order request:", req.body);
-
+    // console.log("Incoming order request:", req.body);
     const {
       name,
       phoneNo,
@@ -30,23 +29,18 @@ router.post("/orders", async (req, res) => {
     if (paymentMethod === "COD") {
       if (!address || !deliveryDate || !deliveryTime) {
         console.error("Missing COD details!");
-        return res
-          .status(400)
-          .json({
-            message:
-              "Address, delivery date, and delivery time are required for COD orders",
-          });
+        return res.status(400).json({
+          message:
+            "Address, delivery date, and delivery time are required for COD orders",
+        });
       }
       orderData.codDetails = { address, deliveryDate, deliveryTime };
     } else if (paymentMethod === "Pickup") {
       if (!pickupDate || !pickupTime) {
         console.error("Missing Pickup details!");
-        return res
-          .status(400)
-          .json({
-            message:
-              "Pickup date and pickup time are required for Pickup orders",
-          });
+        return res.status(400).json({
+          message: "Pickup date and pickup time are required for Pickup orders",
+        });
       }
       orderData.pickupDetails = { pickupDate, pickupTime };
     } else {
@@ -54,7 +48,6 @@ router.post("/orders", async (req, res) => {
       return res.status(400).json({ message: "Invalid payment method" });
     }
 
-  
     const order = new Order(orderData);
     await order.save();
     console.log("Order saved:", order);
@@ -65,28 +58,28 @@ router.post("/orders", async (req, res) => {
       .status(500)
       .json({ message: "Failed to place order. Please check again." });
   }
-}); 
+});
 
 // GET all orders
-router.get('/orders/all', async (req, res) => {
+router.get("/all", async (req, res) => {
   try {
-      const order = await Order.find();
-      if(!order || order.length === 0) {
-        return res.status(404).json({message:"Order data not found"});
-      }
-      res.status(200).json(order);
+    const order = await Order.find();
+    if (!order || order.length === 0) {
+      return res.status(404).json({ message: "Order data not found" });
+    }
+    res.status(200).json(order);
   } catch (error) {
-      res.status(500).json({ errorMessage: error.message });
+    res.status(500).json({ errorMessage: error.message });
   }
 });
 
 // GET a single order by ID
-router.get("/orders/:email", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const email = decodeURIComponent(req.params.email); // Decode email from URL
-    console.log("Received GET request for email:", email);
+    const id = decodeURIComponent(req.params.id); // Decode email from URL
+    console.log("Received GET request for id:", id);
 
-    const order = await Order.findById(email);
+    const order = await Order.findById(id);
     if (!order) {
       return res.status(404).json({ errorMessage: error.message });
     }
@@ -96,52 +89,46 @@ router.get("/orders/:email", async (req, res) => {
   }
 });
 
-router.delete("/orders/:email", async (req, res) => {
-  const email = decodeURIComponent(req.params.email); // Decode email from URL
-  console.log("Received DELETE request for email:", email);
+router.delete("/:id", async (req, res) => {
+  const id = decodeURIComponent(req.params.id); // fixed here
+  console.log("Received DELETE request for order ID:", id);
 
   try {
-    const order = await Order.findOne({ email });
+    const order = await Order.findById(id); // fixed from findOne({ id }) to findById(id)
 
-    // Check if the order exists
     if (!order) {
       return res.status(404).send("Order not found.");
     }
 
-    // Get the current time and the order's creation time
     const now = new Date();
     const orderCreatedAt = new Date(order.createdAt);
-    
-    // Calculate the difference in milliseconds
     const timeDifference = now - orderCreatedAt;
 
-    // Check if the order is older than 24 hours
-    if (timeDifference > 24 * 60 * 60 * 1000) {  // 24 hours in milliseconds
-      return res.status(400).send("Orders can only be deleted within 24 hours of creation.");
+    if (timeDifference > 24 * 60 * 60 * 1000) {
+      return res
+        .status(400)
+        .send("Orders can only be deleted within 24 hours of creation.");
     }
 
-    // Delete the order if it's within 24 hours
-    await Order.deleteOne({ email });
+    await Order.findByIdAndDelete(id); // fix this as well
     res.send({ message: "Order deleted successfully!" });
   } catch (error) {
     res.status(500).send("Error deleting order.");
   }
 });
 
-
 // Update an order if it's within 24 hours
-router.put("/orders/:email", async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
-    const email = decodeURIComponent(req.params.email); // Decode email from URL
-    console.log("Received Update request for email:", email);
+    const id = decodeURIComponent(req.params.id); // fixed here
+    console.log("Received Update request for order ID:", id);
 
-    // Find order by email instead of ID
-    const order = await Order.findOne({ email: email }); // Assuming 'email' is a field in the Order model
+    const order = await Order.findById(id); // fixed from findOne({ id })
+
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // Check if it's within 24 hours
     const orderTime = new Date(order.createdAt);
     const currentTime = new Date();
     const diffHours = (currentTime - orderTime) / (1000 * 60 * 60);
@@ -152,12 +139,10 @@ router.put("/orders/:email", async (req, res) => {
         .json({ message: "Order cannot be updated after 24 hours" });
     }
 
-    // Update the order with the new data
-    const updatedOrder = await Order.findOneAndUpdate(
-      { email: email }, // Update by email instead of ID
-      req.body,
-      { new: true, runValidators: true } // Ensures validation rules are applied
-    );
+    const updatedOrder = await Order.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
     res.json(updatedOrder);
   } catch (error) {
