@@ -1,12 +1,16 @@
 import express from "express";
 import Order from "../../models/OrderManagement/Order.js";
+import SuccessOrder from "../../models/OrderManagement/SuccessOrder.js";
+import User from "../../models/userModel.js";
 // import { useParams } from "react-router-dom";
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post("/create", async (req, res) => {
   try {
     // console.log("Incoming order request:", req.body);
     const {
+      SuccessorderId,
+      customerId,
       name,
       phoneNo,
       email,
@@ -24,7 +28,21 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    let orderData = { name, phoneNo, email, paymentMethod, saveAddress };
+    // ✅ Fetch the actual user
+    const customer = await User.findOne({ email });
+
+    if (!customer) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // ✅ Fetch the SuccessOrder using user's _id
+    const Successorder = await SuccessOrder.findOne({ customerId: customer._id }).sort({ createdAt: -1 }).sort({ createdAt: -1 });
+
+    if (!Successorder) {
+      return res.status(404).json({ message: "SuccessOrder not found for this customer" });
+    }
+
+    let orderData = { SuccessorderId: Successorder._id, customerId: customer._id, name, phoneNo, email, paymentMethod, saveAddress };
 
     if (paymentMethod === "COD") {
       if (!address || !deliveryDate || !deliveryTime) {

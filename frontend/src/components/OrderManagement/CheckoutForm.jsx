@@ -115,7 +115,7 @@ const CheckoutForm = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/orders",
+        "http://localhost:5000/api/orders/create",
         orderData
       );
       setSuccessOrder(response.data);

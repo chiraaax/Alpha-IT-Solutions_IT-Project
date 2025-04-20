@@ -12,7 +12,16 @@ const pickupSchema = new mongoose.Schema({
 });
 
 const orderSchema = new mongoose.Schema({
-  SuccessorderId: { type: mongoose.Schema.Types.ObjectId, ref: "SuccessOrder", required: true },
+  SuccessorderId: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: "SuccessOrder", 
+      required: true 
+    },
+  customerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
   name: { type: String, required: true },
   phoneNo: { type: String, required: true },
   email: { type: String, required: true },

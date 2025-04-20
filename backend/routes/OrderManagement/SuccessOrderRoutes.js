@@ -9,9 +9,11 @@ router.post("/create", async (req, res) => {
   try {
     const { customerId, totalAmount, status, items } = req.body;
 
-    // Validate itemType to ensure it's either "product" or "prebuild"
-    if (!["product", "prebuild"].includes(itemType)) {
-      return res.status(400).json({ message: "Invalid itemType. It must be 'product' or 'prebuild'." });
+    // Validate each item's itemType
+    for (const item of items) {
+      if (!["product", "prebuild"].includes(item.itemType)) {
+        return res.status(400).json({ message: "Invalid itemType. It must be 'product' or 'prebuild'." });
+      }
     }
 
     // Check if the user exists in the database

@@ -49,7 +49,6 @@ const Summary = ({ cart }) => {
             console.log("SuccessOrder saved:", response.data);
 
             dispatch(addOrder());
-            // console.log("item with ID:", item._id);
             navigate("/CheckoutForm"); // Ensure this route exists and navigate to the checkout form
         } catch (error) {
             console.error("Error saving order:", error.response ? error.response.data : error.message);
