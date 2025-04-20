@@ -113,10 +113,22 @@ const CheckoutForm = () => {
       ...(formData.paymentMethod === "COD" ? codData : pickupData),
     };
 
+    const token = localStorage.getItem("token"); // ⬅️ Get the token from storage
+
+    if (!token) {
+      alert("You must be logged in to place an order.");
+      return;
+    }
+
     try {
       const response = await axios.post(
         "http://localhost:5000/api/orders/create",
-        orderData
+        orderData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // ⬅️ Add token here
+          },
+        }
       );
       setSuccessOrder(response.data);
       alert("Order placed successfully!");
@@ -134,28 +146,6 @@ const CheckoutForm = () => {
       console.log("Order after placement:", successOrder);
     }
   }, [successOrder]);
-
-  // const handleDelete = async () => {
-  //   console.log("Deleting Order ID:", successOrder._id);
-  //   if (!id) {
-  //     alert("Order not found. Id is required.");
-  //     return;
-  //   }
-
-  //   const confirmDelete = window.confirm(
-  //     "Are you sure you want to delete this order?"
-  //   );
-  //   if (!confirmDelete) return;
-
-  //   try {
-  //     const result = await deleteOrder();
-  //     alert(result.message || "Order deleted successfully!");
-  //     setSuccessOrder(null);
-  //   } catch (error) {
-  //     console.error("Error deleting order:", error);
-  //     alert("Failed to delete order.");
-  //   }
-  // };
 
   const handleUpdate = async () => {
     console.log("Updating Order ID:", successOrder.order._id);

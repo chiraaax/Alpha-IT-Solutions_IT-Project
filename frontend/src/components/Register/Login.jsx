@@ -3,7 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
 import loginImage from "../../assets/login-5.jpg";
 
-
 const Login = () => {
     const { login } = useContext(AuthContext);
     const [email, setEmail] = useState("");
@@ -18,6 +17,7 @@ const Login = () => {
         setLoading(false);
     
         if (user) {
+            // localStorage.setItem("token", response.data.token);
             // Navigate to home page for both admin and user
             navigate("/");
         }

@@ -1,16 +1,15 @@
 import express from "express";
 import Order from "../../models/OrderManagement/Order.js";
 import SuccessOrder from "../../models/OrderManagement/SuccessOrder.js";
-import User from "../../models/userModel.js";
-// import { useParams } from "react-router-dom";
+import authMiddleware from "../../middleware/authMiddleware.js";
+// import User from "../../models/userModel.js";
+
 const router = express.Router();
 
-router.post("/create", async (req, res) => {
+router.post("/create", authMiddleware(["customer"]), async (req, res) => {
   try {
     // console.log("Incoming order request:", req.body);
     const {
-      SuccessorderId,
-      customerId,
       name,
       phoneNo,
       email,
@@ -29,20 +28,32 @@ router.post("/create", async (req, res) => {
     }
 
     // ✅ Fetch the actual user
-    const customer = await User.findOne({ email });
+    // const customer = await User.findOne({ email });
+    const customerId = req.user._id;
 
-    if (!customer) {
+    if (!customerId) {
       return res.status(404).json({ message: "User not found" });
     }
 
     // ✅ Fetch the SuccessOrder using user's _id
-    const Successorder = await SuccessOrder.findOne({ customerId: customer._id }).sort({ createdAt: -1 }).sort({ createdAt: -1 });
+    const Successorder = await SuccessOrder.findOne({ customerId })
+      .sort({ createdAt: -1 });
 
     if (!Successorder) {
-      return res.status(404).json({ message: "SuccessOrder not found for this customer" });
+      return res
+        .status(404)
+        .json({ message: "SuccessOrder not found for this customer" });
     }
 
-    let orderData = { SuccessorderId: Successorder._id, customerId: customer._id, name, phoneNo, email, paymentMethod, saveAddress };
+    let orderData = {
+      SuccessorderId: Successorder._id,
+      customerId,
+      name,
+      phoneNo,
+      email,
+      paymentMethod,
+      saveAddress,
+    };
 
     if (paymentMethod === "COD") {
       if (!address || !deliveryDate || !deliveryTime) {
@@ -128,8 +139,16 @@ router.delete("/:id", async (req, res) => {
         .send("Orders can only be deleted within 24 hours of creation.");
     }
 
+    // 🔥 Delete associated successOrder using successOrderId in order
+    if (order.SuccessorderId) {
+      await SuccessOrder.findByIdAndDelete(order.SuccessorderId);
+      console.log("Deleted related successOrder:", order.SuccessorderId);
+    }
+
     await Order.findByIdAndDelete(id); // fix this as well
-    res.send({ message: "Order deleted successfully!" });
+    res.send({
+      message: "Order and its related cart details deleted successfully.",
+    });
   } catch (error) {
     res.status(500).send("Error deleting order.");
   }
@@ -176,7 +195,7 @@ router.put("/:id", async (req, res) => {
         $unset: unsetFields,
       },
       { new: true, runValidators: true }
-    );    
+    );
 
     res.json({
       message: "Order updated successfully",
@@ -187,38 +206,5 @@ router.put("/:id", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
-// router.put("/:id", async (req, res) => {
-//   try {
-//     const id = decodeURIComponent(req.params.id); // fixed here
-//     console.log("Received Update request for order ID:", id);
-
-//     const order = await Order.findById(id); // fixed from findOne({ id })
-
-//     if (!order) {
-//       return res.status(404).json({ message: "Order not found" });
-//     }
-
-//     const orderTime = new Date(order.createdAt);
-//     const currentTime = new Date();
-//     const diffHours = (currentTime - orderTime) / (1000 * 60 * 60);
-
-//     if (diffHours > 24) {
-//       return res
-//         .status(400)
-//         .json({ message: "Order cannot be updated after 24 hours" });
-//     }
-
-//     const updatedOrder = await Order.findByIdAndUpdate(id, req.body, {
-//       new: true,
-//       runValidators: true,
-//     });
-
-//     res.json(updatedOrder);
-//   } catch (error) {
-//     console.error("Error updating order:", error);
-//     res.status(500).json({ message: "Internal Server Error" });
-//   }
-// });
 
 export default router;
