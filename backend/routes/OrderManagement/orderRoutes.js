@@ -120,10 +120,10 @@ router.delete("/:id", async (req, res) => {
 // Update an order if it's within 24 hours
 router.put("/:id", async (req, res) => {
   try {
-    const id = decodeURIComponent(req.params.id); // fixed here
+    const id = decodeURIComponent(req.params.id);
     console.log("Received Update request for order ID:", id);
 
-    const order = await Order.findById(id); // fixed from findOne({ id })
+    const order = await Order.findById(id);
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
@@ -134,21 +134,73 @@ router.put("/:id", async (req, res) => {
     const diffHours = (currentTime - orderTime) / (1000 * 60 * 60);
 
     if (diffHours > 24) {
-      return res
-        .status(400)
-        .json({ message: "Order cannot be updated after 24 hours" });
+      return res.status(400).json({
+        message: "Order cannot be updated after 24 hours",
+      });
     }
 
-    const updatedOrder = await Order.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    // Prepare updateData based on payment method
+    const setFields = { ...req.body };
+    const unsetFields = {};
 
-    res.json(updatedOrder);
+    if (req.body.paymentMethod === "COD") {
+      setFields.codDetails = req.body.codDetails;
+      unsetFields.pickupDetails = "";
+    } else if (req.body.paymentMethod === "Pickup") {
+      setFields.pickupDetails = req.body.pickupDetails;
+      unsetFields.codDetails = "";
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      id,
+      {
+        $set: setFields,
+        $unset: unsetFields,
+      },
+      { new: true, runValidators: true }
+    );    
+
+    res.json({
+      message: "Order updated successfully",
+      order: updatedOrder,
+    });
   } catch (error) {
     console.error("Error updating order:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+// router.put("/:id", async (req, res) => {
+//   try {
+//     const id = decodeURIComponent(req.params.id); // fixed here
+//     console.log("Received Update request for order ID:", id);
+
+//     const order = await Order.findById(id); // fixed from findOne({ id })
+
+//     if (!order) {
+//       return res.status(404).json({ message: "Order not found" });
+//     }
+
+//     const orderTime = new Date(order.createdAt);
+//     const currentTime = new Date();
+//     const diffHours = (currentTime - orderTime) / (1000 * 60 * 60);
+
+//     if (diffHours > 24) {
+//       return res
+//         .status(400)
+//         .json({ message: "Order cannot be updated after 24 hours" });
+//     }
+
+//     const updatedOrder = await Order.findByIdAndUpdate(id, req.body, {
+//       new: true,
+//       runValidators: true,
+//     });
+
+//     res.json(updatedOrder);
+//   } catch (error) {
+//     console.error("Error updating order:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
 
 export default router;

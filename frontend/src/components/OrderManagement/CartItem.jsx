@@ -22,13 +22,13 @@ const CartItem = ({ item, updateQuantity }) => {
       }
 
       // Update the parent component with the new quantity
-      updateQuantity(item.id, quantity); // Pass item id and updated quantity
+      updateQuantity(item._id, quantity); // Pass item id and updated quantity
       setPrevQuantity(quantity); // Update prevQuantity to the current one
     }
-  }, [quantity, item.id, item.displayedStock, prevQuantity, updateQuantity]);
+  }, [quantity, item._id, item.displayedStock, prevQuantity, updateQuantity]);
 
   const handleQuantityChange = (e) => {
-    let newQuantity = parseInt(e.target.value, 10);
+    let newQuantity = parseInt(e.target.value, 100);
 
     if (isNaN(newQuantity) || newQuantity < 1) {
       return; // Prevent invalid input

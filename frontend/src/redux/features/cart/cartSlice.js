@@ -8,6 +8,7 @@ const initialState = {
     tax: 0,
     taxRate: 0.05,
     grandTotal: 0,
+    customerOrders: [], // array of past orders
 };
 
 const cartSlice = createSlice({
@@ -69,6 +70,21 @@ const cartSlice = createSlice({
             state.tax = 0;
             state.grandTotal = 0;
         },
+        addOrder: (state, action) => {
+            state.customerOrders.push({
+                id: uuidv4(),
+                date: new Date().toLocaleString(),
+                items: [...state.products],
+                total: state.grandTotal,
+            });
+        
+            // Optional: Clear cart after placing order
+            state.products = [];
+            state.selectedItems = 0;
+            state.totalPrice = 0;
+            state.tax = 0;
+            state.grandTotal = 0;
+        },        
     },
 });
 
@@ -84,5 +100,5 @@ export const setTax = (state) => setTotalPrice(state) * state.taxRate;
 export const setGrandTotal = (state) => setTotalPrice(state) + setTax(state);
 
 // Export actions
-export const { addToCart, updateQuantity, removeFromCart, clearCart } = cartSlice.actions;
+export const { addToCart, updateQuantity, removeFromCart, clearCart, addOrder } = cartSlice.actions;
 export default cartSlice.reducer;

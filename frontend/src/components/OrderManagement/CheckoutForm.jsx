@@ -86,7 +86,23 @@ const CheckoutForm = () => {
   };
 
   const handlePaymentChange = (e) => {
-    setFormData({ ...formData, paymentMethod: e.target.value });
+    const selectedMethod = e.target.value;
+
+    setFormData({ ...formData, paymentMethod: selectedMethod });
+
+    if (selectedMethod === "Pickup") {
+      setPickupData({
+        pickupDate: "",
+        pickupTime: "",
+      });
+    } else if (selectedMethod === "COD") {
+      setCodData({
+        address: "",
+        deliveryDate: "",
+        deliveryTime: "",
+        saveAddress: false,
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -146,15 +162,31 @@ const CheckoutForm = () => {
     const confirmUpdate = window.confirm("Are you sure you want to update this order?");
     if (!confirmUpdate) return;
 
-    const updatedOrderData = {
+    let updatedOrderData = {
       ...formData,
-      ...(formData.paymentMethod === "COD" ? codData : pickupData),
+      // ...(formData.paymentMethod === "COD" ? codData : pickupData),
     };
+
+    if (formData.paymentMethod === "COD") {
+      updatedOrderData = {
+        ...updatedOrderData,
+        codDetails: { ...codData },
+        pickupDetails: undefined, // remove pickupDetails if it exists
+      };
+    } else if (formData.paymentMethod === "Pickup") {
+      updatedOrderData = {
+        ...updatedOrderData,
+        pickupDetails: { ...pickupData },
+        codDetails: undefined, // remove codDetails if it exists
+      };
+    }
 
     try {
       const result = await updateOrder(successOrder.order._id, updatedOrderData);
       alert(result.message || "Order updated successfully!");
-      setSuccessOrder({ ...successOrder, ...updatedOrderData });
+      // setSuccessOrder({ ...successOrder, ...updatedOrderData });
+      setSuccessOrder({ ...successOrder, order: { ...successOrder.order, ...updatedOrderData } });
+
     } catch (error) {
       console.error("Error updating order:", error);
       alert("Failed to update order.");
