@@ -1,10 +1,18 @@
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addOrder } from "../../redux/features/cart/cartSlice";
 import axios from "axios";
 
 const Summary = ({ cart }) => {
+    const customerId = localStorage.getItem("userId"); // or from Redux/auth state
     const navigate = useNavigate(); // React Router navigation
+    const dispatch = useDispatch();
 
-    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    // const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const subtotal = cart.reduce((sum, item) => {
+        const price = item.discountPrice ?? item.price;
+        return sum + price * item.quantity;
+    }, 0);
     const tax = subtotal * 0.05;
     const total = subtotal + tax;
 
@@ -18,15 +26,29 @@ const Summary = ({ cart }) => {
                 return;
             }
 
+            // const orderData = {
+            //     customerId: "67deced64f3bc4a00af20c0c",  // Assuming userId is stored in localStorage
+            //     totalAmount: total,
+            //     status: "Pending",
+            // };
+            // Prepare the item array with itemId, itemType, and quantity
+            const items = cart.map(item => ({
+                itemId: item._id, // assuming _id is the item ID
+                itemType: item.prebuildId ? "prebuild" : "product", // or however you're detecting type
+                quantity: item.quantity
+            }));
+    
             const orderData = {
-                customerId: "67deced64f3bc4a00af20c0c",  // Assuming userId is stored in localStorage
+                customerId: customerId || "67deced64f3bc4a00af20c0c", // fallback if needed
                 totalAmount: total,
                 status: "Pending",
+                items: items
             };
 
             const response = await axios.post("http://localhost:5000/api/successorders/create", orderData);
             console.log("SuccessOrder saved:", response.data);
 
+            dispatch(addOrder());
             navigate("/CheckoutForm"); // Ensure this route exists and navigate to the checkout form
         } catch (error) {
             console.error("Error saving order:", error.response ? error.response.data : error.message);
