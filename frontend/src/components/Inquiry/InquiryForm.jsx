@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../context/authContext';
 import { toast } from "react-toastify";
+import {jsPDF} from "jspdf";
 import 'jspdf-autotable';
 
 const InquiryForm = () => {
@@ -64,10 +65,20 @@ const InquiryForm = () => {
         const file = e.target.files[0];
         if (file) {
             const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            
             if (!allowedTypes.includes(file.type)) {
-                toast.error("Only .png, .jpg, and .jpeg files are allowed.");
+                toast.error("Only PNG, JPG, and JPEG files are allowed.");
+                e.target.value = ""; // Clear the input
                 return;
             }
+
+            if (file.size > maxSize) {
+                toast.error("File size too large. Maximum 5MB allowed.");
+                e.target.value = ""; // Clear the input
+                return;
+            }
+
             setFormData(prevState => ({
                 ...prevState,
                 attachment: file
@@ -75,10 +86,18 @@ const InquiryForm = () => {
         }
     };
 
+    const handleRemoveFile = () => {
+        setFormData(prevState => ({
+            ...prevState,
+            attachment: null
+        }));
+        document.getElementById('attachment').value = "";
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log("[DEBUG] Form submission initiated");
-        console.log("[AUTH] Current token:", localStorage.getItem("token")); // Explicit token logging
+        console.log("[AUTH] Current token:", localStorage.getItem("token"));
 
         // Trim spaces and normalize input before validation
         const trimmedFullName = formData.fullName.trim();
@@ -107,31 +126,25 @@ const InquiryForm = () => {
         }
 
         try {
-            // Create FormData for the inquiry submission
             const formDataToSend = new FormData();
                 
-            // Append all fields explicitly
             formDataToSend.append('fullName', formData.fullName.trim());
             formDataToSend.append('email', formData.email.trim());
             formDataToSend.append('contactNumber', formData.contactNumber);
             formDataToSend.append('inquiryType', formData.inquiryType);
             formDataToSend.append('productName', formData.productName || '');
             formDataToSend.append('additionalDetails', formData.additionalDetails);
-            formDataToSend.append('userApproval', formData.userApproval.toString()); // Convert boolean to string
+            formDataToSend.append('userApproval', formData.userApproval.toString());
             formDataToSend.append('inquirySubject', formData.inquirySubject);
                 
-            // Append file if exists
             if (formData.attachment) {
                 formDataToSend.append('attachment', formData.attachment);
             }
 
-            // Debug: Log FormData contents (for development only)
             for (let [key, value] of formDataToSend.entries()) {
                 console.log(key, value);
             }
     
-            // Submit the Inquiry
-            console.log("[NETWORK] Sending request to backend...");
             const response = await axios.post(
                 "http://localhost:5000/api/inquiries/submit", 
                 formDataToSend, 
@@ -148,7 +161,6 @@ const InquiryForm = () => {
             toast.success(response.data.message);
             setSubmittedData(response.data.inquiry);
 
-            // Reset form
             setFormData(prev => ({
                 ...prev,
                 inquiryType: 'General',
@@ -180,142 +192,327 @@ const InquiryForm = () => {
                 toast.error("Submission failed. Please try again later.");
             }
         }
-    
     };
 
-    const handleDownloadInquiry = async () => {
-        if (!submittedData || !submittedData._id) {
-            toast.error("No inquiry data available for download.");
-            return;
-        }
-
-        try {
-            console.log(`⬇️ Attempting download for inquiry: ${submittedData._id}`);
-
-            const response = await axios.get(`http://localhost:5000/api/inquiries/download/${submittedData._id}`,{
-                responseType: "blob",
-                timeout: 15000, // 15 second timeout
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
+    const handleDownloadInquiry = () => {
+        if (!submittedData) return;
+        
+        const doc = new jsPDF();
+        
+        const logoUrl = `${window.location.origin}/Logo.jpg`;
+        
+        new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.onload = () => {
+                const logoWidth = 35;
+                const logoHeight = logoWidth * (img.height / img.width);
+                doc.addImage(img, "JPEG", 15, 15, logoWidth, logoHeight);
+                resolve();
+            };
+            img.src = logoUrl;
+        }).then(() => {
+            // Colors
+            const primaryColor = "#2c3e50";  // Dark blue
+            const secondaryColor = "#7f8c8d"; // Gray
+            const accentColor = "#e74c3c";   // Red for status
+            const darkColor = "#1F2937";     // Dark gray
+            const lightColor = "#F9FAFB";    // Light gray
+            
+            // Set default font
+            doc.setFont("helvetica");
+            
+            // Company info (right-aligned)
+            doc.setFontSize(10);
+            doc.setTextColor(secondaryColor);
+            doc.text("Alpha IT Solutions", 180, 20, { align: "right" });
+            doc.text("26/C/3 Biyagama Road, Talwatta", 180, 25, { align: "right" });
+            doc.text("Gonawala, Kelaniya 11600", 180, 30, { align: "right" });
+            doc.text("Tel: 077 625 2822", 180, 35, { align: "right" });
+            
+            // Document title (centered below logo)
+            doc.setFontSize(16);
+            doc.setTextColor(primaryColor);
+            doc.setFont(undefined, "bold");
+            doc.text("INQUIRY RECEIPT", 105, 60, { align: "center" });
+            
+            // Document reference section
+            let yPos = 75;
+            
+            // Horizontal line
+            doc.setDrawColor(primaryColor);
+            doc.setLineWidth(0.3);
+            doc.line(15, yPos, 195, yPos);
+            yPos += 10;
+            
+            // Reference information
+            doc.setFontSize(10);
+            doc.setTextColor(secondaryColor);
+            doc.text("Reference Number:", 15, yPos);
+            doc.text("Date Submitted:", 15, yPos + 6);
+            
+            doc.setFontSize(11);
+            doc.setTextColor(primaryColor);
+            doc.text(submittedData._id, 50, yPos);
+            doc.text(new Date(submittedData.createdAt).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            }), 50, yPos + 6);
+            
+            // Status badge (right-aligned)
+            doc.setFillColor("#ffeeee"); // Light red background
+            doc.setDrawColor(accentColor);
+            doc.roundedRect(160, yPos - 3, 30, 10, 2, 2, 'FD');
+            doc.setTextColor(accentColor);
+            doc.setFontSize(9);
+            doc.text("RECEIVED", 175, yPos + 3, { align: "center" });
+            yPos += 20;
+            
+            // Customer information section
+            doc.setFontSize(14);
+            doc.setTextColor(primaryColor);
+            doc.text("Customer Information", 15, yPos);
+            yPos += 8;
+            
+            // Customer details table
+            const customerFields = [
+                { label: "Full Name", value: submittedData.fullName },
+                { label: "Email", value: submittedData.email },
+                { label: "Contact Number", value: submittedData.contactNumber }
+            ];
+            
+            customerFields.forEach((field) => {
+                doc.setFontSize(10);
+                doc.setTextColor(secondaryColor);
+                doc.text(`${field.label}:`, 15, yPos);
+                
+                doc.setFontSize(11);
+                doc.setTextColor(darkColor);
+                doc.text(field.value, 50, yPos);
+                yPos += 7;
             });
-
-            // Verify blob data
-            if (!response.data || response.data.size === 0) {
-                throw new Error("Received empty PDF data");
-            }
-
-            const blob = new Blob([response.data], { type: "application/pdf" });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `Inquiry-${submittedData._id}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-
-            // Cleanup
-            setTimeout(() => {
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-            }, 100);
-
-            toast.success("Your inquiry PDF has been downloaded!");
-        } catch (error) {
-            console.error("Download Error:", {
-                config: error.config,
-                response: error.response,
-                message: error.message
+            yPos += 10;
+            
+            // Inquiry details section
+            doc.setFontSize(14);
+            doc.setTextColor(primaryColor);
+            doc.text("Inquiry Details", 15, yPos);
+            yPos += 8;
+            
+            // Inquiry details table
+            const inquiryFields = [
+                { label: "Inquiry Type", value: submittedData.inquiryType },
+                { label: "Product Name", value: submittedData.productName || "Not specified" },
+                { label: "Subject", value: submittedData.inquirySubject }
+            ];
+            
+            inquiryFields.forEach((field) => {
+                doc.setFontSize(10);
+                doc.setTextColor(secondaryColor);
+                doc.text(`${field.label}:`, 15, yPos);
+                
+                doc.setFontSize(11);
+                doc.setTextColor(darkColor);
+                doc.text(field.value, 50, yPos);
+                yPos += 7;
             });
-    
-            if (error.code === 'ECONNABORTED') {
-                toast.error("Download timed out. Please try again.");
-            } 
-            else if (error.response?.status === 404) {
-                toast.error("Inquiry not found. It may have been deleted.");
-            }
-            else if (error.message.includes("empty PDF")) {
-                toast.error("Failed to generate PDF. Please try again.");
-            }
-            else {
-                toast.error("Download failed. Please try again later.");
-            }
-        }
+            yPos += 10;
+            
+            // Additional details section
+            doc.setFontSize(12);
+            doc.setTextColor(primaryColor);
+            doc.text("Additional Details:", 15, yPos);
+            yPos += 7;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(darkColor);
+            const detailsLines = doc.splitTextToSize(submittedData.additionalDetails, 180);
+            detailsLines.forEach(line => {
+                doc.text(line, 15, yPos);
+                yPos += 6;
+            });
+            yPos += 15;
+            
+            // Footer
+            doc.setFontSize(8);
+            doc.setTextColor(secondaryColor);
+            doc.text("Thank you for contacting us. A representative will respond to your inquiry within 24-48 hours.", 
+                    105, yPos, { align: "center" });
+            yPos += 5;
+            doc.text("For urgent matters, please call our support line at 077 625 2822", 
+                    105, yPos, { align: "center" });
+            
+            // Page border
+            doc.setDrawColor(lightColor);
+            doc.setLineWidth(0.5);
+            doc.rect(5, 5, 200, 287);
+            
+            // Save the PDF
+            doc.save(`Inquiry_Receipt_${submittedData._id.slice(-8)}.pdf`);
+        }).catch((error) => {
+            console.error("Error generating PDF:", error);
+            toast.error("Failed to generate PDF. Please try again.");
+        });
     };
 
     return (
         <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-900 via-gray-900 to-black p-6">
-        {/* FAQ Search Section */}
-        <div className="w-full max-w-xl bg-white bg-opacity-10 backdrop-blur-lg shadow-xl rounded-xl p-6 mb-6 border border-gray-700">
-            <h3 className="text-2xl font-semibold text-purple-400 flex items-center gap-2">
-                🔍 Check Before Submitting an Inquiry
-            </h3>
-            <p className="text-gray-1000 mb-3">Check if your question is already answered in our FAQ section.</p>
-            <input
-                type="text"
-                value={query}
-                onChange={handleQueryChange}
-                placeholder="Type your inquiry..."
-                className="w-full border border-gray-700 rounded-lg px-4 py-2 focus:ring focus:ring-purple-500 bg-gray-900 text-gray-200"
-            />
-            {suggestedFAQs.length > 0 && (
-                <ul className="bg-gray-800 p-2 mt-3 rounded-md border border-gray-700 text-gray-300">
-                    {suggestedFAQs.map((faq) => (
-                        <li key={faq._id} className="p-2 border-b border-gray-700 last:border-b-0">
-                            <strong className="text-purple-400">{faq.question}</strong>
-                            <p className="text-gray-400 mt-1">{faq.answer}</p>
-                        </li>
-                    ))}
-                </ul>
-            )}
+            {/* FAQ Search Section */}
+            <div className="w-full max-w-xl bg-white bg-opacity-10 backdrop-blur-lg shadow-xl rounded-xl p-6 mb-6 border border-gray-700">
+                <h3 className="text-2xl font-semibold text-purple-400 flex items-center gap-2">
+                    🔍 Check Before Submitting an Inquiry
+                </h3>
+                <p className="text-gray-1000 mb-3">Check if your question is already answered in our FAQ section.</p>
+                <input
+                    type="text"
+                    value={query}
+                    onChange={handleQueryChange}
+                    placeholder="Type your inquiry..."
+                    className="w-full border border-gray-700 rounded-lg px-4 py-2 focus:ring focus:ring-purple-500 bg-gray-900 text-gray-200"
+                />
+                {suggestedFAQs.length > 0 && (
+                    <ul className="bg-gray-800 p-2 mt-3 rounded-md border border-gray-700 text-gray-300">
+                        {suggestedFAQs.map((faq) => (
+                            <li key={faq._id} className="p-2 border-b border-gray-700 last:border-b-0">
+                                <strong className="text-purple-400">{faq.question}</strong>
+                                <p className="text-gray-400 mt-1">{faq.answer}</p>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+
+            {/* Inquiry Form Section */}
+            <div className="w-full max-w-xl bg-white bg-opacity-10 backdrop-blur-lg shadow-xl rounded-xl p-6 border border-gray-700">
+                <h2 className="text-3xl font-bold text-pink-400 mb-4 flex items-center gap-2">
+                    ✉️ Submit an Inquiry
+                </h2>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <input type="text" name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
+
+                    <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
+
+                    <input type="text" name="contactNumber" placeholder="Contact Number" value={formData.contactNumber} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
+
+                    <input type="text" name="productName" placeholder="Product Name (if applicable)" value={formData.productName} onChange={handleChange} className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
+
+                    <select name="inquiryType" value={formData.inquiryType} onChange={handleChange} className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500">
+                        <option value="General">General</option>
+                        <option value="Product Availability">Product Availability</option>
+                        <option value="Support">Support</option>
+                    </select>
+
+                    <input type="text" name="inquirySubject" placeholder="Subject" value={formData.inquirySubject} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
+
+                    <textarea name="additionalDetails" placeholder="Additional Details" value={formData.additionalDetails} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500"></textarea>
+
+                    <label className="flex items-center text-gray-1000">
+                        <input type="checkbox" name="userApproval" checked={formData.userApproval} onChange={handleChange} className="mr-2" />
+                        Allow this inquiry to be added to the FAQ
+                    </label>
+
+                    {/* Updated File Upload Section */}
+                    <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-300">Attachment (Optional)</label>
+                        <div className="mt-1 flex items-center">
+                            <label
+                                htmlFor="attachment"
+                                className="cursor-pointer flex flex-col items-center justify-center w-full px-4 py-6 border-2 border-gray-700 border-dashed rounded-lg bg-gray-800 hover:bg-gray-750 transition-colors duration-200"
+                            >
+                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <svg
+                                        className="w-10 h-10 mb-3 text-gray-500"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                        ></path>
+                                    </svg>
+                                    <p className="mb-2 text-sm text-gray-400">
+                                        <span className="font-semibold">Click to upload</span> or drag and drop
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        PNG, JPG, JPEG (Max. 5MB)
+                                    </p>
+                                </div>
+                                <input
+                                    id="attachment"
+                                    name="attachment"
+                                    type="file"
+                                    accept=".png,.jpg,.jpeg"
+                                    onChange={handleFileChange}
+                                    className="hidden"
+                                />
+                            </label>
+                        </div>
+                        {formData.attachment && (
+                            <div className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
+                                <div className="flex items-center space-x-2">
+                                    <svg
+                                        className="w-5 h-5 text-gray-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                                        ></path>
+                                    </svg>
+                                    <span className="text-sm text-gray-300 truncate max-w-xs">
+                                        {formData.attachment.name}
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={handleRemoveFile}
+                                    className="text-gray-400 hover:text-gray-200"
+                                >
+                                    <svg
+                                        className="w-5 h-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M6 18L18 6M6 6l12 12"
+                                        ></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    <button type="submit" className="w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 hover:shadow-lg transition duration-300 transform hover:scale-105">
+                        🚀 Submit Inquiry
+                    </button>
+                </form>
+
+                {submittedData && submittedData._id && (
+                    <button 
+                        onClick={handleDownloadInquiry} 
+                        className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 hover:shadow-lg transition duration-300 transform hover:scale-105 mt-3"
+                    >
+                        📄 Download Inquiry PDF
+                    </button>
+                )}
+            </div>
         </div>
-
-        {/* Inquiry Form Section */}
-        <div className="w-full max-w-xl bg-white bg-opacity-10 backdrop-blur-lg shadow-xl rounded-xl p-6 border border-gray-700">
-            <h2 className="text-3xl font-bold text-pink-400 mb-4 flex items-center gap-2">
-                ✉️ Submit an Inquiry
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <input type="text" name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
-
-                <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
-
-                <input type="text" name="contactNumber" placeholder="Contact Number" value={formData.contactNumber} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
-
-                <input type="text" name="productName" placeholder="Product Name (if applicable)" value={formData.productName} onChange={handleChange} className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
-
-                <select name="inquiryType" value={formData.inquiryType} onChange={handleChange} className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500">
-                    <option value="General">General</option>
-                    <option value="Product Availability">Product Availability</option>
-                    <option value="Support">Support</option>
-                </select>
-
-                <input type="text" name="inquirySubject" placeholder="Subject" value={formData.inquirySubject} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
-
-                <textarea name="additionalDetails" placeholder="Additional Details" value={formData.additionalDetails} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500"></textarea>
-
-                <label className="flex items-center text-gray-1000">
-                    <input type="checkbox" name="userApproval" checked={formData.userApproval} onChange={handleChange} className="mr-2" />
-                    Allow this inquiry to be added to the FAQ
-                </label>
-
-                <input type="file" name="attachment" accept=".png,.jpg,.jpeg" onChange={handleFileChange} className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-300 focus:ring focus:ring-pink-500" />
-
-                <button type="submit" className="w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 hover:shadow-lg transition duration-300 transform hover:scale-105">
-                    🚀 Submit Inquiry
-                </button>
-            </form>
-
-            {submittedData && submittedData._id && (
-                <button 
-                    onClick={handleDownloadInquiry} 
-                    className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 hover:shadow-lg transition duration-300 transform hover:scale-105 mt-3"
-                >
-                    📄 Download Inquiry PDF
-                </button>
-            )}
-        </div>
-    </div>
-
-)};
+    );
+};
 
 export default InquiryForm;

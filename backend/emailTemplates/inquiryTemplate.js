@@ -49,8 +49,8 @@ export const inquiryTemplate = (fullName, inquiryType, productName, additionalDe
 
                 <div class="footer">
                     <p>Best regards,</p>
-                    <p><strong>Your Company Name</strong></p>
-                    <p>Email: support@yourcompany.com | Phone: +1 (123) 456-7890</p>
+                    <p><strong>Alpha IT Solutions</strong></p>
+                    <p>Email: support@alphaITSolutions.com | Phone: 077 625 2822</p>
                 </div>
             </div>
         </body>

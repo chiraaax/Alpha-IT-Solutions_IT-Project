@@ -1,7 +1,6 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
-import PDFDocument from 'pdfkit';
 import Inquiry from '../models/inquiryModel.js';
 import sendEmail from '../config/nodemailer.js';
 import { inquiryTemplate } from '../emailTemplates/inquiryTemplate.js';
@@ -128,81 +127,9 @@ export const submitInquiry = async (req, res) => {
     });
 };
 
-// Generate and Download PDF
-export const downloadInquiry = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const inquiry = await Inquiry.findById(id)
-              .maxTimeMS(5000)
-              .lean();
-
-        if (!inquiry) {
-            console.log(`❌ Inquiry not found: ${id}`);
-            return res.status(404).json({ message: "Inquiry not found" });
-        }
-
-        console.log(`📄 Generating PDF for inquiry: ${id}`);
-        const doc = new PDFDocument();
-
-        // Corrected PDF Response Headers
-        res.setHeader("Content-Disposition", `attachment; filename=Inquiry-${id}.pdf`);
-        res.setHeader("Content-Type", "application/pdf");
-
-        // Error handling for PDF generation
-        doc.on('error', (err) => {
-            console.error('PDF generation error:', err);
-            if (!res.headersSent) {
-                res.status(500).json({ message: "PDF generation failed" });
-            }
-        });
-
-        // Pipe the PDF to the response (no need to save it)
-        doc.pipe(res);
-
-        // Add Inquiry Details
-        doc.fontSize(16).text("Inquiry Details", { align: "center" });
-        doc.moveDown();
-        doc.fontSize(12);
-
-        const inquiryData = [
-            ["Full Name", inquiry.fullName || "N/A"],
-            ["Email", inquiry.email || "N/A"],
-            ["Contact Number", inquiry.contactNumber || "N/A"],
-            ["Inquiry Type", inquiry.inquiryType || "N/A"],
-            ["Product Name", inquiry.productName || "N/A"],
-            ["Inquiry Subject", inquiry.inquirySubject || "N/A"],
-            ["Additional Details", inquiry.additionalDetails || "N/A"],
-            ["User Approval", inquiry.userApproval ? "Yes" : "No"]
-        ];
-
-        inquiryData.forEach(([field, value]) => {
-            doc.text(`${field}: ${value}`);
-            doc.moveDown(0.5);
-        });
-
-        doc.end();
-    } catch (error) {
-        console.error("PDF Generation Error:", {
-            name: error.name,
-            message: error.message,
-            stack: error.stack
-        });
-
-        if (error.name === 'MongoServerError') {
-            return res.status(503).json({ message: "Database operation timed out" });
-        }
-        res.status(500).json({ 
-            message: "Error generating PDF",
-            error: process.env.NODE_ENV === 'development' ? error.message : undefined
-        });
-    }
-};
-
 //Get user's inquiry
 export const getUserInquiries = async (req, res) => {
     try {
-        console.log(`🔍 Fetching inquiries for user: ${req.user.id}`);
-        
         // Add query timeout and lean for performance
         const inquiries = await Inquiry.find({ userId: req.user.id })
             .maxTimeMS(5000)
@@ -210,11 +137,8 @@ export const getUserInquiries = async (req, res) => {
             .sort({ createdAt: -1 }); // Newest first
 
         if (!inquiries || inquiries.length === 0) {
-            console.log(`ℹ️ No inquiries found for user: ${req.user.id}`);
             return res.status(200).json([]); // Return empty array instead of 404
         }
-
-        console.log(`✅ Found ${inquiries.length} inquiries for user: ${req.user.id}`);
         res.status(200).json(inquiries);
 
     } catch (error) {

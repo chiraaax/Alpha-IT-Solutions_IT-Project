@@ -18,13 +18,11 @@ import filterRoutes from "./routes/filterRoutes.js";
 import orderRoutes from "./routes/OrderManagement/orderRoutes.js";
 import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js";
 import reportRoutes from './routes/reportRoutesShop.js';
-// import orderRoutes from "./routes/orderRoutes.js";
 
 import ExpenseRoutes from "./routes/Finance/ExpenseRoutes.js";
 import IncomeRoutes from "./routes/Finance/IncomeRoutes.js";
 import InvoiceRoutes from "./routes/Finance/InvoiceRoutes.js";
 
-import orderRoutes from "./routes/orderRoutes.js";
 import inquiryRoutes from "./routes/inquiryRoute.js";
 import reviewRoutes from "./routes/reviewRoute.js";
 
@@ -64,12 +62,8 @@ app.use("/api/reports", reportRoutes);
 app.use('/api/expenses', ExpenseRoutes);
 app.use('/api/income', IncomeRoutes);
 app.use('/api/invoice', InvoiceRoutes);
-// app.use('/api/successorder', orderRoutes);
-// app.use("/api/orders", orderRoutes);
-// app.use("/api/successorders", SuccessOrderRoutes);
-// app.use('/api/reports', reportRoutes);
 app.use('/api/reports', reportRoutes);
-app.use('/api/successorder', orderRoutes);
+//app.use('/api/successorder',orderRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/reviews", reviewRoutes);
 

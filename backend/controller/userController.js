@@ -131,7 +131,6 @@ export const verifyDetails = async (req, res) => {
         );
 
         clearTimeout(timeout);
-        console.log('✅ Verification result:', isVerified);
         return res.json({ 
             verified: isVerified,
             message: isVerified ? "Details verified" : "Details mismatch"

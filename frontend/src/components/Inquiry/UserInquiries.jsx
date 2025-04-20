@@ -115,7 +115,9 @@ function UserInquiries() {
         serUpdatedData(inquiry);
     };
 
-    const getCountdownTime = (resolvedAt) => {
+    const getCountdownTime = (status, resolvedAt) => {
+        if (status !== "Resolved") return null;
+
         if (!resolvedAt) return "No resolution time set";
     
         const deletionTime = new Date(resolvedAt).getTime() + 48 * 60 * 60 * 1000; // 48 hours after resolution
@@ -255,7 +257,7 @@ function UserInquiries() {
                                         <p><strong className="text-blue-400">Details:</strong> {inquiry.additionalDetails}</p>
                                         <p><strong className="text-blue-400">Status:</strong> {inquiry.status}</p>
                                         <p className="text-sm text-gray-400">Submitted on: {new Date(inquiry.createdAt).toLocaleString()}</p>
-                                        <p className="text-sm text-red-500">Auto-delete in: {getCountdownTime(inquiry.createdAt)}</p>
+                                        <p className="text-sm text-red-500">{getCountdownTime(inquiry.status, inquiry.createdAt)}</p>
                                     </div>
                                     <div className="flex space-x-2">
                                         <button onClick={() => handleEdit(inquiry)} className="bg-yellow-500 text-white py-2 px-6 rounded-lg hover:bg-yellow-600 hover:shadow-lg transition duration-300">

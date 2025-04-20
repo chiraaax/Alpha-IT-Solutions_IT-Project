@@ -3,17 +3,14 @@ import User from '../models/userModel.js';
 
 const authMiddleware = (roles = []) => async (req, res, next) => {
     try {
-        console.log("🔍 Auth Middleware - Checking token");
         const token = req.header('Authorization')?.split(' ')[1] || req.cookies.token; // Get token from header
 
         if (!token) {
-            console.log("❌ No token provided");
             return res.status(401).json({ message: "Access Denied. No token provided." });
         }
 
         // Verify token with timeout
         const decoded = jwt.verify(token, process.env.JWT_SECRET, { maxAge: '1h' });
-        console.log("🔍 Decoded Token:", { id: decoded.id, iat: decoded.iat });
 
         // Database lookup with timeout
         req.user = await User.findById(decoded.id)
@@ -21,7 +18,6 @@ const authMiddleware = (roles = []) => async (req, res, next) => {
             .maxTimeMS(5000);
 
         if (!req.user) {
-            console.log("❌ User not found for token");
             return res.status(401).json({ message: "User not found" });
         }
 
@@ -30,7 +26,6 @@ const authMiddleware = (roles = []) => async (req, res, next) => {
             return res.status(403).json({ message: "Access Denied. Insufficient permissions." });
         }
 
-        console.log("✅ Authenticated user:", req.user.email);
         next();
     } catch (error) {
         console.error("🔴 Auth Middleware Error:", {

@@ -101,25 +101,25 @@ function ReviewManage() {
                 <tr
                   key={review._id}
                   className={`border-t hover:bg-gray-100 transition ${
-                    review.status === "flagged" ? "bg-red-200" : ""
+                    review.status === "flagged" ? "bg-red-50" : ""
                   }`}
                 >
-                  <td className="p-4 border w-2/12 font-medium">{review.fullName}</td>
-                  <td className="p-4 border w-2/12 text-white-600">{review.email}</td>
-                  <td className="p-4 border w-2/12">{review.reviewTitle}</td>
+                  <td className={`p-4 border w-2/12 font-medium ${review.status === "flagged" ? "text-red-600" : ""}`}>{review.fullName}</td>
+                  <td className={`p-4 border w-2/12 ${review.status === "flagged" ? "text-red-600" : "text-gray-600"}`}>{review.email}</td>
+                  <td className={`p-4 border w-2/12 ${review.status === "flagged" ? "text-red-600 font-semibold" : ""}`}>{review.reviewTitle}</td>
                   <td
                     className={`p-4 border w-1/12 font-semibold ${
-                      review.status === "approved" ? "text-green-600" : "text-red-600"
+                      review.status === "approved" ? "text-green-600" : "text-red-60"
                     }`}
                   >
                     {review.status}
                   </td>
-                  <td className="p-4 border w-1/12 text-yellow-500">{renderStars(review.rating)}</td>
-                  <td className="p-4 border w-3/12 text-white-700">{review.comment}</td>
-                  <td className="p-4 border w-1/12 font-semibold">
+                  <td className={`p-4 border w-1/12 ${review.status === "flagged" ? "text-red-500" : "text-yellow-500"}`}>{renderStars(review.rating)}</td>
+                  <td className={`p-4 border w-3/12 ${review.status === "flagged" ? "text-red-600 font-medium" : "text-gray-700"}`}>{review.comment}</td>
+                  <td className={`p-4 border w-1/12 font-semibold ${review.status === "flagged" ? "text-red-600" : ""}`}>
                     {review.verifiedBuyer ? "Yes" : "No"}
                   </td>
-                  <td className="p-4 border w-1/12 text-white-500">
+                  <td className={`p-4 border w-1/12 ${review.status === "flagged" ? "text-red-500" : "text-gray-500"}`}>
                     {new Date(review.createdAt).toLocaleDateString()}
                   </td>
                   <td className="p-4 border w-12/12 flex flex-col items-center gap-4 py-20">

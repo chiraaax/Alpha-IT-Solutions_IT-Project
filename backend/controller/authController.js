@@ -24,7 +24,6 @@ export const register = async (req, res) => {
         }
 
         const { name, email, password, contactNumber, address } = req.body;
-        console.log("Received registration request:", req.body); // Debug log
 
         // Check if the user already exists
         const existingUser = await User.findOne({ email });
