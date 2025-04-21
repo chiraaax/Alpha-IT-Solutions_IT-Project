@@ -17,7 +17,6 @@ const Login = () => {
         setLoading(false);
     
         if (user) {
-            // localStorage.setItem("token", response.data.token);
             // Navigate to home page for both admin and user
             navigate("/");
         }

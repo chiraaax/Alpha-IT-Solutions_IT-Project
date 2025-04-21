@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import PickupForm from "./pickupForm";
 import CodForm from "./CodForm";
@@ -8,6 +8,7 @@ import "../../styles/OrderManagement/CheckoutForm.css";
 
 const CheckoutForm = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
     name: "",
@@ -199,6 +200,8 @@ const CheckoutForm = () => {
       const result = await deleteOrder(successOrder.order._id);
       alert(result.message || "Order deleted successfully!");
       setSuccessOrder(null);
+
+      navigate("/shoppingcart");
     } catch (error) {
       console.error("Error deleting order:", error);
       alert("Failed to delete order.");
