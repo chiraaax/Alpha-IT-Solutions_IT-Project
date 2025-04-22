@@ -16,6 +16,7 @@ import FAQ from '../components/Register/FAQ';
 import ProductCategory from '../components/shop/ProductCategory';
 import ProtectedRoute from "../routers/ProtectedRoute";  
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
+import ContactUs from '../components/Contact/ContactUs';
 
 import AddProduct from '../pages/dashboard/admin/addProduct/AddProduct';
 import ManageProducts from '../pages/dashboard/admin/manageProducts/ManageProducts';
@@ -81,6 +82,7 @@ const router = createBrowserRouter([
       { path: 'UserReviews', element:<UserReviews/>},
       { path: 'InquiryForm', element:<InquiryForm/>},
       { path: 'UserInquiries', element:<UserInquiries/>},
+      { path: 'ContactUs', element:<ContactUs/>},
 
       // CustomBuilds routes
       { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
