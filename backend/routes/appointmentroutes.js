@@ -193,4 +193,5 @@ router.put("/:id/progress", authMiddleware(["admin"]), async (req, res) => {
     res.status(500).json({ message: "Error updating progress", error: error.message });
   }
 });
+
 export default router;

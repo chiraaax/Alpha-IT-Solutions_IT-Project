@@ -4,8 +4,11 @@ import { AuthContext } from '../../context/authContext';
 
 const navItems = [
   { path: '/dashboard', label: 'Dashboard' },
-  { path: '/dashboard/profile', label: 'Profile' },
+  { path: '/dashboard/Profile', label: 'Profile' },
+  { path: '/dashboard/report-shop', label: 'Inventory Report' },
   { path: '/dashboard/report-shop', label: 'Inventory Report' },
+  { label: "My Inquiries", path: "/dashboard/UserInquiries"},
+  { label: "My Reviews", path: "/dashboard/UserReviews"}
 ];
 
 const UserDashboard = () => {
