@@ -55,6 +55,8 @@ const Summary = ({ cart }) => {
             console.log("SuccessOrder saved:", response.data);
 
             dispatch(addOrder());
+            localStorage.removeItem("successOrder");
+            localStorage.removeItem("orderPlaced");
             navigate("/CheckoutForm"); // Ensure this route exists and navigate to the checkout form
         } catch (error) {
             console.error("Error saving order:", error.response ? error.response.data : error.message);

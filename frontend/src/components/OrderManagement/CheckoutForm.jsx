@@ -28,14 +28,45 @@ const CheckoutForm = () => {
   });
 
   const [successOrder, setSuccessOrder] = useState(null);
+  const [canModify, setCanModify] = useState(true);
 
   useEffect(() => {
-    if (id) {
+    const savedOrder = localStorage.getItem("successOrder");
+    if (savedOrder) {
+      const parsedOrder = JSON.parse(savedOrder);
+      setSuccessOrder(parsedOrder);
+  
+      const order = parsedOrder.order;
+
+      setFormData({
+        name: order.name,
+        phoneNo: order.phoneNo,
+        email: order.email,
+        paymentMethod: order.paymentMethod,
+      });
+
+      if (order.paymentMethod === "COD") {
+        setCodData({
+          address: order.codDetails.address,
+          deliveryDate: order.codDetails.deliveryDate,
+          deliveryTime: order.codDetails.deliveryTime,
+          saveAddress: order.codDetails.saveAddress || false,
+        });
+      } else {
+        setPickupData({
+          pickupDate: order.pickupDetails.pickupDate,
+          pickupTime: order.pickupDetails.pickupTime,
+        });
+      }
+  
+      checkTimeLimit(order);
+    } else if (id) {
       axios
         .get(`http://localhost:5000/api/orders/${id}`)
         .then((response) => {
           const order = response.data;
           setSuccessOrder(order);
+          localStorage.setItem("successOrder", JSON.stringify(order));
           setFormData({
             // id: order._id,
             name: order.name,
@@ -118,6 +149,7 @@ const CheckoutForm = () => {
 
     if (!token) {
       alert("You must be logged in to place an order.");
+      navigate("/login");
       return;
     }
 
@@ -131,8 +163,12 @@ const CheckoutForm = () => {
           },
         }
       );
+      // setSuccessOrder(response.data);
       setSuccessOrder(response.data);
+      localStorage.setItem("successOrder", JSON.stringify(response.data));
+      
       alert("Order placed successfully!");
+      localStorage.setItem("orderPlaced", "true");
     } catch (error) {
       console.error(
         "Error placing order:",
@@ -177,6 +213,9 @@ const CheckoutForm = () => {
       alert(result.message || "Order updated successfully!");
       // setSuccessOrder({ ...successOrder, ...updatedOrderData });
       setSuccessOrder({ ...successOrder, order: { ...successOrder.order, ...updatedOrderData } });
+      localStorage.setItem("successOrder", JSON.stringify({
+        order: { ...successOrder.order, ...updatedOrderData }
+      }));
 
     } catch (error) {
       console.error("Error updating order:", error);
@@ -200,6 +239,7 @@ const CheckoutForm = () => {
       const result = await deleteOrder(successOrder.order._id);
       alert(result.message || "Order deleted successfully!");
       setSuccessOrder(null);
+      localStorage.removeItem("successOrder");
 
       navigate("/shoppingcart");
     } catch (error) {
@@ -211,7 +251,7 @@ const CheckoutForm = () => {
   return (
     <div className="form-container">
       <h2 className="header">Checkout</h2>
-      {!successOrder ? (
+      {!successOrder/* || !localStorage.getItem("orderPlaced")*/ ? (
         <form className="form" onSubmit={handleSubmit}>
           <label className="label">Full Name</label>
           <input
@@ -330,7 +370,7 @@ const CheckoutForm = () => {
         </div>
       )}
 
-      {successOrder && (
+      {successOrder && canModify && (
         <div className="order-details-container">
           <h2 className="header">Order Details</h2>
           <div>
@@ -442,6 +482,12 @@ const CheckoutForm = () => {
                 Save Changes
               </button>
             </div>
+            <button
+  className="cart-button"
+  onClick={() => navigate("/shoppingcart")}
+>
+  Go to Shopping Cart
+</button>
           </div>
         </div>
       )}
