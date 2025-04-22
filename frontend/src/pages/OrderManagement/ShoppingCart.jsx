@@ -1,21 +1,24 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import CartItem from "../../components/OrderManagement/CartItem";
 import Summary from "../../components/OrderManagement/Summary";
 
 const ShoppingCart = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   
   // Retrieve cart items from Redux store
   const cartItems = useSelector((state) => state.cart.cartItems) || [];
 
   // Function to update quantity, ensuring it does not exceed stock
-  const updateQuantity = (id, quantity) => {
-    const item = cartItems.find((item) => item.id === id);
+  const updateQuantity = (_id, quantity) => {
+    console.log("Cart Items:", cartItems);
+    const item = cartItems.find((item) => item._id === _id);
     if (item && quantity <= item.displayedStock) {
       dispatch({
         type: "UPDATE_CART_ITEM",
-        payload: { id, updates: { quantity } },
+        payload: { _id, updates: { quantity } },
       });
     }
   };
@@ -42,7 +45,7 @@ const ShoppingCart = () => {
           {cartItems.length > 0 ? (
             cartItems.map((item) => (
               <CartItem
-                key={item.id}
+                key={item._id}
                 item={item}
                 updateQuantity={updateQuantity} // Pass the updateQuantity function
               />
@@ -64,6 +67,12 @@ const ShoppingCart = () => {
               onClick={() => (window.location.href = "/")}
             >
               Continue Shopping
+            </button>
+            <button
+              className="bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-800 focus:outline-none shadow-lg"
+              onClick={() => navigate("/orderList")}
+            >
+              Orders
             </button>
           </div>
         </div>

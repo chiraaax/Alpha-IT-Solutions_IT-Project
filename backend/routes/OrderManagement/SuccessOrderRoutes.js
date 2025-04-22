@@ -7,20 +7,27 @@ const router = express.Router();
 // route.post("/successOrder", create);
 router.post("/create", async (req, res) => {
   try {
-    const { customerId, totalAmount, status } = req.body;
+    const { customerId, totalAmount, status, items } = req.body;
 
-    // Check if the user and order exist in the database
-    // const order = await Order.findById(orderId);
+    // Validate each item's itemType
+    for (const item of items) {
+      if (!["product", "prebuild"].includes(item.itemType)) {
+        return res.status(400).json({ message: "Invalid itemType. It must be 'product' or 'prebuild'." });
+      }
+    }
+
+    // Check if the user exists in the database
     const user = await User.findById(customerId);
-
     if (!user) {
       return res.status(400).json({ message: "User not found!" });
     }
 
+    // Create a new SuccessOrder with itemType and itemId
     const newSuccessOrder = new SuccessOrder({
       customerId,
       totalAmount,
       status: status || "Pending",
+      items, // Store itemType as either "product" or "prebuild"
     });
 
     await newSuccessOrder.save();
@@ -31,30 +38,33 @@ router.post("/create", async (req, res) => {
 });
 
 // Get all orders for a particular customer
-router.get("/successorder/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const Successorder = await SuccessOrder.find({ /*customerId: req.params.users.id*/ }).sort({ createdAt: -1 });
-    res.json(Successorder);
+    const successOrder = await SuccessOrder.find({ customerId: req.params.id }).sort({ createdAt: -1 });
+    if (!successOrder || successOrder.length === 0) {
+      return res.status(404).json({ message: "No orders found for this customer." });
+    }
+    res.json(successOrder);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
 });
 
 // GET all orders
-router.get('/successorder/all', async (req, res) => {
+router.get('/all', async (req, res) => {
   try {
-      const order = await SuccessOrder.find();
-      if(!order || order.length === 0) {
-        return res.status(404).json({message:"Order data not found"});
-      }
-      res.status(200).json(order);
+    const orders = await SuccessOrder.find();
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: "No orders found" });
+    }
+    res.status(200).json(orders);
   } catch (error) {
-      res.status(500).json({ errorMessage: error.message });
+    res.status(500).json({ errorMessage: error.message });
   }
 });
 
 // PUT successorder
-router.put("/successorder/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const { status } = req.body;
     const updatedOrder = await SuccessOrder.findByIdAndUpdate(
@@ -73,6 +83,5 @@ router.put("/successorder/:id", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
 
 export default router;

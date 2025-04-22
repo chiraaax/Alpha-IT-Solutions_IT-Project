@@ -16,6 +16,7 @@ const ProductCards = ({ products = [] }) => {
 
   const handleAddToCart = (product) => {
     // If product is already in the cart, do nothing (or you can show a message)
+    console.log("Adding product to cart:", product);
     if (isProductInCart(product._id)) return;
 
     const { _id, description, discountPrice, price, displayedStock, image } = product;
@@ -24,7 +25,7 @@ const ProductCards = ({ products = [] }) => {
 
     dispatch({
       type: 'ADD_TO_CART',
-      payload: { _id, description, price: effectivePrice, discountPrice, displayedStock, image, quantity: 1 },
+      payload: { id: _id, description, price: effectivePrice, discountPrice, displayedStock, image, quantity: 1 },
     });
 
     // Set the product id to display the confirmation message

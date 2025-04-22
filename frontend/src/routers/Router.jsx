@@ -62,7 +62,7 @@ import CheckoutForm from '../components/OrderManagement/CheckoutForm';
 import PickupForm from '../components/OrderManagement/pickupForm';
 import CodForm from '../components/OrderManagement/CodForm';
 import CatalogReportInline from '../pages/dashboard/user/shop/report/CatalogReportInline ';
-// import OrderList from '../components/OrderManagement/OrderList';
+import OrderList from '../components/OrderManagement/OrderList';
 
 
 const router = createBrowserRouter([
@@ -94,6 +94,7 @@ const router = createBrowserRouter([
       
       //order routes
       { path: 'ShoppingCart', element: <ProtectedRoute><ShoppingCart /></ProtectedRoute> },
+      { path: 'orderList', element: <ProtectedRoute><OrderList /></ProtectedRoute> },
       { path: 'CheckoutForm', element: <ProtectedRoute><CheckoutForm /></ProtectedRoute> },
       { path: 'CheckoutForm/:email', element: <ProtectedRoute><CheckoutForm /></ProtectedRoute> },
       { path: 'PickupForm', element: <ProtectedRoute><PickupForm /></ProtectedRoute> },
