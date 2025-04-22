@@ -25,6 +25,7 @@ import InvoiceRoutes from "./routes/Finance/InvoiceRoutes.js";
 
 import inquiryRoutes from "./routes/inquiryRoute.js";
 import reviewRoutes from "./routes/reviewRoute.js";
+import chatBotRoutes from "./routes/chatbotRoute.js";
 
 dotenv.config();
 const app = express();
@@ -66,6 +67,7 @@ app.use('/api/reports', reportRoutes);
 //app.use('/api/successorder',orderRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/chatbot", chatBotRoutes);
 
 // Home Route
 app.get("/", (req, res) => {
