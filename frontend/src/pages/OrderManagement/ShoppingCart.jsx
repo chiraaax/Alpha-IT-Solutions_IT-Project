@@ -1,76 +1,87 @@
-import { useState } from "react";
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import CartItem from "../../components/OrderManagement/CartItem";
 import Summary from "../../components/OrderManagement/Summary";
-// import User from "../../../../backend/models/userModel";
-// import CheckoutForm from "../../components/OrderManagement/CheckoutForm";
 
 const ShoppingCart = () => {
-  const [cart, setCart] = useState([
-    {
-      id: 1,
-      name: "MSI MEG Trident X 12th",
-      price: 4349.00,
-      quantity: 3,
-      image: "/images/msi-trident-x.jpg",
-    },
-    {
-      id: 2,
-      name: "MSI MEG Trident X 12th",
-      price: 4349.00,
-      quantity: 3,
-      image: "/images/msi-trident-x.jpg",
-    },
-  ]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
+  // Retrieve cart items from Redux store
+  const cartItems = useSelector((state) => state.cart.cartItems) || [];
 
-  const updateQuantity = (id, quantity) => {
-    setCart(cart.map(item => item.id === id ? { ...item, quantity } : item));
+  // Function to update quantity, ensuring it does not exceed stock
+  const updateQuantity = (_id, quantity) => {
+    console.log("Cart Items:", cartItems);
+    const item = cartItems.find((item) => item._id === _id);
+    if (item && quantity <= item.displayedStock) {
+      dispatch({
+        type: "UPDATE_CART_ITEM",
+        payload: { _id, updates: { quantity } },
+      });
+    }
   };
+
+  // Clear cart function
+  const clearCart = () => {
+    dispatch({ type: "CLEAR_CART" });
+  };
+
+  // Calculate total price directly from cart items
+  const total = cartItems.reduce((acc, item) => {
+    const price = item.discountPrice ? item.discountPrice : item.price;
+    return acc + price * item.quantity;
+  }, 0);
 
   return (
     <div className="container mx-auto p-4 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold text-gray-800 mb-6">Shopping Cart</h2>
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        {/* Cart Items Section */}
         <div className="md:col-span-2 space-y-6">
-          {cart.map(item => (
-            <CartItem key={item.id} item={item} updateQuantity={updateQuantity} />
-          ))}
+          {cartItems.length > 0 ? (
+            cartItems.map((item) => (
+              <CartItem
+                key={item._id}
+                item={item}
+                updateQuantity={updateQuantity} // Pass the updateQuantity function
+              />
+            ))
+          ) : (
+            <p>Your cart is empty.</p>
+          )}
 
-          {/* Buttons below cart items */}
+          {/* Cart Actions */}
           <div className="flex space-x-6 mt-6">
-            <button className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 focus:outline-none shadow-md"
-             onClick={() => setCart([])}>
-              Clear Shopping cart
+            <button
+              className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 focus:outline-none shadow-lg"
+              onClick={clearCart}
+            >
+              Clear Shopping Cart
             </button>
-            <button className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 focus:outline-none shadow-md"
-             onClick={() => window.location.href = "/"}>
+            <button
+              className="bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-800 focus:outline-none shadow-lg"
+              onClick={() => (window.location.href = "/")}
+            >
               Continue Shopping
             </button>
-            {/* <div className="flex space-x-10">
-              <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none shadow-md">
-                Update Shopping cart
-              </button>
-            </div> */}
+            <button
+              className="bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-800 focus:outline-none shadow-lg"
+              onClick={() => navigate("/orderList")}
+            >
+              Orders
+            </button>
           </div>
         </div>
-        
-        <div className="bg-gray-100 p-6 rounded-lg shadow-md">
-          <Summary cart={cart}/>
-        </div>
-      </div>
-      <div className="flex gap-4 mt-6">
-        {/* Input Field */}
-        <input type="text"
-              placeholder="Enter your query..."
-              className="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
 
-        {/* Contact Us Button */}
-        <button
-          onClick={() => window.location.href = "/contact"}
-          className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 focus:outline-none"
-        >
-          Contact Us
-        </button>
+        {/* Summary Section with Correct Total Calculation */}
+        <div className="bg-gray-600 p-6 rounded-lg shadow-lg">
+          <Summary cart={cartItems} total={total} />
+        </div>
+
       </div>
     </div>
   );

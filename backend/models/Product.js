@@ -5,23 +5,6 @@ const productSchema = new Schema({
   category: {
     type: String,
     required: true,
-    enum: [
-      'laptop',
-      'motherboard',
-      'processor',
-      'ram',
-      'gpu',
-      'powerSupply',
-      'casings',
-      'monitors',
-      'cpuCoolers',
-      'keyboard',
-      'mouse',
-      'soundSystems',
-      'cablesConnectors',
-      'storage',
-      'externalStorage'
-    ]
   },
   price: { type: Number, required: true },
   // New inventory-specific fields:
@@ -34,9 +17,9 @@ const productSchema = new Schema({
       return this.price;
     } 
   },
-  stockCount: { type: Number, default: 0 },
-  threshold: { type: Number, default: 1 },
-  displayedStock: { type: Number, default: 0 },
+  stockCount: { type: Number, default: 20 },
+  threshold: { type: Number, default: 3 },
+  displayedStock: { type: Number, default: 10 },
 
   // Existing fields
   availability: {

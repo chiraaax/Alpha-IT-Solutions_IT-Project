@@ -1,11 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
-
 import { toast } from "react-toastify";
-
 import { jwtDecode } from "jwt-decode"; 
-
-
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -57,7 +53,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user,setUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

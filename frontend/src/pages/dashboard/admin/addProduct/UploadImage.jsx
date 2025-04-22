@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 import { getBaseURL } from "../../../../utils/baseUtil";
 
 const UploadImage = ({ name, setImage }) => {
@@ -18,7 +19,8 @@ const UploadImage = ({ name, setImage }) => {
             // Send to backend
             const res = await axios.post(`${getBaseURL()}/api/uploadImage`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
-            });
+              });
+              
 
             console.log("Upload Response:", res.data);
 
@@ -26,13 +28,13 @@ const UploadImage = ({ name, setImage }) => {
                 const imageUrl = `${getBaseURL()}${res.data.imageUrl}`;
                 setUrl(imageUrl);
                 setImage(imageUrl);
-                alert("Image uploaded successfully");
+                toast.success("Image uploaded successfully!");
             } else {
-                alert("Image upload failed, please try again.");
+                toast.error("Image upload failed, please try again.");
             }
         } catch (error) {
             console.error("Upload Error:", error.response ? error.response.data : error.message);
-            alert("Error uploading image");
+            toast.error("Error uploading image");
         } finally {
             setLoading(false);
         }
@@ -42,7 +44,6 @@ const UploadImage = ({ name, setImage }) => {
     const uploadImage = async (event) => {
         const file = event.target.files[0]; // Get the first selected file
         if (!file) return;
-
         await uploadSingleImage(file);
     };
 

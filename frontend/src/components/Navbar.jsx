@@ -5,25 +5,37 @@ import { FaSun, FaMoon } from 'react-icons/fa';  // Import Sun and Moon icons fo
 import logo from '../assets/AlphaITSolutionsLogo.jpg';
 import { AuthContext } from '../context/authContext';
 import { useTheme } from './CustomBuilds/ThemeContext';  // Import the useTheme hook
+import { useDispatch } from 'react-redux';
+import { persistor } from '../redux/store';
 
 const adminDropDownMenus = [
   { label: "Dashboard", path: "/dashboard/admin" },
+  { label: "AdminProfile", path: "/dashboard/AdminProfile" },
   { label: "Manage Items", path: "/dashboard/manage-products" },
   { label: "Add Product", path: "/dashboard/add-new-product" },
   { label: "Manage filters", path: "/dashboard/manage-filters" },
   { label: "Manage appointments", path: "/dashboard/manage-appointments" },
+  { label: "Manage Pre-Builds", path: "/dashboard/prebuild-dashboard" },
+  { label: "Setup Pre-Builds", path: "/dashboard/create-custom-prebuild" },
+  { label: "Manage Inquiry", path: "/dashboard/InquiryManage"},
+  { label: "Manage Review", path: "/dashboard/ReviewManage"},
+  { label: "FAQ Manage", path: "/dashboard/FAQManage"},
 ];
 
 const userDropDownMenus = [
   { label: "Dashboard", path: "/dashboard" },
   { label: "Profile", path: "/dashboard/profile" },
+  { label: "My Inquiries", path: "/dashboard/UserInquiries"},
+  { label: "My Reviews", path: "/dashboard/UserReviews"}
 ];
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
+  
+  const dispatch = useDispatch();
 
   // Access user and logout from AuthContext
   const { user, logout } = useContext(AuthContext);
@@ -50,46 +62,59 @@ const Navbar = () => {
   }, [lastScrollY]);
 
   const handleDropDownToggle = () => {
-    setIsDropDownOpen(prev => !prev);
+    setIsDropDownOpen((prev) => !prev);
   };
 
   const handleLogout = () => {
+    // Clear the cart by dispatching a CLEAR_CART action.
+    dispatch({ type: 'CLEAR_CART' });
+    // Purge persisted Redux state.
+    persistor.purge();
+    // Call the logout function from AuthContext.
     if (logout) {
       logout();
     } else {
       console.log('Logging out...');
     }
     setIsDropDownOpen(false);
+    // Redirect the user to the login page.
     navigate('/login');
   };
 
   return (
     <header
-      className={`pb-auto w-full bg-gray-100 border-black transition-transform duration-500 z-50 shadow-lg ${
+      className={`pb-auto h-33 w-full bg-gray-100 border-black transition-transform duration-500 z-50 shadow-lg ${
         isVisible ? 'fixed top-0 left-0 translate-y-0' : 'fixed top-0 left-0 -translate-y-full'
       }`}
     >
       <nav className='max-w-screen-xl mx-auto px-5 flex justify-between items-center py-2'>
-        {/* Logo */}
-        <div className='pr-5 pl-10 max-w-35 max-h-35'>
-          <img src={logo} alt="Alpha IT Solutions" />
-        </div>
+  {/* Logo */}
+  <div className='pr-6 pl-4 w-32'> {/* Reduced padding & fixed width */}
+    <img 
+      src={logo} 
+      alt="Alpha IT Solutions" 
+      className="w-full h-auto"  // Make logo responsive within container
+    />
+  </div>
 
-        <div className='nav__logo pr-80'>
-          <Link to="/">
-            <span>A</span>LPHA <span>I</span>T <span>S</span>OLUTIONS
-          </Link>
-        </div>
-        
-        <ul className='nav__links flex gap-6'>
-          <li className='link'><Link to="/about">About</Link></li>
-          <li className='link'><Link to="/appointment">Services</Link></li>
-          <li className='link'><Link to="/custom-prebuilds">Custom Pre-Builds</Link></li>
-          <li className='link'><Link to="/">Reviews</Link></li>
-          <li className='link'><Link to="/contact">Contact</Link></li>
-        </ul>
+  {/* Brand Name - Reduced padding */}
+  <div className='nav__logo pr-8 pt-6'>  {/* Changed from pr-80 to pr-8 */}
+    <Link to="/" className="text-xl font-semibold whitespace-nowrap">
+      <span>A</span>LPHA <span>I</span>T <span>S</span>OLUTIONS
+    </Link>
+  </div>
+  
+  {/* Navigation Links - Added whitespace-nowrap */}
+  <ul className='nav__links flex gap-4 flex-1 justify-center ml-10'>  {/* Reduced gap to 4 */}
+    <li className='link whitespace-nowrap'><Link to="/about">About</Link></li>
+    <li className='link whitespace-nowrap'><Link to="/appointment">Services</Link></li>
+    {/*<li className='link whitespace-nowrap'><Link to="/custom-prebuilds">Custom <br />Pre-<br />Builds</Link></li>*/}
+    <li className='link whitespace-nowrap'><Link to="/custom-prebuilds">Custom Pre-Builds</Link></li>
+    <li className='link'><Link to="/faq">FAQ</Link></li>
+    <li className='link whitespace-nowrap'><Link to="/ContactUs">Contact</Link></li>
+  </ul>
 
-        <div className='nav__icons flex items-center gap-4 relative'>
+  <div className='nav__icons flex items-center gap-4 relative ml-35'>
           {/* Search Icon */}
           <Link to="/search">
             <MdSearch size={24} />
@@ -112,7 +137,7 @@ const Navbar = () => {
                 className="cursor-pointer"
               />
               {isDropDownOpen && (
-                <div className='absolute right-0 mt-3 p-4 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50'>
+                <div className='absolute right-0 mt-3 p-4 w-65 bg-sky-100 border border-gray-200 rounded-lg shadow-lg z-50'>
                   <ul className='font-medium space-y-4 p-2'>
                     {dropDownMenus.map((menu, index) => (
                       <li key={index}>

@@ -22,7 +22,7 @@ const OrderList = ({ customerId }) => {
 
   return (
     <div>
-      <h2>Your Orders</h2>
+      <h1>Your Orders</h1>
       {loading ? (
         <p>Loading...</p>
       ) : orders.length === 0 ? (
