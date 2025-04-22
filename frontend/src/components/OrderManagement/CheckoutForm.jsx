@@ -10,6 +10,13 @@ const CheckoutForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   
+  const timeSlots = [
+    "9:00 AM - 11:00 AM",
+    "11:00 AM - 1:00 PM",
+    "2:00 PM - 4:00 PM",
+    "4:00 PM - 6:00 PM",
+    "6:00 PM - 8:00 PM",
+  ];
   const [formData, setFormData] = useState({
     name: "",
     phoneNo: "",
@@ -440,13 +447,18 @@ const CheckoutForm = () => {
                 </div>
                 <div className="input-group">
                   <strong>Delivery Time:</strong>
-                  <input
+                  <select
                     type="time"
                     name="deliveryTime"
                     value={codData.deliveryTime}
                     onChange={handleCodChange}
                     className="edit-input"
-                  />
+                  >
+                    <option value="">Select a time slot</option>
+                    {timeSlots.map((slot, index) => (
+                      <option key={index} value={slot}>{slot}</option>
+                    ))}
+                  </select>
                 </div>
               </>
             )}
@@ -464,13 +476,18 @@ const CheckoutForm = () => {
                 </div>
                 <div className="input-group">
                   <strong>Pickup Time:</strong>
-                  <input
+                  <select
                     type="time"
                     name="pickupTime"
                     value={pickupData.pickupTime}
                     onChange={handlePickupChange}
                     className="edit-input"
-                  />
+                  >
+                    <option value="">Select a time slot</option>
+                    {timeSlots.map((slot, index) => (
+                      <option key={index} value={slot}>{slot}</option>
+                    ))}
+                    </select>
                 </div>
               </>
             )}

@@ -77,6 +77,22 @@ router.post("/create", authMiddleware(["customer"]), async (req, res) => {
       return res.status(400).json({ message: "Invalid payment method" });
     }
 
+    const validTimeSlots = [
+      "9:00 AM - 11:00 AM",
+      "11:00 AM - 1:00 PM",
+      "2:00 PM - 4:00 PM",
+      "4:00 PM - 6:00 PM",
+      "6:00 PM - 8:00 PM",
+    ];
+    
+    if (paymentMethod === 'COD' && !validTimeSlots.includes(deliveryTime)) {
+      return res.status(400).json({ message: "Invalid delivery time slot" });
+    }
+    
+    if (paymentMethod === 'Pickup' && !validTimeSlots.includes(pickupTime)) {
+      return res.status(400).json({ message: "Invalid pickup time slot" });
+    }
+
     const order = new Order(orderData);
     await order.save();
     console.log("Order saved:", order);
