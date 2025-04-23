@@ -40,6 +40,12 @@ const ShoppingCart = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         
+      {/* /**
+   * 
+   * ToDo: This part got edited
+   * 
+   *  */}
+   
         {/* Cart Items Section */}
         <div className="md:col-span-2 space-y-6">
           {cartItems.length > 0 ? (
@@ -47,7 +53,8 @@ const ShoppingCart = () => {
               <CartItem
                 key={item._id}
                 item={item}
-                updateQuantity={updateQuantity} // Pass the updateQuantity function
+                specs={item.specs}  //ToDo: edited
+                updateQuantity={updateQuantity} 
               />
             ))
           ) : (

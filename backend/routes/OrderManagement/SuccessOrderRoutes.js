@@ -1,20 +1,42 @@
 import express from "express";
 import SuccessOrder from "../../models/OrderManagement/SuccessOrder.js";
 import User from "../../models/userModel.js";
-// import Order from "../../models/OrderManagement/Order.js";
+import authMiddleware from "../../middleware/authMiddleware.js";
+
 const router = express.Router();
 
 // route.post("/successOrder", create);
-router.post("/create", async (req, res) => {
+router.post("/create", authMiddleware(["customer"]), async (req, res) => {
   try {
-    const { customerId, totalAmount, status, items } = req.body;
+    //testing 
+    // console.log("🤖  POST /create body:", JSON.stringify(req.body, null, 2));
+    
+    const { totalAmount, status, items } = req.body;
 
+    // inside router.post("/create", …)
+    const requiredLabels = ["Processor", "GPU", "RAM", "Storage", "Power Supply", "Casing"];
+
+    for (const item of req.body.items) {
+      if (item.itemType === "prebuild") {
+        const labels = (item.specs || []).map(s => s.label);
+        const missing = requiredLabels.filter(l => !labels.includes(l));
+    
+        if (missing.length) {
+          return res
+            .status(400)
+            .json({ message: `Item ${item.itemId} missing specs: ${missing.join(", ")}` });
+        }
+      }
+    }
+    
     // Validate each item's itemType
     for (const item of items) {
       if (!["product", "prebuild"].includes(item.itemType)) {
         return res.status(400).json({ message: "Invalid itemType. It must be 'product' or 'prebuild'." });
       }
     }
+
+    const customerId = req.user._id;
 
     // Check if the user exists in the database
     const user = await User.findById(customerId);
@@ -37,19 +59,6 @@ router.post("/create", async (req, res) => {
   }
 });
 
-// Get all orders for a particular customer
-router.get("/:id", async (req, res) => {
-  try {
-    const successOrder = await SuccessOrder.find({ customerId: req.params.id }).sort({ createdAt: -1 });
-    if (!successOrder || successOrder.length === 0) {
-      return res.status(404).json({ message: "No orders found for this customer." });
-    }
-    res.json(successOrder);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error });
-  }
-});
-
 // GET all orders
 router.get('/all', async (req, res) => {
   try {
@@ -62,6 +71,21 @@ router.get('/all', async (req, res) => {
     res.status(500).json({ errorMessage: error.message });
   }
 });
+
+// Get all orders for a particular customer
+router.get("/:id", async (req, res) => {
+  try {
+    const successOrder = await SuccessOrder.find({ customerId: req.params.id }).populate("items.itemId").sort({ createdAt: -1 });
+    if (!successOrder || successOrder.length === 0) {
+      return res.status(404).json({ message: "No orders found for this customer." });
+    }
+    res.json(successOrder);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
+
 
 // PUT successorder
 router.put("/:id", async (req, res) => {
@@ -83,5 +107,6 @@ router.put("/:id", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 export default router;
