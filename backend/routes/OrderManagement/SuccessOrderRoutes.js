@@ -12,8 +12,8 @@ router.post("/create", authMiddleware(["customer"]), async (req, res) => {
 
     // Validate each item's itemType
     for (const item of items) {
-      if (!["product", "prebuild"].includes(item.itemType)) {
-        return res.status(400).json({ message: "Invalid itemType. It must be 'product' or 'prebuild'." });
+      if (!["Product", "PreBuild"].includes(item.itemType)) {
+        return res.status(400).json({ message: "Invalid itemType. It must be 'Product' or 'PreBuild'." });
       }
     }
 
@@ -43,7 +43,7 @@ router.post("/create", authMiddleware(["customer"]), async (req, res) => {
 // Get all orders for a particular customer
 router.get("/:id", async (req, res) => {
   try {
-    const successOrder = await SuccessOrder.find({ customerId: req.params.id }).sort({ createdAt: -1 });
+    const successOrder = await SuccessOrder.find({ customerId: req.user._id }).sort({ createdAt: -1 });
     if (!successOrder || successOrder.length === 0) {
       return res.status(404).json({ message: "No orders found for this customer." });
     }
@@ -54,14 +54,31 @@ router.get("/:id", async (req, res) => {
 });
 
 // GET all orders
-router.get('/all', async (req, res) => {
+router.get('/successOrder/all',authMiddleware(["customer"]) , async (req, res) => {
   try {
-    const orders = await SuccessOrder.find();
-    if (!orders || orders.length === 0) {
+    // Ensure user is authenticated
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized access" });
+    }
+
+    const customerId = req.user._id; // assuming user is authenticated
+    console.log("Fetching orders for customerId:", customerId);
+
+    const orders = await SuccessOrder.findOne({ customerId })
+      .populate("items.itemId") // populate details for product/prebuild
+      .sort({ createdAt: -1 }); // most recent first
+
+    // const orders = await SuccessOrder.find();
+    console.log("Fetched orders:", orders);
+
+    if (orders.length === 0) {
       return res.status(404).json({ message: "No orders found" });
     }
+
     res.status(200).json(orders);
   } catch (error) {
+    console.error("Error fetching orders:", error.stack); 
+    console.error(error); // Log the error for debugging
     res.status(500).json({ errorMessage: error.message });
   }
 });

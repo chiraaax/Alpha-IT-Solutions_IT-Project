@@ -98,7 +98,7 @@ const ProductDetails = () => {
       setTimeout(() => {
         navigate('/ShoppingCart');
         setMessage('');
-      }, 2000);
+      }, 1000);
       return;
     }
     
@@ -115,6 +115,7 @@ const ProductDetails = () => {
       displayedStock: product.displayedStock,
       image: product.image,
       quantity: 1, // Default quantity.
+      isProduct: true,  //for cart
     };
 
     // Dispatch the action to add the product to the cart.
@@ -128,7 +129,7 @@ const ProductDetails = () => {
     setTimeout(() => {
       navigate('/ShoppingCart');
       setMessage('');
-    }, 2000);
+    }, 1000);
   };
 
   return (

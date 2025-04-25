@@ -239,7 +239,6 @@ const GamingBuildDetail = () => {
     return cartItems.some((item) => item._id === build?._id);
   };
 
-  // Add to Cart functionality using prebuild fields: _id, price, image, description.
   const handleAddToCart = () => {
     if (isGamingBuildInCart()) {
       setMessage("Build is already in cart. Adjust quantity in the shopping cart.");
@@ -249,18 +248,45 @@ const GamingBuildDetail = () => {
       }, 2000);
       return;
     }
-
-    const { _id, description, price, image } = build;
-    dispatch({
-      type: "ADD_TO_CART",
-      payload: { _id, description, price, image, quantity: 1 },
-    });
+  
+    // Destructure core fields
+    const { _id, category, description, price, image } = build;
+  
+    // Build an array of specs for the cart item
+    const specsForCart = [
+      {id: build.processor,  label: 'Processor',    value: productsLookup[build.processor]?.description || build.processor },
+      {id: build.gpu, label: 'GPU',          value: productsLookup[build.gpu]?.description       || build.gpu },
+      {id: build.ram , label: 'RAM',          value: productsLookup[build.ram]?.description       || build.ram },
+      {id: build.storage , label: 'Storage',      value: productsLookup[build.storage]?.description   || build.storage },
+      {id: build.powerSupply, label: 'Power Supply', value: productsLookup[build.powerSupply]?.description || build.powerSupply },
+      {id: build.casings ,  label: 'Casing',       value: productsLookup[build.casings]?.description    || build.casings },
+    ];
+  
+    // Create a payload variable
+    const payload = {
+      _id,
+      category,
+      description,
+      price,
+      image,
+      specs: specsForCart,
+      quantity: 1,
+    };
+  
+    // Log it so you can inspect in the console
+    console.log("🛒 Dispatching ADD_TO_CART with payload:", payload);
+  
+    // Dispatch once, using the payload variable
+    dispatch({ type: 'ADD_TO_CART', payload });
+  
     setMessage("Build added to cart!");
     setTimeout(() => {
       navigate('/ShoppingCart');
       setMessage('');
     }, 2000);
   };
+  
+
 
   return (
     <div className={`min-h-screen py-10 px-4 ${isDark ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-800"}`}>

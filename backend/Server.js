@@ -34,7 +34,7 @@ const corsOptions = {
   origin: "http://localhost:5173", // Adjust if frontend URL changes
   credentials: true, 
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cache-Control"],
 };
 
 // Apply Middlewares
@@ -63,7 +63,6 @@ app.use('/api/expenses', ExpenseRoutes);
 app.use('/api/income', IncomeRoutes);
 app.use('/api/invoice', InvoiceRoutes);
 app.use('/api/reports', reportRoutes);
-//app.use('/api/successorder',orderRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/reviews", reviewRoutes);
 
