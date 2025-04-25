@@ -21,6 +21,7 @@ const cartSlice = createSlice({
                 ...action.payload,
                 cartId: uuidv4(),
                 quantity: 1,
+                specs: action.payload.specs || [],   // ← default to empty array
             };
 
             state.products.push(newItem);

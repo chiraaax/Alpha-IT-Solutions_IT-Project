@@ -10,6 +10,21 @@ router.post("/create", authMiddleware(["customer"]), async (req, res) => {
   try {
     const { totalAmount, status, items } = req.body;
 
+    // inside router.post("/create", …)
+    const requiredLabels = ["Processor", "GPU", "RAM", "Storage", "Power Supply", "Casing"];
+
+    for (const item of req.body.items) {
+      if (item.itemType === "prebuild") {
+        const labels = (item.specs || []).map(s => s.label);
+        const missing = requiredLabels.filter(l => !labels.includes(l));
+    
+        if (missing.length) {
+          return res
+            .status(400)
+            .json({ message: `Item ${item.itemId} missing specs: ${missing.join(", ")}` });
+        }
+      }
+    }
     // Validate each item's itemType
     for (const item of items) {
       if (!["Product", "PreBuild"].includes(item.itemType)) {

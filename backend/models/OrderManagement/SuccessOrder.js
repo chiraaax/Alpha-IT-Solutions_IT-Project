@@ -14,7 +14,13 @@ const itemSchema = new mongoose.Schema({
   quantity: {
     type: Number,
     required: true
-  }
+  },
+  specs: [
+    {
+      label: { type: String, required: true },
+      value: { type: String, required: true }
+    }
+  ]
 });
 
 const SuccessOrderSchema = new mongoose.Schema({

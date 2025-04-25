@@ -4,7 +4,7 @@ import { addOrder } from "../../redux/features/cart/cartSlice";
 import axios from "axios";
 
 const Summary = ({ cart }) => {
-    // const customerId = localStorage.getItem("userId"); // or from Redux/auth state
+    const customerId = localStorage.getItem("userId"); // or from Redux/auth state
     const navigate = useNavigate(); // React Router navigation
     const dispatch = useDispatch();
 
@@ -26,39 +26,30 @@ const Summary = ({ cart }) => {
                 return;
             }
 
-            const user = JSON.parse(localStorage.getItem("user") || "{}");
-            const customerId = user._id || null;
-            console.log("🧑‍💻 Logged-in customer ID (inside checkout):", customerId);
-
-            if (!customerId) {
-                alert("No customer ID found. Please log in again.");
-                return;
-            }
-
-            const requiredLabels = ["Processor", "GPU", "RAM", "Storage", "Power Supply", "Casing"];
+            // const requiredLabels = ["Processor", "GPU", "RAM", "Storage", "Power Supply", "Casing"];
 
             const items = cart.map(item => {
+                const isProduct = item.isProduct === true;
                 const rawSpecs = item.specs || [];
-                const labels = rawSpecs.map(s => s.label?.trim()).filter(Boolean);
-                const isPrebuild = requiredLabels.every(label => labels.includes(label));
               
                 const base = {
                   itemId: item._id,
-                  itemType: isPrebuild ? "prebuild" : "product",
+                  itemType: isProduct ? "Product" : "PreBuild",
                   quantity: item.quantity
                 };
               
-                return isPrebuild
+                return !isProduct
                   ? {
                       ...base,
                       specs: rawSpecs.map(spec => ({
-                        _id: spec.id,           // ✅ Include product ID
+                        _id: spec.id,
                         label: spec.label,
                         value: spec.value
                       }))
                     }
-                  : base; // ❌ still exclude specs for non-prebuilds
+                  : base;
               });
+              
     
             const orderData = {
                 customerId: customerId,
