@@ -414,7 +414,7 @@ const InquiryForm = () => {
 
                     {/* Updated File Upload Section */}
                     <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-300">Attachment (Optional)</label>
+                        <label className="block text-sm font-medium text-gray-900">Attachment (Optional)</label>
                         <div className="mt-1 flex items-center">
                             <label
                                 htmlFor="attachment"

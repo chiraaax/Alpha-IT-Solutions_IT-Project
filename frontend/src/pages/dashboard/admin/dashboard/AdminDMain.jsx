@@ -1,5 +1,6 @@
 import React from "react";
-
+import InquiryChart from "../../../../components/InquiryChart/InquiryChart";
+import ReviewChart from "../../../../components/ReviewChart/ReviewChart";
 
 const Dashboard = () => {
   // You would fetch this data from your API
@@ -7,7 +8,13 @@ const Dashboard = () => {
 
   return (
     <div style={{ padding: "2rem", display: "grid", gap: "2rem" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2rem" }}>
+      <div style={{ 
+        display: "grid", 
+        gridTemplateColumns: "1fr", // Changed to single column
+        gap: "2rem" 
+      }}>
+        <InquiryChart/>
+        <ReviewChart/>
      
         {/* You can add more chart cards here in the future */}
       </div>
@@ -18,17 +25,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-import React from 'react';
-import InquiryChart from "../../../../components/InquiryChart/InquiryChart";
-import ReviewChart from '../../../../components/ReviewChart/ReviewChart';
-
-function AdminDMain() {
-  return (
-    <div>
-      <InquiryChart/>
-      <ReviewChart/>
-    </div>
-  )
-}
-
-export default AdminDMain

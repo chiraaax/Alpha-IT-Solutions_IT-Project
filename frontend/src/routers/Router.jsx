@@ -18,7 +18,7 @@ import ProtectedRoute from "../routers/ProtectedRoute";
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
 import ContactUs from '../components/Contact/ContactUs';
 import AdminPanel from '../pages/dashboard/admin/dashboard/AdminDMain' 
-import AdminDMain from '../pages/dashboard/admin/dashboard/AdminDMain';
+//import AdminDMain from '../pages/dashboard/admin/dashboard/AdminDMain'
 
 import AddProduct from '../pages/dashboard/admin/addProduct/AddProduct';
 import ManageProducts from '../pages/dashboard/admin/manageProducts/ManageProducts';
@@ -140,7 +140,7 @@ const router = createBrowserRouter([
 
       // Admin routes
       { path: 'admin', element: <ProtectedRoute allowedRoles={["admin"]}><div><AdminPanel/></div></ProtectedRoute> },
-      { path: 'admin', element: <ProtectedRoute allowedRoles={["admin"]}><div><AdminDMain/></div></ProtectedRoute> },
+      //{ path: 'admin', element: <ProtectedRoute allowedRoles={["admin"]}><div><AdminDMain/></div></ProtectedRoute> },
       { path: 'add-new-product', element: <ProtectedRoute allowedRoles={["admin"]}><AddProduct /></ProtectedRoute> },
       { path: 'manage-products', element: <ProtectedRoute allowedRoles={["admin"]}><ManageProducts /></ProtectedRoute> },
       { path: 'manage-inventory', element: <ProtectedRoute allowedRoles={["admin"]}><ManageInventory /></ProtectedRoute> },
