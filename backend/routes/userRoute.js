@@ -11,4 +11,5 @@ router.post('/verify-details', authMiddleware, verifyDetails);
 router.post('/verify-details-review', authMiddleware, verifyDetailsReveiws);
 router.get('/get-all-users', getUsers);
 
+
 export default router;

@@ -1,5 +1,6 @@
 import User from '../models/userModel.js';  
 import bcrypt from 'bcryptjs';
+ 
 
 export const updateUser = async(req, res) => {
     try{
@@ -195,4 +196,7 @@ export const getUsers = async (req, res) => {
         console.error("Error fetching users:", error);
         res.status(500).json({ message: "Error fetching users", error });
     }
+ 
 };
+
+
