@@ -106,7 +106,8 @@ const router = createBrowserRouter([
       { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, 
 
       //ai product routes
-      { path: 'AI-Engine', element: <ImageUploader /> },
+      { path: 'AI-Engine', element: <ProtectedRoute allowedRoles={["user", "admin"]}><ImageUploader /></ProtectedRoute> },
+
     ]
   },
 

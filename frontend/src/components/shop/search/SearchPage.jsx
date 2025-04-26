@@ -1,13 +1,27 @@
 import React, { useState, useEffect } from "react";
 import ProductCards from "../ProductCards";
 import { FiLoader } from "react-icons/fi";
+import { useLocation } from "react-router-dom";
+
+
 
 const SearchPage = () => {
+  
   const [products, setProducts] = useState([]);
   const [tags, setTags] = useState({ categories: [] });
   const [searchTerm, setSearchTerm] = useState("");
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const query = params.get('q');
+    if (query) {
+      setSearchTerm(query);
+    }
+  }, [location.search]);
 
   // Fetch products from the database
   useEffect(() => {
@@ -45,7 +59,7 @@ const SearchPage = () => {
     if (loadingProducts) {
       timer = setTimeout(() => {
         setShowLoader(true);
-      }, 5435555555555555);
+      }, 1500);      
     } else {
       setShowLoader(false);
     }
@@ -59,18 +73,29 @@ const SearchPage = () => {
 
   // Filter products based on search term or tags
   const filteredProducts = products.filter((product) => {
-    const lowerCaseSearch = searchTerm.toLowerCase();
-    return (
-      (product.category &&
-        product.category.toLowerCase().includes(lowerCaseSearch)) ||
-      (product.specs &&
-        product.specs.some(
-          (spec) =>
-            (spec.key && spec.key.toLowerCase().includes(lowerCaseSearch)) ||
-            (spec.value && spec.value.toLowerCase().includes(lowerCaseSearch))
-        ))
-    );
+    const searchWords = searchTerm.toLowerCase().split(/\s+/).filter(Boolean);
+  
+    const searchableFields = [
+      product.name,             // ✅ include product name
+      product.category,
+      product.availability,
+      product.state,
+      product.description,
+      ...(product.specs?.map((spec) => `${spec.key} ${spec.value}`) || []),
+      ...(product.tags || []),   // ✅ include tags (if you have tags)
+    ];
+  
+    const searchableText = searchableFields
+      .filter((field) => typeof field === "string")
+      .join(" ")
+      .toLowerCase();
+  
+    // ✅ Match if ANY search word matches (more flexible)
+    return searchWords.some((word) => searchableText.includes(word));
   });
+  
+  
+  
 
   return (
     <div className="min-h-screen py-12 bg-gray-900">
@@ -87,7 +112,7 @@ const SearchPage = () => {
 
           {/* Filter Tags */}
           <div className="mb-6">
-            <h3 className="font-semibold text-xl text-blue-400 mb-3">Tags:</h3>
+            <h3 className="font-semibold text-xl text-blue-400 mb-3">Common Category Tags:</h3>
             <div className="flex flex-wrap gap-4">
               {tags.categories.map((category, idx) => (
                 <span

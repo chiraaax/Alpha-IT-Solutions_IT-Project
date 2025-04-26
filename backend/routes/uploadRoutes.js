@@ -40,8 +40,7 @@ router.post("/uploadImage", upload.single("image"), (req, res) => {
  * 
  * 
  */
-// Ensure uploads/AI folder exists
-// Updated: Make sure uploads/ai_products exists
+
 const aiProductFolder = path.join("uploads", "ai_products");
 if (!fs.existsSync(aiProductFolder)) fs.mkdirSync(aiProductFolder, { recursive: true });
 
