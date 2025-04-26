@@ -6,7 +6,7 @@ import CustomPreBuilds from '../components/CustomBuilds/CustomPreBuilds';
 import AppointmentDashboard from '../components/Appointment/Appointment_Dashboard';
 import AppointmentForm from '../components/Appointment/Appointment_form';
 import AppointmenentAI from "../components/Appointment/AppointmentAi";
-import DraftedTechniciansReports from '../components/DraftedTechniciansReports';
+import DraftedTechniciansReports from '../components/Appointment/DraftedTechniciansReports';
 import Login from '../components/Register/Login';
 import Register from '../components/Register/Register';
 import ForgotPassword from '../components/Register/ForgotPassword';
@@ -17,6 +17,7 @@ import ProductCategory from '../components/shop/ProductCategory';
 import ProtectedRoute from "../routers/ProtectedRoute";  
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
 import ContactUs from '../components/Contact/ContactUs';
+import AdminPanel from '../pages/dashboard/admin/dashboard/AdminDMain' 
 import AdminDMain from '../pages/dashboard/admin/dashboard/AdminDMain';
 
 import AddProduct from '../pages/dashboard/admin/addProduct/AddProduct';
@@ -24,12 +25,13 @@ import ManageProducts from '../pages/dashboard/admin/manageProducts/ManageProduc
 import ManageInventory from '../pages/dashboard/admin/inventoryManagement/ManageInventory';
 import ProductDetails from '../components/shop/ProductDetails';
 import SearchPage from '../components/shop/search/SearchPage';
-import ManageAppointments from "../pages/dashboard/manage-appointments";
+import ManageAppointments from "../pages/dashboard/appointment/manage-appointments";
 import ManageOrder from "../pages/dashboard/admin/manageOrder/OrderList";
 import CustomerOrder from "../pages/dashboard/admin/manageOrder/CustomerOrderList";
 import ExpensePage from "../pages/dashboard/Finance/ExpensePage";
 import IncomePage from "../pages/dashboard/Finance/IncomePage";
 import InvoicePage from "../pages/dashboard/Finance/InvoicePage";
+import UserAppointment from "../pages/dashboard/appointment/user-profile_appointment"
 
 import Profile from '../components/Register/Profile';
 import UserManage from '../components/Register/UserManage';
@@ -83,6 +85,7 @@ const router = createBrowserRouter([
       { path: 'AppointmenentAI', element: <ProtectedRoute><AppointmenentAI /></ProtectedRoute> },
       { path: 'draftedTechnicianReport', element: <ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
       { path: 'appointment-form', element: <ProtectedRoute><AppointmentForm /></ProtectedRoute> },
+      
 
       { path: 'faq', element: <FAQ /> },
       { path: 'ReviewForm', element:<ReviewForm/>},
@@ -130,12 +133,13 @@ const router = createBrowserRouter([
       { path: '', element: <div>Dashboard Home</div> },
       { path: 'reviews', element: <div>Reviews</div> },
       { path: 'report-shop', element: <CatalogReportInline/> },
-      
+      {path: 'user-profile_appointment', element: <UserAppointment /> },
       { path: 'Profile', element: <div><Profile/></div> },
       { path: 'UserInquiries', element: <div><UserInquiries/></div> },
       { path: 'UserReviews', element:<div><UserReviews/></div>},
 
       // Admin routes
+      { path: 'admin', element: <ProtectedRoute allowedRoles={["admin"]}><div><AdminPanel/></div></ProtectedRoute> },
       { path: 'admin', element: <ProtectedRoute allowedRoles={["admin"]}><div><AdminDMain/></div></ProtectedRoute> },
       { path: 'add-new-product', element: <ProtectedRoute allowedRoles={["admin"]}><AddProduct /></ProtectedRoute> },
       { path: 'manage-products', element: <ProtectedRoute allowedRoles={["admin"]}><ManageProducts /></ProtectedRoute> },

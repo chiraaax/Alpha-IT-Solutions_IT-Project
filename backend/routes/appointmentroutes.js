@@ -14,6 +14,7 @@ router.post(
     body("name").notEmpty().withMessage("Name is required"),
     body("email").isEmail().withMessage("Invalid email"),
     body("phone").isLength({ min: 10, max: 10 }).withMessage("Phone number must be 10 digits"),
+    body("address").notEmpty().withMessage("Address is required"), // Added address validation
     body("deviceType").notEmpty().withMessage("Device type is required"),
     body("issueDescription").notEmpty().withMessage("Issue description is required"),
     body("date").notEmpty().withMessage("Date is required"),
@@ -26,13 +27,14 @@ router.post(
       // Check for validation errors
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(400).json({ message: "Validation failed", errors: errors.array() });
+        return res.status(400).json({ message: "All required feilds must be complete", errors: errors.array() });
       }
 
       const {
         name,
         email,
         phone,
+        address, // Added address
         deviceType,
         issueDescription,
         contactMethod,
@@ -57,6 +59,7 @@ router.post(
         name,
         email,
         phone,
+        address, // Added address
         deviceType,
         issueDescription,
         contactMethod,
@@ -114,7 +117,7 @@ router.put("/:id", authMiddleware(), async (req, res) => {
       return res.status(404).json({ message: "Appointment not found or unauthorized" });
     }
 
-    // Update the appointment
+    // Update the appointment (including address if provided)
     const updatedAppointment = await Appointment.findByIdAndUpdate(id, updateData, { new: true });
     res.json(updatedAppointment);
   } catch (error) {
@@ -194,4 +197,27 @@ router.put("/:id/progress", authMiddleware(["admin"]), async (req, res) => {
   }
 });
 
+router.put('/:id/clear-timeslot', authMiddleware(["admin"]), async (req, res) => {
+  try {
+    const { date, timeSlot } = req.body;
+    const update = date && timeSlot 
+      ? { date, timeSlot }
+      : { $unset: { date: "", timeSlot: "" } };
+
+    const appointment = await Appointment.findByIdAndUpdate(
+      req.params.id,
+      update,
+      { new: true }
+    );
+
+    if (!appointment) {
+      return res.status(404).json({ msg: 'Appointment not found' });
+    }
+
+    res.json(appointment);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 export default router;
