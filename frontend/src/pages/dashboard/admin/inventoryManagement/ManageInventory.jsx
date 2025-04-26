@@ -4,6 +4,16 @@ import InventoryProductModal from "./InventoryManagement";
 import NotificationBell from "./NotificationBell";
 import { useNavigate } from "react-router-dom";
 
+// storage helpers...
+const STORAGE_KEY = "orderStatusMap";
+const loadStatusMap = () => {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch { return {}; }
+};
+const saveStatusMap = (map) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
+};
+
 // Modal component to manage order statuses
 const OrdersModal = ({ orders, onClose, onStatusChange }) => {
   // Close on Escape
@@ -14,6 +24,46 @@ const OrdersModal = ({ orders, onClose, onStatusChange }) => {
     document.addEventListener("keydown", handleEsc);
     return () => document.removeEventListener("keydown", handleEsc);
   }, [onClose]);
+
+// outside your component, or at top of OrdersModal
+const FULFILLED = ["Approved", "Handovered"];
+
+function adjustStockForOrder(order, prevStatus, newStatus) {
+  const wasFulfilled    = FULFILLED.includes(prevStatus);
+  const willBeFulfilled = FULFILLED.includes(newStatus);
+
+  // no change if you didn't cross the threshold
+  if (wasFulfilled === willBeFulfilled) return;
+
+  // moving into fulfilled? decrease (–); moving out? increase (+)
+  const factor = willBeFulfilled ? -1 : +1;
+
+  order.items.forEach(item => {
+    const lineQty = item.quantity || 1;
+
+    if (item.itemType === "product") {
+      updateProductStock(item.itemId, factor * lineQty);
+    }
+    else if (item.itemType === "prebuild") {
+      item.specs.forEach(spec => {
+        // if your spec object also carries its own quantity:
+        const specQty = spec.quantity || 1;
+        updateProductStock(spec._id, factor * lineQty * specQty);
+      });
+    }
+  });
+}
+
+// helper to DRY-up your setProducts call
+function updateProductStock(productId, delta) {
+  setProducts(prev =>
+    prev.map(p =>
+      p._id === productId
+        ? { ...p, stockCount: (p.stockCount || 0) + delta }
+        : p
+    )
+  );
+}
 
   return (
     // Backdrop: click here to close
@@ -42,6 +92,7 @@ const OrdersModal = ({ orders, onClose, onStatusChange }) => {
               <th className="border p-2">Customer ID</th>
               <th className="border p-2">Created At</th>
               <th className="border p-2">Total Amount</th>
+              <th className="border p-2">Quantity</th>
               <th className="border p-2">Status</th>
             </tr>
           </thead>
@@ -53,31 +104,39 @@ const OrdersModal = ({ orders, onClose, onStatusChange }) => {
                 </td>
               </tr>
             ) : (
-              orders.map((order) => (
-                <tr key={order._id} className="hover:bg-gray-50">
-                  <td className="border p-2">{order._id}</td>
-                  <td className="border p-2">{order.customerId}</td>
-                  <td className="border p-2">
-                    {new Date(order.createdAt).toLocaleString()}
-                  </td>
-                  <td className="border p-2">{order.totalAmount}</td>
-                  <td className="border p-2">
-                    <select
-                      value={order.status}
-                      onChange={(e) =>
-                        onStatusChange(order._id, e.target.value)
-                      }
-                      className="p-1 border rounded-md"
-                    >
-                      <option value="Pending">Pending</option>
-                      <option value="Approved">Approved</option>
-                      <option value="Handovered">Handovered</option>
-                      <option value="Rejected">Rejected</option>
-                    </select>
-                  </td>
-                </tr>
-              ))
-            )}
+              orders.map((order) => {
+                       // compute the sum of all item quantities in this order
+                       const totalQty = (order.items || [])
+                         .reduce((sum, item) => sum + (item.quantity || 0), 0);
+                
+                        return (
+                          <tr key={order._id} className="hover:bg-gray-50">
+                            <td className="border p-2">{order._id}</td>
+                            <td className="border p-2">{order.customerId}</td>
+                            <td className="border p-2">
+                              {new Date(order.createdAt).toLocaleString()}
+                            </td>
+                           
+                            <td className="border p-2">{order.totalAmount}</td>
+                            <td className="border p-2">{totalQty}</td>
+                            <td className="border p-2">
+                              <select
+                                value={order.status}
+                                onChange={(e) =>
+                                  onStatusChange(order._id, e.target.value)
+                                }
+                                className="p-1 border rounded-md"
+                              >
+                                <option value="Pending">Pending</option>
+                                <option value="Approved">Approved</option>
+                                <option value="Handovered">Handovered</option>
+                                <option value="Rejected">Rejected</option>
+                              </select>
+                            </td>
+                          </tr>
+                        );
+                      })
+          )}
           </tbody>
         </table>
       </div>
@@ -106,7 +165,19 @@ const InventoryTable = () => {
     setIsLoading(true);
     try {
       const response = await axios.get("http://localhost:5000/api/products");
-      if (response.status === 200) setProducts(response.data);
+      if (response.status === 200) {
+        setProducts(response.data.map(p => ({
+          ...p,
+          // half of real stock, rounded down
+          displayedStock: Math.floor((p.stockCount || 0) / 2),
+          // how many times we've decremented displayedStock
+          displayedReductions: 0,
+          // toggles our red-warning row
+          lowStockWarning: false,
+          // so we only email once
+          notificationSent: false,
+        })));
+      }
     } catch (error) {
       console.error("Error fetching products:", error);
       alert("Error fetching products. Check console for details.");
@@ -120,12 +191,19 @@ const InventoryTable = () => {
     if (showOrdersModal) {
       axios
         .get("http://localhost:5000/api/successorder/all")
-        .then(res => {
-          console.log("Fetched orders:", res.data);
-          const data = Array.isArray(res.data) ? res.data : res.data.orders;
-          setOrders(data || []);
+        .then((res) => {
+          const fetched = Array.isArray(res.data) ? res.data : res.data.orders;
+          const savedMap = loadStatusMap();
+
+          // merge saved statuses
+          const withSaved = fetched.map((o) => ({
+            ...o,
+            status: savedMap[o._id] || o.status,
+          }));
+
+          setOrders(withSaved);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Error fetching orders:", err);
           setOrders([]);
         });
@@ -134,15 +212,22 @@ const InventoryTable = () => {
 
   // Handle order status changes and adjust stock
   const handleStatusChange = (orderId, newStatus) => {
+    // 1) Persist the new status
+    const statusMap = loadStatusMap();
+    statusMap[orderId] = newStatus;
+    saveStatusMap(statusMap);
+  
+    // 2) Update in-memory orders & adjust stock
     setOrders(prev =>
       prev.map(o => {
-        if (o._id === orderId) {
-          const prevStatus = o.status;
-          const updated = { ...o, status: newStatus };
-          adjustStockForOrder(updated, prevStatus, newStatus);
-          return updated;
-        }
-        return o;
+        if (o._id !== orderId) return o;
+        
+        const prevStatus = o.status;
+        const updated = { ...o, status: newStatus };
+        
+        // adjust stock based on that transition
+        adjustStockForOrder(updated, prevStatus, newStatus);
+        return updated;
       })
     );
   };
@@ -177,19 +262,52 @@ const InventoryTable = () => {
   };
 
   // Simulate order for product table
-  const simulateOrder = async product => {
+  const simulateOrder = async (product) => {
     try {
+      // still fire your back-end order if you like
       const response = await axios.post("http://localhost:5000/api/successorder", {
         orderId: "ORDER123",
         items: [{ itemId: product._id, itemType: "product", quantity: 1, specs: [] }]
       });
+
       if (response.status === 200) {
         setProducts(prev =>
-          prev.map(p =>
-            p._id === product._id
-              ? { ...p, stockCount: (p.stockCount || 0) - 1 }
-              : p
-          )
+          prev.map(p => {
+            if (p._id !== product._id) return p;
+
+            const newDisplayedReductions = p.displayedReductions + 1;
+            const newDisplayedStock      = Math.max(p.displayedStock - 1, 0);
+
+            // only every two displayed hits do we knock down real stock
+            let newStockCount = p.stockCount;
+            if (newDisplayedReductions % 2 === 0) {
+              newStockCount = Math.max(p.stockCount - 1, 0);
+            }
+
+            let lowStockWarning = p.lowStockWarning;
+            let notificationSent = p.notificationSent;
+
+            // when displayedStock hits 1, fire warning + email + collapse real stock to 1
+            if (newDisplayedStock === 1 && !notificationSent) {
+              lowStockWarning = true;
+              notificationSent = true;
+              newStockCount = 1; // leave exactly one in real stock
+
+              axios.post("http://localhost:5000/api/notifyLowStock", {
+                productId: p._id,
+                remainingStock: newStockCount
+              }).catch(err => console.error("Low-stock email error:", err));
+            }
+
+            return {
+              ...p,
+              displayedReductions: newDisplayedReductions,
+              displayedStock: newDisplayedStock,
+              stockCount: newStockCount,
+              lowStockWarning,
+              notificationSent
+            };
+          })
         );
       }
     } catch (error) {

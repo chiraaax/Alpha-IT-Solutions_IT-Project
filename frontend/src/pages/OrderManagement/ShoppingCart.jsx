@@ -40,12 +40,6 @@ const ShoppingCart = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         
-      {/* /**
-   * 
-   * ToDo: This part got edited
-   * 
-   *  */}
-   
         {/* Cart Items Section */}
         <div className="md:col-span-2 space-y-6">
           {cartItems.length > 0 ? (
@@ -53,9 +47,10 @@ const ShoppingCart = () => {
               <CartItem
                 key={item._id}
                 item={item}
-                specs={item.specs}  //ToDo: edited
-                updateQuantity={updateQuantity} 
+                specs={item.specs}
+                updateQuantity={updateQuantity}
               />
+
             ))
           ) : (
             <p>Your cart is empty.</p>
@@ -77,7 +72,7 @@ const ShoppingCart = () => {
             </button>
             <button
               className="bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-800 focus:outline-none shadow-lg"
-              onClick={() => navigate("/orderList")}
+              onClick={() => navigate("/OrderList")}
             >
               Orders
             </button>

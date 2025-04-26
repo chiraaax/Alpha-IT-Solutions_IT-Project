@@ -62,6 +62,7 @@ import PickupForm from '../components/OrderManagement/pickupForm';
 import CodForm from '../components/OrderManagement/CodForm';
 import CatalogReportInline from '../pages/dashboard/user/shop/report/CatalogReportInline ';
 import OrderList from '../components/OrderManagement/OrderList';
+import ImageUploader from '../components/shop/ai/ImageUploader';
 
 
 const router = createBrowserRouter([
@@ -101,8 +102,11 @@ const router = createBrowserRouter([
       { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, 
        // Updated route for your custom dashboard
       { path: 'ai-customize-build', element: <AICustomizeBuild /> }, 
-      { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, // ✅ New Route
-      { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, // Updated route for your custom dashboard
+      { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, 
+      { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, 
+
+      //ai product routes
+      { path: 'AI-Engine', element: <ImageUploader /> },
     ]
   },
 

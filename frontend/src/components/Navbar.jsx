@@ -66,6 +66,7 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("orderStatusMap");
     // Clear the cart by dispatching a CLEAR_CART action.
     dispatch({ type: 'CLEAR_CART' });
     // Purge persisted Redux state.
@@ -153,6 +154,7 @@ const Navbar = () => {
                     <li>
                       <button 
                         onClick={handleLogout} 
+                        
                         className="w-full text-left px-4 py-2 rounded-lg text-white font-semibold transition-all duration-300 shadow-md"
                         style={{
                           textAlign: "center",

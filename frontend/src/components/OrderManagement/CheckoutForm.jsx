@@ -500,11 +500,11 @@ const CheckoutForm = () => {
               </button>
             </div>
             <button
-              className="cart-button"
-              onClick={() => navigate("/shoppingcart")}
-            >
-              Go to Shopping Cart
-            </button>
+  className="cart-button"
+  onClick={() => navigate("/shoppingcart")}
+>
+  Go to Shopping Cart
+</button>
           </div>
         </div>
       )}

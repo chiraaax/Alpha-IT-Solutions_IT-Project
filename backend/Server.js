@@ -25,6 +25,8 @@ import InvoiceRoutes from "./routes/Finance/InvoiceRoutes.js";
 
 import inquiryRoutes from "./routes/inquiryRoute.js";
 import reviewRoutes from "./routes/reviewRoute.js";
+//products, ai
+import compareRoutes from "./routes/compareRoutes.js";
 
 
 dotenv.config();
@@ -58,7 +60,7 @@ app.use("/api/filters", filterRoutes);
 app.use("/api/prebuilds", prebuildRoutes);
 app.use("/api", uploadRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/api/successorder", SuccessOrderRoutes);
+app.use("/api/successorders", SuccessOrderRoutes);
 app.use("/api/reports", reportRoutes);
 app.use('/api/expenses', ExpenseRoutes);
 app.use('/api/income', IncomeRoutes);
@@ -66,6 +68,7 @@ app.use('/api/invoice', InvoiceRoutes);
 app.use('/api/reports', reportRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api", compareRoutes);
 
 
 // Home Route
