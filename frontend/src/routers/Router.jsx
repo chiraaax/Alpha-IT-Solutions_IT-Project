@@ -17,6 +17,7 @@ import ProductCategory from '../components/shop/ProductCategory';
 import ProtectedRoute from "../routers/ProtectedRoute";  
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
 import ContactUs from '../components/Contact/ContactUs';
+import AdminDMain from '../pages/dashboard/admin/dashboard/AdminDMain';
 
 import AddProduct from '../pages/dashboard/admin/addProduct/AddProduct';
 import ManageProducts from '../pages/dashboard/admin/manageProducts/ManageProducts';
@@ -34,15 +35,21 @@ import Profile from '../components/Register/Profile';
 import UserManage from '../components/Register/UserManage';
 import AdminProfile from '../components/Register/AdminProfile';
 
+//Blog Components
+import BlogManage from '../components/Blog/BlogManage';
+import UserBlog from '../components/Blog/UserBlog';
+
 //Inquiry Components
 import InquiryForm from '../components/Inquiry/InquiryForm';
 import InquiryManage from '../components/Inquiry/InquiryManage';
 import UserInquiries from '../components/Inquiry/UserInquiries';
+import InquiryChart from '../components/InquiryChart/InquiryChart';
 
 //Review Components
 import UserReviews from '../components/Reviews/UserReviews';
 import ReviewManage from '../components/Reviews/ReviewManage';
 import ReviewForm from '../components/Reviews/ReviewForm';
+import ReviewChart from '../components/ReviewChart/ReviewChart';
 
 // CustomBuilds Components
 import GamingBuilds from '../components/CustomBuilds/GamingBuilds';
@@ -83,6 +90,7 @@ const router = createBrowserRouter([
       { path: 'InquiryForm', element:<InquiryForm/>},
       { path: 'UserInquiries', element:<UserInquiries/>},
       { path: 'ContactUs', element:<ContactUs/>},
+      { path: 'UserBlog', element:<UserBlog/>},
 
       // CustomBuilds routes
       { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
@@ -128,7 +136,7 @@ const router = createBrowserRouter([
       { path: 'UserReviews', element:<div><UserReviews/></div>},
 
       // Admin routes
-      { path: 'admin', element: <ProtectedRoute allowedRoles={["admin"]}><div>Admin Panel</div></ProtectedRoute> },
+      { path: 'admin', element: <ProtectedRoute allowedRoles={["admin"]}><div><AdminDMain/></div></ProtectedRoute> },
       { path: 'add-new-product', element: <ProtectedRoute allowedRoles={["admin"]}><AddProduct /></ProtectedRoute> },
       { path: 'manage-products', element: <ProtectedRoute allowedRoles={["admin"]}><ManageProducts /></ProtectedRoute> },
       { path: 'manage-inventory', element: <ProtectedRoute allowedRoles={["admin"]}><ManageInventory /></ProtectedRoute> },
@@ -146,8 +154,11 @@ const router = createBrowserRouter([
       { path: 'ReviewManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><ReviewManage/></div></ProtectedRoute> },
       { path: 'InquiryManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><InquiryManage/></div></ProtectedRoute>},
       { path: 'FAQManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><FAQManage/></div></ProtectedRoute>},
+      { path: 'BlogManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><BlogManage/></div></ProtectedRoute>},
       { path: 'AdminProfile', element: <ProtectedRoute allowedRoles={["admin"]}><div><AdminProfile/></div></ProtectedRoute>},
-      
+      { path: 'InquiryChart', element: <ProtectedRoute allowedRoles={["admin"]}><div><InquiryChart/></div></ProtectedRoute>},
+      { path: 'ReviewChart', element: <ProtectedRoute allowedRoles={["admin"]}><div><ReviewChart/></div></ProtectedRoute>},
+
     ]
   }
 ]);

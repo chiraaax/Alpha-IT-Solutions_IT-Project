@@ -389,11 +389,11 @@ const InquiryForm = () => {
                     ✉️ Submit an Inquiry
                 </h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <input type="text" name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
+                    <input type="text" name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange} readOnly className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
 
-                    <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
+                    <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} readOnly className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
 
-                    <input type="text" name="contactNumber" placeholder="Contact Number" value={formData.contactNumber} onChange={handleChange} required className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
+                    <input type="text" name="contactNumber" placeholder="Contact Number" value={formData.contactNumber} onChange={handleChange} readOnly className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
 
                     <input type="text" name="productName" placeholder="Product Name (if applicable)" value={formData.productName} onChange={handleChange} className="w-full border border-gray-700 rounded-lg px-4 py-2 bg-gray-900 text-gray-200 focus:ring focus:ring-pink-500" />
 
