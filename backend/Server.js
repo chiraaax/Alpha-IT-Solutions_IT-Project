@@ -22,6 +22,7 @@ import reportRoutes from './routes/reportRoutesShop.js';
 import ExpenseRoutes from "./routes/Finance/ExpenseRoutes.js";
 import IncomeRoutes from "./routes/Finance/IncomeRoutes.js";
 import InvoiceRoutes from "./routes/Finance/InvoiceRoutes.js";
+import TransactionRoutes from "./routes/Finance/transactionRoutes.js"
 
 import inquiryRoutes from "./routes/inquiryRoute.js";
 import reviewRoutes from "./routes/reviewRoute.js";
@@ -62,6 +63,7 @@ app.use("/api/reports", reportRoutes);
 app.use('/api/expenses', ExpenseRoutes);
 app.use('/api/income', IncomeRoutes);
 app.use('/api/invoice', InvoiceRoutes);
+app.use("/api/transactions", TransactionRoutes);
 app.use('/api/reports', reportRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/reviews", reviewRoutes);

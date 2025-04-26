@@ -3,6 +3,7 @@ import SuccessOrder from "../../models/OrderManagement/SuccessOrder.js";
 import User from "../../models/userModel.js";
 import authMiddleware from "../../middleware/authMiddleware.js";
 import sendEmail from "../../utils/sendEmail.js";
+import Transaction from "../../models/Finance/Transaction.js";
 
 const router = express.Router();
 
@@ -195,9 +196,7 @@ router.put('/admin/updatestatus/:id', authMiddleware("admin"), async (req, res) 
       return res.status(404).json({ message: "Order not found" });
     }
 
-    console.log("order.c", order.customerId.email);
-
-    // 📧 Send Email
+    // Send Email to customer
     await sendEmail(
       order.customerId.email,
       `Your Order Status is now ${status}`,
@@ -205,6 +204,16 @@ router.put('/admin/updatestatus/:id', authMiddleware("admin"), async (req, res) 
     
     If you have any questions, feel free to contact us.`
     );
+
+    // If status becomes "handedOver", create a transaction
+    if (status === "handedOver") {
+      await Transaction.create({
+        amount: order.totalAmount,
+        type: 'Income',
+        category: 'sales',
+        description: "Income from customer order's"
+      });
+    }
     
     res.json(order);
   } catch (error) {

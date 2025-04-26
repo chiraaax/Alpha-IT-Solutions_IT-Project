@@ -63,6 +63,7 @@ import PickupForm from '../components/OrderManagement/pickupForm';
 import CodForm from '../components/OrderManagement/CodForm';
 import CatalogReportInline from '../pages/dashboard/user/shop/report/CatalogReportInline ';
 import OrderList from '../components/OrderManagement/OrderList';
+import TransactionPage from '../pages/dashboard/Finance/TransactionPage';
 
 
 const router = createBrowserRouter([
@@ -142,6 +143,7 @@ const router = createBrowserRouter([
       { path: 'expensePage', element: <ExpensePage /> },
       { path: 'incomePage', element: <IncomePage /> },
       { path: 'invoicePage', element: <InvoicePage /> },
+      { path: 'TransactionPage', element: <TransactionPage /> },
       { path: 'prebuild-dashboard', element: <ProtectedRoute allowedRoles={["admin"]}><PreBuildDashboard /></ProtectedRoute>  },
       { path: 'ReviewManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><ReviewManage/></div></ProtectedRoute> },
       { path: 'InquiryManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><InquiryManage/></div></ProtectedRoute>},
