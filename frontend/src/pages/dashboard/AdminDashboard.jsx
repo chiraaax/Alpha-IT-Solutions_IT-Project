@@ -21,7 +21,8 @@ const navItems = [
   { path: '/dashboard/invoicePage', label: 'Invoice' },
   { path: '/dashboard/InquiryManage', label: 'Inquiry Manage'},
   { path: '/dashboard/ReviewManage', label: 'Review Manage'},
-  { path: '/dashboard/FAQManage', label: 'FAQ Manage'}
+  { path: '/dashboard/FAQManage', label: 'FAQ Manage'},
+  { path: '/dashboard/BlogManage', label: 'Blog Manage'},
 ];
 
 const AdminDashboard = () => {

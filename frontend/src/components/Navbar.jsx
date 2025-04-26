@@ -20,6 +20,7 @@ const adminDropDownMenus = [
   { label: "Manage Inquiry", path: "/dashboard/InquiryManage"},
   { label: "Manage Review", path: "/dashboard/ReviewManage"},
   { label: "FAQ Manage", path: "/dashboard/FAQManage"},
+  { label: "Blog Manage", path: "/dashboard/BlogManage"},
 ];
 
 const userDropDownMenus = [
