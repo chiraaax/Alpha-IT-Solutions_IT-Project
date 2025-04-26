@@ -47,9 +47,10 @@ const ShoppingCart = () => {
               <CartItem
                 key={item._id}
                 item={item}
-                specs={item.specs} //specs for prebuild
-                updateQuantity={updateQuantity} // Pass the updateQuantity function
+                specs={item.specs}
+                updateQuantity={updateQuantity}
               />
+
             ))
           ) : (
             <p>Your cart is empty.</p>

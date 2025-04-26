@@ -109,33 +109,56 @@ const OrderList = () => {
 
           <div className="mt-3">
             <strong>Items:</strong>
-            <ul className="list-disc list-inside space-y-2 mt-1">
+            <ul className="list-none space-y-4 mt-3">
               {order.items.map((item, idx) => (
-                <li key={idx} className="flex justify-between items-center">
-                  <div className="flex items-center space-x-3">
-                    {item.itemId?.image && (
-                      <img
-                        src={item.itemId.image}
-                        alt="item"
-                        className="w-12 h-12 object-cover rounded"
-                        onError={(e) => (e.target.style.display = "none")}
-                      />
-                    )}
-                    <span>
-                      {item.itemType}: {item.itemId?.description || "Unnamed"} x {item.quantity}
-                    </span>
-                  </div>
-                  {item.itemId?._id && (
-                    <button
-                      onClick={() => navigate(getItemRoute(item))}
-                      className="bg-blue-500 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition-all"
-                    >
-                      View Item
-                    </button>
+                <li key={idx} className="flex justify-between items-start bg-white shadow-md rounded-lg p-4">
+                 <div className="flex items-center space-x-4">
+                  {item.itemId?.image && (
+                    <img
+                    src={item.itemId.image}
+                    alt="item"
+                    className="w-16 h-16 object-cover rounded-md"
+                    onError={(e) => (e.target.style.display = "none")}
+                    />
                   )}
-                </li>
-              ))}
-            </ul>
+                <div className="flex flex-col">
+                  <span className="text-lg font-semibold">
+                    {item.itemType}: {item.itemId?.description || "Unnamed"} x {item.quantity}
+                  </span>
+                </div>
+                
+                </div>
+        
+              {/* Show specs for PreBuild items */}
+              {item.itemType === 'PreBuild' && item.specs && item.specs.length > 0 && (
+                <div className="mt-4 text-sm text-gray-700">
+                  <p className="font-medium text-gray-800">Specs:</p>
+                  <ul className="space-y-1">
+                    {item.specs.map((spec, idx) => (
+                      <li key={idx} className="flex space-x-2">
+                        <span className="font-semibold text-gray-600">{spec.label}:</span>
+                        <span>{spec.value}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+        
+              {/* View Item button */}
+              {item.itemId?._id && (
+                <div className="mt-4">
+                  <button
+                    onClick={() => navigate(getItemRoute(item))}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-600 transition-all"
+                  >
+                    View Item
+                  </button>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+        
           </div>
 
           {order.details && (
@@ -160,7 +183,7 @@ const OrderList = () => {
 
               <div className="flex gap-4 mt-3">
                 <button
-                  onClick={() => navigate(`/orders/edit/${order.details._id}`)}
+                  onClick={() => navigate("/CheckoutForm", { state: { editMode: true } })}
                   className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
                 >
                   Edit

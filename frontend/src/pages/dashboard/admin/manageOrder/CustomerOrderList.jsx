@@ -16,7 +16,7 @@ const CustomerOrderList = () => {
           return;
         }
 
-        const response = await fetch("http://localhost:5000/api/orders/orders/all", {
+        const response = await fetch("http://localhost:5000/api/orders/all", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -107,6 +107,11 @@ const CustomerOrderList = () => {
     reportWindow.print();
   };
 
+  const handleOrderClick = (orderId) => {
+    navigate(`/dashboard/SuccessOrder/${orderId}`);
+  };
+  
+
   return (
     <div className="dashboard-container">
       <h1>Customer Orders</h1>
@@ -156,7 +161,9 @@ const CustomerOrderList = () => {
               const pickup = order.pickupDetails || {};
 
               return (
-                <tr key={order._id}>
+                <tr key={order._id} 
+                onClick={() => handleOrderClick(order.SuccessorderId)}
+                style={{ cursor: "pointer" }}>
                   <td>{index + 1}</td>
                   <td>{order.name}</td>
                   <td>{order.email}</td>
