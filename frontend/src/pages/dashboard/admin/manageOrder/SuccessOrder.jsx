@@ -7,7 +7,7 @@ const SuccessOrder = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showCustomer, setShowCustomer] = useState(false);
-  const [newStatus, setNewStatus] = useState(""); // 🚀 new
+  const [newStatus, setNewStatus] = useState("");
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -45,15 +45,23 @@ const SuccessOrder = () => {
       return;
     }
 
-    // 🧠 Prevent 'HandedOver' if not 'Approved' yet
     if (newStatus === "handedOver" && order.status !== "Approved") {
       alert("Order must be Approved before it can be Handed Over.");
       return;
     }
 
+    // ⏰ Check if 24 hours passed since createdAt
+    const createdAt = new Date(order.createdAt);
+    const now = new Date();
+    const hoursPassed = (now - createdAt) / (1000 * 60 * 60); // milliseconds to hours
+
+    if (hoursPassed < 24) {
+      alert("You can update the status only after 24 hours from order creation!");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
-      console.log("Token:", token);
       const response = await fetch(`http://localhost:5000/api/successorders/admin/updatestatus/${id}`, {
         method: "PUT",
         headers: {
@@ -66,22 +74,19 @@ const SuccessOrder = () => {
       if (!response.ok) throw new Error("Failed to update status");
 
       const updatedOrder = await response.json();
-      setOrder(updatedOrder); // 🛠️ Update state immediately
+      setOrder(updatedOrder);
 
       alert(`Status updated to ${newStatus}. An email will be sent to the customer.`);
-
-      // 🌟 Automatically send email (assuming your backend sends it on status update)
     } catch (error) {
       console.error("Error updating status:", error);
       alert("Failed to update order status.");
     }
   };
 
-  //generate report
   const generateReport = () => {
     const reportWindow = window.open("", "_blank");
     if (!reportWindow) return alert("Popup blocked! Please allow popups for this site.");
-  
+
     const customer = order.customerId;
     const orderItems = order.items.map(
       (item, index) => `
@@ -92,7 +97,7 @@ const SuccessOrder = () => {
         </tr>
       `
     ).join("");
-  
+
     reportWindow.document.write(`
       <html>
       <head>
@@ -130,11 +135,10 @@ const SuccessOrder = () => {
       </body>
       </html>
     `);
-  
+
     reportWindow.document.close();
-    reportWindow.print(); // Opens print dialog, user can choose "Save as PDF"
+    reportWindow.print();
   };
-  
 
   if (loading) return <div>Loading order details...</div>;
   if (!order) return <div>Order not found.</div>;
@@ -160,7 +164,7 @@ const SuccessOrder = () => {
         <div><strong>Status:</strong> {order.status}</div>
         <div><strong>Created At:</strong> {new Date(order.createdAt).toLocaleString()}</div>
 
-        {/* 🔘 Button to toggle customer details */}
+        {/* Toggle customer details */}
         <button
           onClick={() => setShowCustomer(!showCustomer)}
           style={{
@@ -187,7 +191,7 @@ const SuccessOrder = () => {
         )}
       </div>
 
-      {/* 🌟 Status Update Section */}
+      {/* Status Update Section */}
       <div style={{ marginBottom: "30px", backgroundColor: "#1e1e1e", padding: "20px", borderRadius: "8px" }}>
         <h2 style={{ color: "#00bcd4" }}>Update Order Status</h2>
         <select
@@ -237,7 +241,6 @@ const SuccessOrder = () => {
         >
           Download Report
         </button>
-
       </div>
 
       {/* Items Table */}

@@ -16,9 +16,8 @@ const navItems = [
   { path: '/dashboard/prebuild-dashboard', label: 'Manage Custom Prebuild' },
   { path: '/dashboard/manageOrder', label: 'Manage Order' },
   { path: '/dashboard/customerOrder', label: 'Manage Customer Orders' },
-  { path: '/dashboard/expensePage', label: 'Expense' },
-  { path: '/dashboard/incomePage', label: 'Income' },
-  { path: '/dashboard/TransactionPage', label: 'Transaction' },
+  { path: '/dashboard/TransactionPage', label: 'Manage Transaction' },
+  { path: '/dashboard/InvoicePage', label: 'Manage Invoice' },
   
   { path: '/dashboard/prebuild-dashboard', label: 'Manage Custom Prebuild' },
   

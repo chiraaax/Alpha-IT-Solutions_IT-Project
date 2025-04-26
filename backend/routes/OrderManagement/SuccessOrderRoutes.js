@@ -4,6 +4,11 @@ import User from "../../models/userModel.js";
 import authMiddleware from "../../middleware/authMiddleware.js";
 import sendEmail from "../../utils/sendEmail.js";
 import Transaction from "../../models/Finance/Transaction.js";
+import Product from "../../models/Product.js";
+import PreBuild from "../../models/PreBuild.js";
+import Invoice from "../../models/Finance/Invoice.js";
+import { createInvoicePDF } from "../../utils/invoicePdf.js"
+import fs from 'fs';
 
 const router = express.Router();
 
@@ -187,39 +192,101 @@ router.put('/admin/updatestatus/:id', authMiddleware("admin"), async (req, res) 
   const orderId = req.params.id;
 
   try {
-    console.log("Updating orderId:", orderId);
-    console.log("New status:", status);
-
     const order = await SuccessOrder.findByIdAndUpdate(orderId, { status }, { new: true }).populate('customerId');
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // Send Email to customer
+    // Fetch item details for invoice (name, price, quantity)
+    const populatedItems = [];
+
+    for (const item of order.items) {
+      let itemDetails;
+
+      if (item.itemType === 'Product') {
+        itemDetails = await Product.findById(item.itemId);
+      } else if (item.itemType === 'PreBuild') {
+        itemDetails = await PreBuild.findById(item.itemId);
+      }
+
+      if (itemDetails) {
+        populatedItems.push({
+          name: `(${item.itemType}) - Category: ${itemDetails.category} | Description: ${itemDetails.description}`,
+          price: itemDetails.price,
+          quantity: item.quantity
+        });
+      }
+    }
+
+    // Send Email to customer about status update
     await sendEmail(
       order.customerId.email,
       `Your Order Status is now ${status}`,
-      `We would like to inform you that your order status has been updated to: <strong style="color:rgb(78, 76, 175);">${status}</strong>.<br\>
-    
-    If you have any questions, feel free to contact us.`
+      `We would like to inform you that your order status has been updated to: <strong style="color:rgb(78, 76, 175);">${status}</strong>.<br/>
+      If you have any questions, feel free to contact us.`,
+      { useTemplate: true }
     );
 
-    // If status becomes "handedOver", create a transaction
+    // If status becomes "handedOver", create transaction and send invoice
     if (status === "handedOver") {
+      // Create Transaction
       await Transaction.create({
         amount: order.totalAmount,
         type: 'Income',
         category: 'sales',
         description: "Income from customer order's"
       });
+
+      // Create Invoice
+      const newInvoice = new Invoice({
+        customerName: order.customerId.name,
+        items: populatedItems,
+        totalAmount: order.totalAmount,
+        status: 'Paid', // or 'Pending' if not yet paid
+        date: new Date(),
+      });
+
+      const savedInvoice = await newInvoice.save();
+      console.log('Invoice created automatically ✅');
+
+      // Generate Invoice PDF
+      if (!fs.existsSync('invoices')) {
+        fs.mkdirSync('invoices');
+      }
+      const invoicePath = `invoices/invoice_${savedInvoice._id}.pdf`;
+
+      createInvoicePDF(savedInvoice, invoicePath);
+
+      // Small wait to make sure PDF is written
+      setTimeout(async () => {
+        // Send Email with Invoice PDF
+        await sendEmail(
+          order.customerId.email,
+          `Your Invoice from Alpha IT Solutions`,
+          `Thank you for your order! Please find attached your invoice.`,
+          {
+            attachments: [
+              {
+                filename: `invoice_${savedInvoice._id}.pdf`,
+                path: invoicePath
+              }
+            ],
+            useTemplate: false // or true if you want an HTML body
+          }
+        );
+
+        // Optional: Delete the PDF after sending if you don't want to store it
+        // fs.unlinkSync(invoicePath);
+      }, 2000); // 2 seconds delay
     }
-    
+
     res.json(order);
   } catch (error) {
     console.error("Error updating status:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 export default router;

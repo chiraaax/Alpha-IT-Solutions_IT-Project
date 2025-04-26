@@ -108,7 +108,7 @@ router.post("/create", authMiddleware(["customer"]), async (req, res) => {
 // GET all orders
 router.get("/all", async (req, res) => {
   try {
-    const order = await Order.find();
+    const order = await Order.find().populate('SuccessorderId');
     if (!order || order.length === 0) {
       return res.status(404).json({ message: "Order data not found" });
     }

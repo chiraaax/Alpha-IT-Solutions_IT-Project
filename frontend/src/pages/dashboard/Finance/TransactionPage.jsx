@@ -8,6 +8,7 @@ const TransactionPage = () => {
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [selectedType, setSelectedType] = useState("All");
     const [reportData, setReportData] = useState([]);
+    const [totalAmount, setTotalAmount] = useState(0); // Store the total amount (income - expenses)
 
     const reportRef = useRef();
 
@@ -95,7 +96,37 @@ const TransactionPage = () => {
         }
 
         setReportData(filtered);
+
+        // Calculate total amount (income - expenses)
+        const incomeTotal = filtered.filter(txn => txn.type === "Income").reduce((sum, txn) => sum + Number(txn.amount), 0);
+        const expenseTotal = filtered.filter(txn => txn.type === "Expense").reduce((sum, txn) => sum + Number(txn.amount), 0);
+        const total = incomeTotal - expenseTotal;
+        setTotalAmount(total);
+
+        // Alert if the total amount goes below 0
+        if (total < 0) {
+            alert("Warning: Total amount is negative!");
+        }
     };
+
+    // Calculate and display Current Balance when selectedCategory and selectedType are "All"
+    const getCurrentBalance = () => {
+        if (selectedCategory === "All" && selectedType === "All") {
+            // Calculate the overall balance (income - expenses) when no filters are applied
+            const incomeTotal = transactions.filter(txn => txn.type === "Income").reduce((sum, txn) => sum + Number(txn.amount), 0);
+            const expenseTotal = transactions.filter(txn => txn.type === "Expense").reduce((sum, txn) => sum + Number(txn.amount), 0);
+            const balance = (incomeTotal - expenseTotal).toFixed(2); // Ensure two decimal points
+    
+            // Check if the balance is negative and alert the user
+            if (parseFloat(balance) < 0) {
+                alert("Warning: Your balance is negative!");
+            }
+    
+            return balance;
+        }
+        return 0; // If filters are applied, return 0 for the "Current Balance"
+    };
+    
 
     const handlePrint = () => {
         const printContents = reportRef.current.innerHTML;
@@ -106,15 +137,12 @@ const TransactionPage = () => {
         window.location.reload();
     };
 
-    const getTotalAmount = () => {
-        return reportData.reduce((sum, txn) => sum + Number(txn.amount), 0);
-    };
+    const getTotalAmount = () => totalAmount.toFixed(2); // Return the calculated total amount with 2 decimal places
 
     return (
         <div style={styles.container}>
             <style>{`
                 body {
-                    // background-color: #121212;
                     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                     margin: 0;
                     padding: 20px;
@@ -205,10 +233,57 @@ const TransactionPage = () => {
                 .delete-btn:hover {
                     background-color: #c0392b;
                 }
+
+                .generate-btn, .print-btn {
+                    background-color: #28a745;
+                    color: white;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    margin-right: 10px;
+                    transition: background-color 0.3s ease;
+                }
+
+                .generate-btn:hover, .print-btn:hover {
+                    background-color: #218838;
+                }
+
+                .button-container {
+                    display: flex;
+                    gap: 20px;
+                    margin-bottom: 20px;
+                }
+
+                .total-amount {
+                    font-size: 20px;
+                    margin-top: 10px;
+                    color: #ff6f61;
+                }
+
+                .current-balance {
+                    background-color: #007BFF;
+                    padding: 20px;
+                    border-radius: 12px;
+                    margin-bottom: 20px;
+                    color: white;
+                    font-size: 2rem;
+                    font-weight: bold;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                }
             `}</style>
 
             <h1>Transactions of <b>Alpha IT Solutions</b></h1>
             {error && <p style={{ color: "red" }}>{error}</p>}
+
+            {/* Display Current Balance when both filters are "All" */}
+            <div className="current-balance">
+                <h3>Current Balance: LKR {getCurrentBalance()}</h3>
+            </div>
+
+            <div className="total-amount">
+                Total Amount (Income - Expenses): LKR {getTotalAmount()}
+            </div>
 
             <form onSubmit={editingTransaction ? updateTransaction : addTransaction} style={styles.form}>
                 <input type="number" name="amount" value={formData.amount} onChange={handleChange} placeholder="Amount" required />
@@ -249,9 +324,9 @@ const TransactionPage = () => {
                     </select>
                 </div>
 
-                <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
-                    <button onClick={generateReport}>Generate Report</button>
-                    <button onClick={handlePrint}>Print Report</button>
+                <div className="button-container">
+                    <button className="generate-btn" onClick={generateReport}>Generate Report</button>
+                    <button className="print-btn" onClick={handlePrint}>Print Report</button>
                 </div>
 
                 {reportData.length > 0 && (
