@@ -61,7 +61,7 @@ const cartReducer = (state = initialState, action) => {
 const saveToOrderDatabase = async (itemId) => {
   try {
     const response = await axios.post('/api/successorders/create', { itemId });  // Adjust the API endpoint as needed
-    console.log('Order saved successfully:', response.data);
+    console.log('SuccessOrder saved successfully:', response.data);
   } catch (error) {
     console.error('Error saving order:', error);
   }

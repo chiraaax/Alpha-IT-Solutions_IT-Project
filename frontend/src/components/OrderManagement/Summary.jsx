@@ -26,29 +26,56 @@ const Summary = ({ cart }) => {
                 return;
             }
 
-            // const orderData = {
-            //     customerId: "67deced64f3bc4a00af20c0c",  // Assuming userId is stored in localStorage
-            //     totalAmount: total,
-            //     status: "Pending",
-            // };
-            // Prepare the item array with itemId, itemType, and quantity
-            const items = cart.map(item => ({
-                itemId: item._id, // assuming _id is the item ID
-                itemType: item.prebuildId ? "prebuild" : "product", // or however you're detecting type
-                quantity: item.quantity
-            }));
+            // const requiredLabels = ["Processor", "GPU", "RAM", "Storage", "Power Supply", "Casing"];
+
+            const items = cart.map(item => {
+                const isProduct = item.isProduct === true;
+                const rawSpecs = item.specs || [];
+              
+                const base = {
+                  itemId: item._id,
+                  itemType: isProduct ? "Product" : "PreBuild",
+                  quantity: item.quantity
+                };
+              
+                return !isProduct
+                  ? {
+                      ...base,
+                      specs: rawSpecs.map(spec => ({
+                        _id: spec.id,
+                        label: spec.label,
+                        value: spec.value
+                      }))
+                    }
+                  : base;
+              });
+              
     
             const orderData = {
-                customerId: customerId || "67deced64f3bc4a00af20c0c", // fallback if needed
+                customerId: customerId,
                 totalAmount: total,
                 status: "Pending",
                 items: items
             };
 
-            const response = await axios.post("http://localhost:5000/api/successorders/create", orderData);
+            // Retrieve token from localStorage (or sessionStorage, or cookies)
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                console.error("No token found! Please log in.");
+                return;
+            }
+
+            const response = await axios.post("http://localhost:5000/api/successorders/create", orderData, {
+                headers: {
+                    Authorization: `Bearer ${token}` // Sending the token in the header
+                }
+            });
             console.log("SuccessOrder saved:", response.data);
 
             dispatch(addOrder());
+            localStorage.removeItem("successOrder");
+            localStorage.removeItem("orderPlaced");
             navigate("/CheckoutForm"); // Ensure this route exists and navigate to the checkout form
         } catch (error) {
             console.error("Error saving order:", error.response ? error.response.data : error.message);

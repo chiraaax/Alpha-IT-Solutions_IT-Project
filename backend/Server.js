@@ -19,25 +19,33 @@ import orderRoutes from "./routes/OrderManagement/orderRoutes.js";
 import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js";
 import reportRoutes from './routes/reportRoutesShop.js';
 
-import ExpenseRoutes from "./routes/Finance/ExpenseRoutes.js";
-import IncomeRoutes from "./routes/Finance/IncomeRoutes.js";
 import InvoiceRoutes from "./routes/Finance/InvoiceRoutes.js";
+import TransactionRoutes from "./routes/Finance/transactionRoutes.js"
 
 import inquiryRoutes from "./routes/inquiryRoute.js";
 import reviewRoutes from "./routes/reviewRoute.js";
 import chatBotRoutes from "./routes/chatbotRoute.js";
 import blogRoutes from "./routes/blogRoute.js";
+//products, ai
+import compareRoutes from "./routes/compareRoutes.js";
+
 
 dotenv.config();
 const app = express();
 
 // CORS Configuration
 const corsOptions = {
-  origin: "http://localhost:5173", // Adjust if frontend URL changes
+  origin: "http://localhost:5173", 
   credentials: true, 
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cache-Control"],
 };
+
+// Log every incoming request to server
+app.use((req, res, next) => {
+  console.log(`➡️ ${req.method} ${req.url}`);
+  next();
+});
 
 // Apply Middlewares
 app.use(cors(corsOptions));
@@ -61,15 +69,16 @@ app.use("/api", uploadRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/successorders", SuccessOrderRoutes);
 app.use("/api/reports", reportRoutes);
-app.use('/api/expenses', ExpenseRoutes);
-app.use('/api/income', IncomeRoutes);
-app.use('/api/invoice', InvoiceRoutes);
+app.use('/api/invoices', InvoiceRoutes);
+app.use("/api/transactions", TransactionRoutes);
 app.use('/api/reports', reportRoutes);
-//app.use('/api/successorder',orderRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/chatbot", chatBotRoutes);
 app.use("/api/blogs", blogRoutes);
+app.use("/api", compareRoutes);
+app.use("/api/successOrder", SuccessOrderRoutes);
+
 
 // Home Route
 app.get("/", (req, res) => {
@@ -81,6 +90,7 @@ app.use((err, req, res, next) => {
   console.error("Global Error: ", err.stack);
   res.status(500).send("Something went wrong!");
 });
+
 
 // Connect to MongoDB
 mongoose

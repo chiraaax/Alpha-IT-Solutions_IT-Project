@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import InquiryChart from "../../../../components/InquiryChart/InquiryChart";
 import ReviewChart from "../../../../components/ReviewChart/ReviewChart";
 import AppointmentAnalytics from "../charts/AppointmentChart";
+import OrderChart from "../../../../components/orderChart/orderChart";
+import OrderSuccessDashboard from "../../../../components/orderChart/OrderSuccessDashboard";
+import TransactionDashboard from "../charts/TransactionDashboard";
+import InventoryAnalytics from "../inventoryManagement/InventoryAnalytics";
 
 const Dashboard = () => {
   const [activeChart, setActiveChart] = useState(null);
@@ -14,6 +18,20 @@ const Dashboard = () => {
     <div style={dashboardContainer}>
       <main style={mainContent}>
         <section style={chartListSection}>
+        <button
+            style={{
+              ...chartButton,
+              ...(activeChart === "inventory" ? activeButtonStyle : {}),
+            }}
+            onClick={() => handleChartClick("inventory")}
+          >
+            Inventory Analytics
+          </button>
+          {activeChart === "inventory" && (
+            <div style={chartContainer}>
+              <InventoryAnalytics />
+            </div>
+          )}
           <button
             style={{
               ...chartButton,
@@ -56,6 +74,51 @@ const Dashboard = () => {
           {activeChart === "appointment" && (
             <div style={chartContainer}>
               <AppointmentAnalytics />
+            </div>
+          )}
+
+          <button
+            style={{
+              ...chartButton,
+              ...(activeChart === "order" ? activeButtonStyle : {}),
+            }}
+            onClick={() => handleChartClick("order")}
+          >
+            Order Overview
+          </button>
+          {activeChart === "order" && (
+            <div style={chartContainer}>
+              <OrderChart />
+            </div>
+          )}
+
+          <button
+            style={{
+              ...chartButton,
+              ...(activeChart === "Successorder" ? activeButtonStyle : {}),
+            }}
+            onClick={() => handleChartClick("Successorder")}
+          >
+            SuccessOrder Overview
+          </button>
+          {activeChart === "Successorder" && (
+            <div style={chartContainer}>
+              <OrderSuccessDashboard />
+            </div>
+          )}
+
+          <button
+            style={{
+              ...chartButton,
+              ...(activeChart === "transaction" ? activeButtonStyle : {}),
+            }}
+            onClick={() => handleChartClick("transaction")}
+          >
+            Transaction Analytics
+          </button>
+          {activeChart === "transaction" && (
+            <div style={chartContainer}>
+              <TransactionDashboard />
             </div>
           )}
         </section>
