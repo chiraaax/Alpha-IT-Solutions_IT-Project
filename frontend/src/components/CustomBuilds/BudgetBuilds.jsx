@@ -4,15 +4,8 @@ import axios from "axios";
 import { useTheme } from "./ThemeContext";
 import { FaSun, FaMoon, FaChevronUp } from "react-icons/fa";
 import { motion } from "framer-motion";
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend
-} from "recharts";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend} from "recharts";
+import { Cpu, Zap, AlertTriangle } from 'lucide-react';
 
 // API URL for budget builds
 const API_URL = "http://localhost:5000/api/prebuilds/category/Budget";
@@ -25,6 +18,11 @@ const formatPrice = (price) => {
   }).format(price);
 };
 
+const navigate = (path) => {
+  console.log(`Navigating to: ${path}`);
+};  
+
+
 const BudgetBuilds = () => {
   const { isDark, toggleTheme } = useTheme();
   const [budgetBuilds, setBudgetBuilds] = useState([]);
@@ -34,7 +32,35 @@ const BudgetBuilds = () => {
   const [productsLookup, setProductsLookup] = useState({});
   const [showScrollTop, setShowScrollTop] = useState(false);
   const navigate = useNavigate();
-
+  const [hoverExplore, setHoverExplore] = useState(false);
+  const [hoverAI, setHoverAI] = useState(false);
+  const [glitchEffect, setGlitchEffect] = useState(false);
+  const [glitchText, setGlitchText] = useState(false);
+  
+    useEffect(() => {
+      let glitchInterval;
+      let textInterval;
+      
+      if (hoverAI) {
+        // More frequent glitches when hovering
+        glitchInterval = setInterval(() => {
+          setGlitchEffect(true);
+          setTimeout(() => setGlitchEffect(false), 150);
+        }, 800);
+        
+        // Text glitch effect
+        textInterval = setInterval(() => {
+          setGlitchText(true);
+          setTimeout(() => setGlitchText(false), 100);
+        }, 1200);
+      }
+      
+      return () => {
+        clearInterval(glitchInterval);
+        clearInterval(textInterval);
+      };
+    }, [hoverAI]);
+  
   // Fetching budget builds data from API
   useEffect(() => {
     axios
@@ -159,8 +185,6 @@ const getRamCapacityGB = (productId) => {
 };
 
 // In your BudgetBuilds component, alongside getRamCapacityGB:
-
-
 // Safely extract storage capacity in GB from specs (e.g. “500GB”, “1.5 TB”, “2 nas drive bays” → tries to pull “500GB” or “1.5 TB”)
 // e.g. just above your component’s return:
 const getStorageCapacityGB = (productId) => {
@@ -192,25 +216,216 @@ return (
       </div>
       <div className="container mx-auto px-4 relative z-10">                      
     <div className="text-8xl flex flex-col items-center text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-lime-400 to-teal-500 mb-4">
-    <span className="font-bold bg-clip-text bg-gradient-to-r from-green-400 via-lime-400 to-teal-500 mb-10">
-
-
-    Budget Builds </span>
-        </div>
-
+    <div className="relative group">
+  {/* Main text with cyberpunk color scheme */}
+  <span className="font-bold text-8xl mb-1 tracking-tight inline-block
+    bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-lime-400 to-teal-500
+    relative z-10"
+  > Budget Builds </span>
+  <div className="absolute -bottom-2 left-0 w-full h-px bg-lime-400"></div>  
+  {/* Subtle tech glow effect */}
+  <div className="absolute inset-0 bg-cyan-400 opacity-20 blur-md z-0
+    transform scale-105 group-hover:opacity-30 transition-opacity duration-300"></div>
+</div>
+  </div>
           <p className="text-xl text-center text-white/90 mb-6 max-w-3xl mx-auto  ">
           Discover Balanced Performance Budget Builds Tailored for Handle Everday Workload            
           </p>
-          <div className="flex justify-center">
-            <button
-              onClick={() => window.scrollTo({ top: window.innerHeight - 100, behavior: "smooth" })}
-              className="bg-white text-blue-600 hover:bg-purple-200 transition-all duration-300 font-semibold px-8 py-3 rounded-full shadow-lg"
-            >
-              Explore Builds
-            </button>
+ <div className="flex flex-col md:flex-row items-center justify-center gap-6 p-8 rounded-lg">
+    {/* Explore Builds Button */}
+    <button
+      onMouseEnter={() => setHoverExplore(true)}
+      onMouseLeave={() => setHoverExplore(false)}
+      onClick={() => window.scrollTo({ top: window.innerHeight - 100, behavior: "smooth" })}
+      className={`relative overflow-hidden bg-gradient-to-r from-blue-800 to-fuchsia-800 text-white font-bold px-15 py-6 rounded-lg border-2 border-blue-400 shadow-lg transform transition-all duration-300 ${hoverExplore ? 'scale-105' : ''}`}
+    >
+      <div className="absolute inset-0 bg-blue-500 opacity-10"></div>
+      <div className="absolute top-0 left-0 w-full h-px bg-white opacity-30"></div>
+      <div className="absolute bottom-0 right-0 w-full h-px bg-blue-300 opacity-30"></div>
+      <div className="flex items-center justify-center gap-2">
+        <Cpu size={20} className={`transition-all duration-300 ${hoverExplore ? 'text-blue-300' : 'text-blue-400'}`} />
+        <span className="relative z-10">EXPLORE BUILDS</span>
+      </div>
+    </button>
+
+    {/* Enhanced Cyberpunk AI Build Suggestor Button */}
+    <div className="relative group">
+      {/* Expanded outer glow effect on hover */}
+      <div className={`absolute -inset-1 bg-gradient-to-r from-pink-600 via-cyan-500 to-purple-600 rounded-lg blur transition-all duration-300 
+        ${hoverAI ? 'opacity-100 -inset-3 blur-md' : 'opacity-75'} 
+        ${glitchEffect ? 'scale-110' : ''} 
+        animate-pulse`}
+      ></div>
+      
+      {/* Extra outer glow ring that appears only on hover */}
+      <div className={`absolute -inset-3 bg-gradient-to-r from-cyan-600 to-pink-600 rounded-lg blur-lg transition-all duration-500 
+        ${hoverAI ? 'opacity-50' : 'opacity-0'}`}
+      ></div>
+      
+      {/* Digital noise overlay */}
+      <div className={`absolute inset-0 bg-black opacity-10 
+        ${glitchEffect ? 'translate-x-1' : ''} 
+        ${hoverAI ? 'bg-gradient-to-r from-black via-transparent to-black' : ''} 
+        transition-all duration-100`}
+      ></div>
+      
+      {/* Button with cyberpunk aesthetics */}
+      <button
+        onMouseEnter={() => setHoverAI(true)}
+        onMouseLeave={() => setHoverAI(false)}
+        onClick={() => navigate('/AI-build-suggestor')}
+        className={`relative bg-black text-cyan-400 font-mono font-bold px-15 py-6 rounded-md border transform transition-all duration-300 overflow-hidden
+          ${hoverAI ? 'border-pink-500 shadow-lg shadow-pink-500/50 scale-105' : 'border-cyan-500'} 
+          ${glitchEffect ? '-translate-x-px translate-y-px' : ''}`}
+      >
+        {/* Moving tech grid background that activates on hover */}
+        <div className={`absolute inset-0 bg-grid-pattern opacity-20 transition-all duration-1000
+          ${hoverAI ? 'animate-grid-move' : ''}`}></div>
+        
+        {/* Scanline effect intensifies on hover */}
+        <div className={`absolute inset-0 bg-gradient-to-b from-transparent via-cyan-900 to-transparent opacity-5 bg-repeat-y bg-size-200 
+          ${hoverAI ? 'animate-scanline-fast' : 'animate-scanline'}`}></div>
+        
+        {/* Warning stripes that appear on hover */}
+        <div className={`absolute -left-0 top-0 bottom-0 w-2 bg-warning-stripes transition-all duration-300
+          ${hoverAI ? 'opacity-90' : 'opacity-0'}`}></div>
+        <div className={`absolute -right-0 top-0 bottom-0 w-2 bg-warning-stripes transition-all duration-300
+          ${hoverAI ? 'opacity-90' : 'opacity-0'}`}></div>
+        
+        {/* Circuit lines that light up more on hover */}
+        <div className={`absolute top-0 left-0 w-full h-px transition-all duration-300
+          ${hoverAI ? 'bg-cyan-300 opacity-100 shadow-glow-cyan' : 'bg-cyan-600 opacity-70'}`}></div>
+        <div className={`absolute top-0 right-4 w-px h-4 transition-all duration-300
+          ${hoverAI ? 'bg-cyan-300 opacity-100 shadow-glow-cyan' : 'bg-cyan-600 opacity-70'}`}></div>
+        <div className={`absolute top-4 right-0 w-4 h-px transition-all duration-300
+          ${hoverAI ? 'bg-cyan-300 opacity-100 shadow-glow-cyan' : 'bg-cyan-600 opacity-70'}`}></div>
+        <div className={`absolute bottom-0 right-0 w-full h-px transition-all duration-300
+          ${hoverAI ? 'bg-pink-400 opacity-100 shadow-glow-pink' : 'bg-pink-600 opacity-70'}`}></div>
+        <div className={`absolute bottom-0 left-4 w-px h-4 transition-all duration-300
+          ${hoverAI ? 'bg-pink-400 opacity-100 shadow-glow-pink' : 'bg-pink-600 opacity-70'}`}></div>
+        <div className={`absolute bottom-4 left-0 w-4 h-px transition-all duration-300
+          ${hoverAI ? 'bg-pink-400 opacity-100 shadow-glow-pink' : 'bg-pink-600 opacity-70'}`}></div>
+        
+        {/* Text and icons */}
+        <div className="flex items-center justify-center gap-2 relative z-10">
+          {/* Icon that changes on hover */}
+          {hoverAI ? (
+            <AlertTriangle 
+              size={27} 
+              className="text-yellow-400 animate-pulse" 
+              style={{ filter: 'drop-shadow(0 0 3px #eab308)' }}
+            />
+          ) : (
+            <Zap 
+              size={27} 
+              className="text-pink-500" 
+              style={{ filter: 'drop-shadow(0 0 2px #ec4899)' }}
+            />
+          )}
+          
+          {/* Text that glitches and changes on hover */}
+          <span 
+            className={`tracking-wider transition-all duration-300 ${glitchText ? 'text-pink-500 skew-x-3' : ''} 
+              ${hoverAI ? 'text-cyan-300 font-extrabold tracking-widest' : 'text-cyan-400'}`}
+            style={{ 
+              textShadow: hoverAI ? '0 0 8px rgba(34, 211, 238, 0.9), 0 0 2px rgba(255, 255, 255, 0.7)' : '0 0 5px rgba(34, 211, 238, 0.7)' 
+            }}
+          >
+            {hoverAI ? ">> ACTIVATE <<" : "AI_BUILD.SYS"}
+          </span>
+          
+          {/* Blinking indicator that speeds up on hover */}
+          <div className="absolute -right-2 -top-2 flex items-center justify-center w-4 h-4">
+            <div className={`absolute w-2 h-2 bg-cyan-400 rounded-full ${hoverAI ? 'animate-ping-fast' : 'animate-ping'}`}></div>
+            <div className={`w-1 h-1 rounded-full transition-colors duration-300 ${hoverAI ? 'bg-cyan-300' : 'bg-cyan-500'}`}></div>
           </div>
         </div>
+        
+        {/* Digital counters/data that change on hover */}
+        <div className={`absolute bottom-1 right-3 text-sm font-mono opacity-70 transition-all duration-300
+          ${hoverAI ? 'text-pink-500 text-sm' : 'text-cyan-500 text-xs'}`}>
+          {hoverAI ? "READY" : Math.floor(Math.random() * 9999).toString().padStart(3, '0')}
+        </div>
+        
+        {/* Status indicators that appear on hover */}
+        <div className={`absolute top-1 left-3 text-sm font-mono transition-all duration-300
+          ${hoverAI ? 'opacity-100 text-yellow-400' : 'opacity-0'}`}>
+          SYS:ON
+        </div>
+      </button>
+    </div>
+
+    {/* Add some custom CSS for special effects */}
+    <style jsx>{`
+      @keyframes scanline {
+        0% { background-position: 0 -100vh; }
+        100% { background-position: 0 100vh; }
+      }
+      
+      @keyframes scanline-fast {
+        0% { background-position: 0 -100vh; }
+        100% { background-position: 0 100vh; }
+      }
+      
+      @keyframes grid-move {
+        0% { background-position: 0 0; }
+        100% { background-position: 50px 50px; }
+      }
+      
+      @keyframes ping-fast {
+        0% { transform: scale(1); opacity: 1; }
+        75%, 100% { transform: scale(2); opacity: 0; }
+      }
+      
+      .animate-scanline {
+        animation: scanline 8s linear infinite;
+      }
+      
+      .animate-scanline-fast {
+        animation: scanline 4s linear infinite;
+      }
+      
+      .animate-grid-move {
+        animation: grid-move 3s linear infinite;
+      }
+      
+      .animate-ping-fast {
+        animation: ping-fast 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+      }
+      
+      .bg-size-200 {
+        background-size: 100% 8px;
+      }
+      
+      .bg-grid-pattern {
+        background-image: 
+          linear-gradient(to right, rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
+      }
+      
+      .bg-warning-stripes {
+        background-image: repeating-linear-gradient(
+          -45deg,
+          #f59e0b,
+          #f59e0b 10px,
+          #000000 10px,
+          #000000 20px
+        );
+      }
+      
+      .shadow-glow-cyan {
+        box-shadow: 0 0 5px rgba(6, 182, 212, 0.7);
+      }
+      
+      .shadow-glow-pink {
+        box-shadow: 0 0 5px rgba(236, 72, 153, 0.7);
+      }
+    `}
+    </style>
+        </div>
       </div>
+    </div>    
 
       {/* Theme Toggle Button */}
       <button
@@ -375,6 +590,7 @@ return (
               isDark ? "bg-gradient-to-br from-gray-900 to-sky-600 p-6 rounded-xl border border-sky-500/30-gray-900" : "bg-gradient-to-br from-sky-500 to-gray-800 p-6 rounded-xl border border-sky-500/30"
             }`}
           >
+            {/* Header */}
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-3xl font-bold">Build Comparison</h2>
               <button
@@ -479,7 +695,7 @@ return (
                 </ResponsiveContainer>
               </div>
             {/* Storage Comparison */}
-            {/* Storage Comparison */}
+
 <div className="mt-12">
   <h3 className="text-xl font-bold mb-4 text-center">Storage Comparison (GB)</h3>
   <ResponsiveContainer width="100%" height={200}>
