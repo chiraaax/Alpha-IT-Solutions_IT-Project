@@ -114,7 +114,7 @@ const Navbar = () => {
     {/*<li className='link whitespace-nowrap'><Link to="/custom-prebuilds">Custom <br />Pre-<br />Builds</Link></li>*/}
     <li className='link whitespace-nowrap'><Link to="/custom-prebuilds">Custom Pre-Builds</Link></li>
     <li className='link'><Link to="/faq">FAQ</Link></li>
-    <li className='link whitespace-nowrap'><Link to="/contact">Contact</Link></li>
+    <li className='link whitespace-nowrap'><Link to="/ContactUs">Contact</Link></li>
   </ul>
 
   <div className='nav__icons flex items-center gap-4 relative ml-35'>
