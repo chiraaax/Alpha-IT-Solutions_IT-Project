@@ -8,8 +8,8 @@ import { HiCpuChip, HiComputerDesktop, HiBolt, HiDevicePhoneMobile } from "react
 import { BsGpuCard, BsMemory } from "react-icons/bs";
 import { LuHardDrive } from "react-icons/lu";
 import './BuildSuggestorAI.css';
-
-const STORAGE_KEY = "buildHistory";
+import { useAuth } from "../../../context/authContext";
+import { useNavigate } from "react-router-dom";
 
 const components = [
   { name: 'PROCESSOR', icon: <HiCpuChip /> },
@@ -22,6 +22,8 @@ const components = [
 ];
 
 const BuildSuggestor = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
   const [requirement, setRequirement] = useState("");
   const [buildData, setBuildData] = useState(null);
@@ -31,10 +33,17 @@ const BuildSuggestor = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const historyRefs = useRef({});
 
+  // Compute storage key after user is defined
+  const STORAGE_KEY = user ? `buildHistory_${user._id}` : null;
+
   useEffect(() => {
+    if (!user) {
+      setHistory([]);
+      return;
+    }
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
     setHistory(stored);
-  }, []);
+  }, [user, STORAGE_KEY]);
 
   const addToHistory = (req, build) => {
     const entry = {
@@ -45,7 +54,9 @@ const BuildSuggestor = () => {
     };
     const newHistory = [entry, ...history];
     setHistory(newHistory);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newHistory));
+    if (STORAGE_KEY) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newHistory));
+    }
   };
 
   const handleSubmit = async () => {
@@ -83,21 +94,34 @@ const BuildSuggestor = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "build_history.json";
+    a.download = `AI_Build_Description_History_${user?.id || "user"}.json`;
     a.click();
   };
 
   const clearHistory = () => {
-    if (window.confirm("Clear all build history?")) {
+    if (window.confirm("Are you sure you want to clear all build history?")) {
       setHistory([]);
-      localStorage.removeItem(STORAGE_KEY);
+      if (STORAGE_KEY) {
+        localStorage.removeItem(STORAGE_KEY);
+      }
     }
   };
+
+  if (!user) {
+    return (
+      <div style={{ padding: "2rem", color: isDark ? "#e0f2fe" : "#0A1F44", textAlign: "center" }}>
+        <h2>Please log in to use the AI Build Suggester.</h2>
+      </div>
+    );
+  }
 
   const downloadPDF = (id) => {
     const el = historyRefs.current[id];
     if (!el) return;
-    html2pdf().from(el).set({ margin: 10, filename: `build_${id}.pdf` }).save();
+    html2pdf()
+      .from(el)
+      .set({ margin: 10, filename: `AI_Build_Description_${id}.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: "mm", format: "a4", orientation: "portrait" } })
+      .save();
   };
 
   const copyJSON = (build) => {
@@ -116,14 +140,9 @@ const BuildSuggestor = () => {
 
   return (
     <div className="cyberpunk-container">
-      {/* 🌟 INLINE STYLES (FULL YOUR CSS INSERTED HERE) */}
-      <style>
-        {`         
-          // if you want to add your CSS styles, you can do it here.
-        `}
-      </style>
+      {/* 🌟 INLINE STYLES (PLACE CSS HERE IF NEEDED) */}
 
-      {/* Animated background with tech circuit pattern */}
+      {/* Animated background */}
       <div className="circuit-background">
         <div className="circuit-lines"></div>
       </div>
@@ -135,11 +154,7 @@ const BuildSuggestor = () => {
             <FaCogs className="rotating-icon" /> PC Build AI
           </h1>
           <div className="theme-toggle-container">
-            <button
-              onClick={toggleTheme}
-              className="theme-toggle"
-              aria-label="Toggle theme"
-            >
+            <button onClick={toggleTheme} className="theme-toggle" aria-label="Toggle theme">
               {isDark ? <FiMoon className="sun-pulse" /> : <FiSun className="moon-glow" />}
             </button>
           </div>
@@ -167,9 +182,7 @@ const BuildSuggestor = () => {
               <span className="button-glow"></span>
             </button>
 
-            {error && (
-              <p className="error-message">{error}</p>
-            )}
+            {error && <p className="error-message">{error}</p>}
           </div>
         </div>
 
@@ -258,7 +271,7 @@ const BuildSuggestor = () => {
                 <div className="build-specs">
                   {Object.entries(item.build).map(([comp, mod]) => (
                     <p key={comp} className="spec-item">
-                      <span className="spec-name">{comp}:</span> 
+                      <span className="spec-name">{comp}:</span>
                       <span className="spec-value">{mod}</span>
                     </p>
                   ))}
@@ -270,7 +283,7 @@ const BuildSuggestor = () => {
         </AnimatePresence>
       </div>
     </div>
-  )
+  );
 };
 
 export default BuildSuggestor;
