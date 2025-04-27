@@ -146,6 +146,11 @@ export const updateReview = async (req, res) => {
         return res.status(403).json({ message: "Unauthorized" });
       }
 
+      // Check if the review is published
+      if (review.status === "approved") {
+        return res.status(400).json({ message: "Published reviews cannot be updated." });
+      }
+
       // Check if the review is within the 24-hour edit window
       const timeElapsed = (Date.now() - new Date(review.createdAt)) / (1000 * 60 * 60);
       if (timeElapsed > 24) {
@@ -173,6 +178,11 @@ export const deleteReview = async (req, res) => {
 
       if (!review) {
           return res.status(404).json({ message: "Review not found." });
+      }
+
+      // Check if the review is published
+      if (review.status === "approved") {
+        return res.status(400).json({ message: "Published reviews cannot be deleted." });
       }
 
       const timeElapsed = (Date.now() - new Date(review.createdAt)) / (1000 * 60 * 60);

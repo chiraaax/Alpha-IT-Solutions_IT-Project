@@ -9,6 +9,7 @@ const appointmentSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   phone: { type: String, required: true },
+  address: { type: String }, // Added address field
   deviceType: String,
   issueDescription: String,
   contactMethod: { type: String, enum: ["email", "phone"], required: true },

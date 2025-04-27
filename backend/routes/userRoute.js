@@ -4,11 +4,39 @@ import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.put('/update',authMiddleware, updateUser);
-router.put('/change-password', authMiddleware, changePassword);
-router.delete('/delete',authMiddleware, deleteUser);
+router.put('/update',
+    (req, res, next) => {
+        next();
+    },
+    authMiddleware(), 
+    (req, res, next) => {
+        next();
+    },
+    updateUser);
+
+router.put('/change-password', 
+    (req, res, next) => {
+        next();
+    },
+    authMiddleware(), 
+    (req, res, next) => {
+        next();
+    },
+    changePassword);
+
+router.delete('/delete',
+    (req, res, next) => {
+        next();
+    },
+    authMiddleware(), 
+    (req, res, next) => {
+        next();
+    }, 
+    deleteUser);
+
 router.post('/verify-details', authMiddleware, verifyDetails);
 router.post('/verify-details-review', authMiddleware, verifyDetailsReveiws);
 router.get('/get-all-users', getUsers);
+
 
 export default router;

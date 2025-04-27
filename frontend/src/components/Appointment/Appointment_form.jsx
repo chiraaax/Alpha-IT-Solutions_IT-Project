@@ -2,20 +2,35 @@ import React, { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import axios from "axios";
-import { Button, Input } from "./ui";
+import { Button } from "./ui";
 import "../../styles/appointment.css";
-import { useAuth } from "../../context/authContext"; // Assuming you have an AuthContext for user authentication
+import { useAuth } from "../../context/authContext";
 
 const timeSlots = ["09:00 AM", "10:00 AM", "11:00 AM", "02:00 PM", "03:00 PM", "04:00 PM"];
 
+const Input = ({ value, onChange, placeholder, type = "text", required = false, className = "", pattern, title, ...props }) => (
+  <input
+    value={value}
+    onChange={onChange}
+    placeholder={placeholder}
+    type={type}
+    required={required}
+    pattern={pattern}
+    title={title}
+    className={`w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600 focus:ring focus:ring-blue-500 ${className}`}
+    {...props}
+  />
+);
+
 export default function AppointmentDashboard() {
-  const { user } = useAuth(); // Get the logged-in user from your authentication context
+  const { user } = useAuth();
   const [date, setDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(null);
   const [formData, setFormData] = useState({
-    name: user ? user.name : "", // Pre-fill name if user is logged in
-    email: user ? user.email : "", // Pre-fill email if user is logged in
+    name: "",
+    email: "",
     phone: "",
+    address: "",
     deviceType: "",
     issueDescription: "",
     contactMethod: "email",
@@ -26,37 +41,88 @@ export default function AppointmentDashboard() {
     backupData: false,
   });
   const [isBooked, setIsBooked] = useState(false);
-  const [phoneError, setPhoneError] = useState("");
+  const [errors, setErrors] = useState({});
   const [bookingError, setBookingError] = useState("");
 
-  const validatePhoneNumber = (phone) => {
-    const phoneRegex = /^\d{10}$/;
-    return phoneRegex.test(phone);
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || user.contactNumber || "",
+        address: user.address || ""
+      }));
+    }
+  }, [user]);
+
+  const validators = {
+    name: {
+      pattern: /^[A-Za-z\s]{2,50}$/,
+      message: "Name must only contain letters and be 2-50 characters long."
+    },
+    email: {
+      pattern: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/,
+      message: "Invalid email format."
+    },
+    phone: {
+      pattern: /^\d{10}$/,
+      message: "Phone number must be exactly 10 digits."
+    },
+  };
+
+  const handleInputChange = (key, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [key]: value,
+    }));
+
+    if (validators[key]) {
+      const { pattern, message } = validators[key];
+      if (!pattern.test(value)) {
+        setErrors(prev => ({ ...prev, [key]: message }));
+      } else {
+        setErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors[key];
+          return newErrors;
+        });
+      }
+    }
+  };
+
+  const formatDateLocal = (dateObj) => {
+    const tzOffset = dateObj.getTimezoneOffset() * 60000;
+    return new Date(dateObj.getTime() - tzOffset).toISOString().split("T")[0];
   };
 
   const handleBooking = async () => {
-    setPhoneError("");
     setBookingError("");
 
-    if (!validatePhoneNumber(formData.phone)) {
-      setPhoneError("Phone number must be exactly 10 digits.");
+    if (Object.keys(errors).length > 0) {
+      setBookingError("Please fix all errors before submitting.");
+      return;
+    }
+
+    if (!formData.address) {
+      setBookingError("Address is required");
       return;
     }
 
     if (formData.name && formData.email && selectedTime) {
       try {
-        const token = localStorage.getItem("token"); // Assuming you store the JWT token in localStorage
+        const token = localStorage.getItem("token");
         const response = await axios.post(
           "http://localhost:5000/api/appointments",
           {
             ...formData,
-            userId: user._id, // Associate the appointment with the logged-in user
-            date: date.toISOString().split("T")[0],
+            userId: user._id,
+            date: formatDateLocal(date),
             timeSlot: selectedTime,
           },
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Include the token in the request
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -83,15 +149,20 @@ export default function AppointmentDashboard() {
       </header>
       <main className="flex-grow p-6 max-w-4xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Calendar */}
           <div className="p-6 rounded-lg shadow-lg border border-gray-700 bg-gray-900 bg-opacity-90">
             <h2 className="text-xl font-semibold mb-4">Select a Date</h2>
             <Calendar
               onChange={setDate}
               value={date}
               minDate={new Date()}
+              maxDate={new Date(new Date().setFullYear(new Date().getFullYear() + 1))}
               className="custom-calendar"
             />
+            <p className="mt-2 text-sm text-gray-400">Only appointments up to one year in advance can be booked.</p>
           </div>
+
+          {/* Time Slots */}
           <div className="p-6 rounded-lg shadow-lg border border-gray-700 bg-gray-900 bg-opacity-90">
             <h2 className="text-xl font-semibold mb-4">Select a Time Slot</h2>
             <div className="grid grid-cols-2 gap-3">
@@ -112,140 +183,75 @@ export default function AppointmentDashboard() {
             </div>
           </div>
         </div>
+
+        {/* Form Fields */}
         <div className="mt-6 p-6 rounded-lg shadow-lg border border-gray-700 bg-gray-900 bg-opacity-90">
           <h2 className="text-xl font-semibold mb-4">Enter Your Details</h2>
-          <div className="mb-4">
-            <label className="block text-sm font-medium">
-              Full Name <span className="text-red-500">*</span>
-            </label>
-            <Input
-              value={formData.name}
-              placeholder="Full Name"
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium">
-              Email <span className="text-red-500">*</span>
-            </label>
-            <Input
-              value={formData.email}
-              placeholder="Email"
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium">
-              Phone Number <span className="text-red-500">*</span>
-            </label>
-            <Input
-              value={formData.phone}
-              placeholder="Phone Number"
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            />
-            {phoneError && <p className="text-red-500 text-sm mb-2">{phoneError}</p>}
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium">
-              Device Type <span className="text-red-500">*</span>
-            </label>
-            <Input
-              value={formData.deviceType}
-              placeholder="Device Type"
-              onChange={(e) => setFormData({ ...formData, deviceType: e.target.value })}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium">
-              Issue Description <span className="text-red-500">*</span>
-            </label>
-            <Input
-              value={formData.issueDescription}
-              placeholder="Issue Description"
-              onChange={(e) => setFormData({ ...formData, issueDescription: e.target.value })}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium">
-              Preferred Contact Method <span className="text-red-500">*</span>
-            </label>
-            <select
-              className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600"
-              value={formData.contactMethod}
-              onChange={(e) => setFormData({ ...formData, contactMethod: e.target.value })}
-            >
-              <option value="email">Email</option>
-              <option value="phone">Phone</option>
-            </select>
-          </div>
 
-          {/* Additional Fields */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium">
-              Problem Type <span className="text-red-500">*</span>
-            </label>
-            <select
-              className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600"
-              value={formData.problemType}
-              onChange={(e) => setFormData({ ...formData, problemType: e.target.value })}
-            >
-              <option value="">Select Problem Type</option>
-              <option value="hardware">Hardware Problem</option>
-              <option value="software">Software Problem</option>
-              <option value="virus">Virus Problem</option>
-            </select>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium">
-              Pickup or Dropoff <span className="text-red-500">*</span>
-            </label>
-            <select
-              className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600"
-              value={formData.pickupOrDropoff}
-              onChange={(e) => setFormData({ ...formData, pickupOrDropoff: e.target.value })}
-            >
-              <option value="">Select Option</option>
-              <option value="pickup">Pickup</option>
-              <option value="dropoff">Dropoff</option>
-            </select>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium">
-              <input
-                type="checkbox"
-                checked={formData.chipLevelRepair}
-                onChange={(e) => setFormData({ ...formData, chipLevelRepair: e.target.checked })}
-                className="mr-2"
+          {[
+            { label: "Full Name", key: "name", required: true, type: "text" },
+            { label: "Email", key: "email", required: true, type: "email" },
+            { label: "Phone Number", key: "phone", required: true, type: "tel" },
+            { label: "Address", key: "address", required: true, type: "text" },
+            { label: "Device Type", key: "deviceType", required: true, type: "text" },
+            { label: "Issue Description", key: "issueDescription", required: true, type: "text" },
+          ].map(({ label, key, required, type }) => (
+            <div className="mb-4" key={key}>
+              <label className="block text-sm font-medium">
+                {label} {required && <span className="text-red-500">*</span>}
+              </label>
+              <Input
+                value={formData[key]}
+                placeholder={label}
+                onChange={(e) => handleInputChange(key, e.target.value)}
+                type={type}
+                required={required}
               />
-              Chip-Level Repair Required
-            </label>
-          </div>
+              {errors[key] && <p className="text-red-500 text-sm">{errors[key]}</p>}
+            </div>
+          ))}
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium">
-              <input
-                type="checkbox"
-                checked={formData.attemptedFixes}
-                onChange={(e) => setFormData({ ...formData, attemptedFixes: e.target.checked })}
-                className="mr-2"
-              />
-              Have You Attempted Any Fixes?
-            </label>
-          </div>
+          {/* Dropdowns */}
+          {[
+            { label: "Preferred Contact Method", key: "contactMethod", options: ["email", "phone"] },
+            { label: "Problem Type", key: "problemType", options: ["", "hardware", "software", "virus"] },
+            { label: "Pickup or Dropoff", key: "pickupOrDropoff", options: ["", "pickup", "dropoff"] },
+          ].map(({ label, key, options }) => (
+            <div className="mb-4" key={key}>
+              <label className="block text-sm font-medium">{label} <span className="text-red-500">*</span></label>
+              <select
+                className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600"
+                value={formData[key]}
+                onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                required
+              >
+                {options.map(opt => (
+                  <option value={opt} key={opt}>
+                    {opt ? opt.charAt(0).toUpperCase() + opt.slice(1) : "Select Option"}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ))}
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium">
-              <input
-                type="checkbox"
-                checked={formData.backupData}
-                onChange={(e) => setFormData({ ...formData, backupData: e.target.checked })}
-                className="mr-2"
-              />
-              Do You Need Data Backup Before Repairs?
-            </label>
-          </div>
+          {/* Checkboxes */}
+          {[
+            { label: "Chip-Level Repair Required", key: "chipLevelRepair" },
+            { label: "Have You Attempted Any Fixes?", key: "attemptedFixes" },
+            { label: "Do You Need Data Backup Before Repairs?", key: "backupData" },
+          ].map(({ label, key }) => (
+            <div className="mb-4" key={key}>
+              <label className="block text-sm font-medium">
+                <input
+                  type="checkbox"
+                  checked={formData[key]}
+                  onChange={(e) => setFormData({ ...formData, [key]: e.target.checked })}
+                  className="mr-2"
+                />
+                {label}
+              </label>
+            </div>
+          ))}
 
           <Button
             className="w-full p-3 rounded-lg bg-gradient-to-r from-red-600 to-blue-600 text-white font-semibold transition-all hover:from-red-700 hover:to-blue-700"
@@ -254,6 +260,8 @@ export default function AppointmentDashboard() {
             Book Appointment
           </Button>
         </div>
+
+        {/* Feedback */}
         {bookingError && (
           <div className="mt-6 p-6 rounded-lg bg-red-500 text-white text-center">
             <p>{bookingError}</p>
@@ -263,7 +271,8 @@ export default function AppointmentDashboard() {
           <div className="mt-6 p-6 rounded-lg bg-green-500 text-white text-center">
             <h2 className="text-xl font-semibold">Appointment Confirmed!</h2>
             <p>Your appointment for <strong>{formData.deviceType}</strong> repair is booked for <strong>{date.toDateString()}</strong> at <strong>{selectedTime}</strong>.</p>
-            <p>We will contact you via <strong>{formData.contactMethod === "email" ? "email" : "phone"}</strong>.</p>
+            <p>We will contact you via <strong>{formData.contactMethod}</strong>.</p>
+            <p>Address: <strong>{formData.address}</strong></p>
           </div>
         )}
       </main>

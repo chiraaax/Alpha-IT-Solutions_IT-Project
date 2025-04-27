@@ -1,167 +1,271 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-import "../../styles/Appointmentai.css"; // Import the CSS file
+import { useNavigate } from "react-router-dom";
+
+/* ---------------- palette / helpers ---------------- */
+const BLUE = "#0a84ff";
+const RED = "#ff3b6b";
+const DARK = "#1e293b";
+const neon = (c) => `0 0 6px ${c}, 0 0 14px ${c}77`;
+
+/* button factory */
+const btnStyle = (bg, disabled) => ({
+  border: "none",
+  padding: "12px 26px",
+  fontWeight: 600,
+  borderRadius: 10,
+  cursor: disabled ? "not-allowed" : "pointer",
+  background: bg,
+  color: "#fff",
+  boxShadow: neon(bg),
+  opacity: disabled ? 0.65 : 1,
+  transition: "transform 0.15s",
+});
 
 const AIChat = () => {
-  const navigate = useNavigate(); // Initialize the navigate function
-  const [step, setStep] = useState(1); // Track the current step in the decision tree
-  const [problemCategory, setProblemCategory] = useState(""); // Problem category (hardware/software/virus)
-  const [specificIssue, setSpecificIssue] = useState(""); // Specific issue (e.g., slow performance)
-  const [errorMessage, setErrorMessage] = useState(""); // Error message (if any)
-  const [response, setResponse] = useState(""); // AI's response
-  const [isLoading, setIsLoading] = useState(false); // Loading state
-  const [error, setError] = useState(""); // Error state
+  const nav = useNavigate();
 
-  // Function to handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const [step, setStep] = useState(1);
+  const [category, setCategory] = useState("");
+  const [issue, setIssue] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [resp, setResp] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
 
-    setIsLoading(true);
-    setError("");
-
+  /* ---------------- API call ---------------- */
+  const askAI = async () => {
+    setBusy(true);
+    setErr("");
     try {
-      // Construct the prompt based on user inputs
-      const prompt = `My computer has a ${problemCategory} problem. The specific issue is ${specificIssue}. ${
-        errorMessage ? `I also see this error message: ${errorMessage}.` : ""
-      } Can you help me fix it?`;
-
-      // Send the prompt to the backend API
-      const res = await fetch("http://localhost:5000/api/ai/generate", {
+      const prompt = `Problem: ${category}. Issue: ${issue}. ${
+        errorMsg && `Error message: ${errorMsg}.`
+      } Suggest fixes.`;
+      const r = await fetch("http://localhost:5000/api/ai/generate", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt }),
       });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setResponse(data.response); // Set the AI's response
-      } else {
-        setError(data.error || "Failed to generate response.");
-      }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
-      console.error("Error:", err);
+      const d = await r.json();
+      r.ok ? setResp(d.response) : setErr(d.error || "Failed to get answer.");
+    } catch (error) {
+      setErr("Request failed. Try again.");
     } finally {
-      setIsLoading(false);
+      setBusy(false);
     }
   };
 
-  // Function to handle the next step in the decision tree
-  const handleNextStep = () => {
-    setStep(step + 1);
-  };
+  /* ---------------- utils ---------------- */
+  const fmt = (t) =>
+    t.split("\n").map((l, i) =>
+      l.startsWith("- ") ? <li key={i}>{l.slice(2)}</li> : <p key={i}>{l}</p>
+    );
 
-  // Function to handle the previous step in the decision tree
-  const handlePreviousStep = () => {
-    setStep(step - 1);
-  };
+  const next = () => setStep((s) => s + 1);
+  const back = () => setStep((s) => s - 1);
 
-  // Function to format the AI's response
-  const formatResponse = (text) => {
-    // Split the response into lines
-    const lines = text.split("\n");
-
-    // Map each line to a paragraph, list item, or subheading
-    return lines.map((line, index) => {
-      if (line.startsWith("- ")) {
-        // Handle list items
-        return <li key={index}>{line.substring(2)}</li>;
-      } else if (line.startsWith("**") && line.endsWith("**")) {
-        // Handle subheadings (remove the ** and render as <h3>)
-        const cleanedLine = line.substring(2, line.length - 2); // Remove the **
-        return <h3 key={index}>{cleanedLine}</h3>;
-      } else {
-        // Handle regular paragraphs (remove any remaining **)
-        const cleanedLine = line.replace(/\*\*/g, ""); // Remove all instances of **
-        return <p key={index}>{cleanedLine}</p>;
-      }
-    });
-  };
-
+  /* ---------------- UI ---------------- */
   return (
-    <div className="ai-chat-container">
-      <h1 className="ai-chat-heading">Computer Repair Assistant</h1>
+    <div
+      style={{
+        minHeight: "100vh",
+        background:
+          "radial-gradient(circle at 25% 15%,#002d60 0%,#00152e 55%,#000a1c 100%)",
+        fontFamily: "Inter, sans-serif",
+        display: "flex",
+        alignItems: "center",
+        padding: 40,
+        color: "#e2e8f0",
+      }}
+    >
+      <div
+        style={{
+          width: "75vw",
+          maxWidth: 960,
+          margin: "0 auto",
+          background: "rgba(255,255,255,0.08)",
+          backdropFilter: "blur(12px)",
+          borderRadius: 22,
+          boxShadow: "0 10px 28px rgba(0,0,0,0.32)",
+          padding: "50px 60px",
+        }}
+      >
+        <h1
+          style={{
+            textAlign: "center",
+            marginBottom: 36,
+            fontSize: 32,
+            color: BLUE,
+            textShadow: neon(BLUE),
+          }}
+        >
+          Computer Repair Assistant
+        </h1>
 
-      {step === 1 && (
-        <div className="ai-chat-step">
-          <h2>What type of problem are you facing?</h2>
-          <div className="button-group">
-            <button className="btn-primary" onClick={() => { setProblemCategory("hardware"); handleNextStep(); }}>
-              Hardware Issue
-            </button>
-            <button className="btn-primary" onClick={() => { setProblemCategory("software"); handleNextStep(); }}>
-              Software Issue
-            </button>
-            <button className="btn-primary" onClick={() => { setProblemCategory("virus/malware"); handleNextStep(); }}>
-              Virus/Malware Issue
+        {/* ---------- STEP 1 ---------- */}
+        {step === 1 && (
+          <>
+            <h2 style={{ textAlign: "center", marginBottom: 24 }}>
+              Select problem type
+            </h2>
+            <div
+              style={{
+                display: "flex",
+                gap: 24,
+                flexWrap: "wrap",
+                justifyContent: "center",
+              }}
+            >
+              {["hardware", "software", "virus/malware"].map((k) => (
+                <button
+                  key={k}
+                  style={btnStyle(BLUE)}
+                  onClick={() => {
+                    setCategory(k);
+                    next();
+                  }}
+                >
+                  {k[0].toUpperCase() + k.slice(1)}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* ---------- STEP 2 ---------- */}
+        {step === 2 && (
+          <>
+            <h2 style={{ textAlign: "center", marginBottom: 16 }}>
+              Describe the issue
+            </h2>
+            <textarea
+              rows={5}
+              value={issue}
+              placeholder={
+                category === "hardware"
+                  ? "Describe the hardware issue (e.g., no display, overheating, etc.)"
+                  : category === "software"
+                  ? "Describe the software issue (e.g., slow performance, app crashes, etc.)"
+                  : "Describe the virus/malware issue (e.g., pop-ups, system slowdown, etc.)"
+              }
+              onChange={(e) => setIssue(e.target.value)}
+              style={{
+                width: "100%",
+                padding: 16,
+                borderRadius: 12,
+                border: "1px solid #334155",
+                background: "rgba(0,0,0,0.25)",
+                color: "#e2e8f0",
+              }}
+            />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginTop: 32,
+              }}
+            >
+              <button style={btnStyle(DARK)} onClick={back}>
+                Back
+              </button>
+              <button
+                style={btnStyle(BLUE, !issue.trim())}
+                onClick={next}
+                disabled={!issue.trim()}
+              >
+                Next
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* ---------- STEP 3 ---------- */}
+        {step === 3 && (
+          <>
+            <h2 style={{ textAlign: "center", marginBottom: 16 }}>
+              Error message (optional)
+            </h2>
+            <textarea
+              rows={5}
+              value={errorMsg}
+              placeholder="Enter the error message (if any)"
+              onChange={(e) => setErrorMsg(e.target.value)}
+              style={{
+                width: "100%",
+                padding: 16,
+                borderRadius: 12,
+                border: "1px solid #334155",
+                background: "rgba(0,0,0,0.25)",
+                color: "#e2e8f0",
+              }}
+            />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginTop: 32,
+              }}
+            >
+              <button style={btnStyle(DARK)} onClick={back}>
+                Back
+              </button>
+              <button
+                style={btnStyle(RED, busy)}
+                onClick={askAI}
+                disabled={busy}
+              >
+                {busy ? "Generating…" : "Submit"}
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* ---------- ERROR ---------- */}
+        {err && (
+          <p
+            style={{
+              marginTop: 32,
+              padding: 16,
+              borderRadius: 12,
+              background: "#ff5c8420",
+              color: RED,
+            }}
+          >
+            {err}
+          </p>
+        )}
+
+        {/* ---------- RESPONSE ---------- */}
+        {resp && (
+          <div style={{ marginTop: 48 }}>
+            <h2
+              style={{
+                textAlign: "center",
+                color: RED,
+                textShadow: neon(RED),
+                marginBottom: 20,
+              }}
+            >
+              AI Suggestions
+            </h2>
+            <div
+              style={{
+                background: "rgba(0,0,0,0.35)",
+                padding: 28,
+                borderRadius: 16,
+                lineHeight: 1.7,
+              }}
+            >
+              {fmt(resp)}
+            </div>
+            <button
+              style={{ ...btnStyle(BLUE), width: "100%", marginTop: 36 }}
+              onClick={() => nav("/appointment-form")}
+            >
+              Book an Appointment
             </button>
           </div>
-        </div>
-      )}
-
-      {step === 2 && (
-        <div className="ai-chat-step">
-          <h2>What is the specific issue?</h2>
-          <textarea
-            value={specificIssue}
-            onChange={(e) => setSpecificIssue(e.target.value)}
-            placeholder={
-              problemCategory === "hardware"
-                ? "Describe the hardware issue (e.g., no display, overheating, etc.)"
-                : problemCategory === "software"
-                ? "Describe the software issue (e.g., slow performance, app crashes, etc.)"
-                : "Describe the virus/malware issue (e.g., pop-ups, system slowdown, etc.)"
-            }
-            rows={4}
-          />
-          <div className="button-group">
-            <button className="btn-secondary" onClick={handlePreviousStep}>
-              Back
-            </button>
-            <button className="btn-primary" onClick={handleNextStep}>
-              Next
-            </button>
-          </div>
-        </div>
-      )}
-
-      {step === 3 && (
-        <div className="ai-chat-step">
-          <h2>Do you see any error messages?</h2>
-          <textarea
-            value={errorMessage}
-            onChange={(e) => setErrorMessage(e.target.value)}
-            placeholder="Enter the error message (if any)"
-            rows={4}
-          />
-          <div className="button-group">
-            <button className="btn-secondary" onClick={handlePreviousStep}>
-              Back
-            </button>
-            <button className="btn-primary" onClick={handleSubmit} disabled={isLoading}>
-              {isLoading ? "Generating..." : "Submit"}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {error && <p className="ai-chat-error">{error}</p>}
-
-      {response && (
-        <div className="ai-chat-response">
-          <h2 className="ai-chat-response-heading">AI Response:</h2>
-          <div className="ai-chat-response-text">
-            {formatResponse(response)}
-          </div>
-          {/* Add the "Book Appointment" button */}
-          <button className="btn-appointment" onClick={() => navigate("/appointment-form")}>
-            If you are not satisfied with the answers, book an appointment
-          </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

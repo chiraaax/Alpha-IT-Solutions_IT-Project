@@ -24,6 +24,8 @@ import TransactionRoutes from "./routes/Finance/transactionRoutes.js"
 
 import inquiryRoutes from "./routes/inquiryRoute.js";
 import reviewRoutes from "./routes/reviewRoute.js";
+import chatBotRoutes from "./routes/chatbotRoute.js";
+import blogRoutes from "./routes/blogRoute.js";
 
 dotenv.config();
 const app = express();
@@ -63,6 +65,8 @@ app.use("/api/transactions", TransactionRoutes);
 app.use('/api/reports', reportRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/chatbot", chatBotRoutes);
+app.use("/api/blogs", blogRoutes);
 
 // Home Route
 app.get("/", (req, res) => {
