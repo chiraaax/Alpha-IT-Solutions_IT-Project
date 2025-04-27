@@ -42,7 +42,36 @@ const orderSchema = new mongoose.Schema({
   pickupDetails: { type: pickupSchema, required: function () { return this.paymentMethod === "Pickup"; } },
   saveAddress: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
+
+  // Adding fraud detection fields
+  isFraudulent: { type: Boolean, default: false },
+  fraudReason: { type: String, default: "" }, // Optional: stores the reason for fraud
 });
 
 const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
 export default Order;
+
+
+orderSchema.pre("save", function (next) {
+  let fraudReasons = [];
+
+  // Fraud detection logic
+  if (this.phoneNo.length < 8) fraudReasons.push("Phone number too short.");
+  if (this.phoneNo.length > 10) fraudReasons.push("Phone number too large.");
+  if (!this.email.includes("@")) fraudReasons.push("Invalid email address.");
+  if (this.paymentMethod === "COD" && this.codDetails?.deliveryDate < new Date()) {
+    fraudReasons.push("Delivery date is in the past.");
+  }
+  if (this.paymentMethod === "Pickup" && this.pickupDetails?.pickupDate < new Date()) {
+    fraudReasons.push("Pickup date is in the past.");
+  }
+
+  // If any fraud reasons are found, mark the order as fraudulent
+  if (fraudReasons.length > 0) {
+    this.isFraudulent = true;
+    this.fraudReason = fraudReasons.join(", "); // Join reasons as a single string
+  }
+
+  next();
+});
+

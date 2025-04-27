@@ -17,15 +17,19 @@ import uploadRoutes from "./routes/uploadRoutes.js";
 import prebuildRoutes from "./routes/prebuildRoutes.js";
 import filterRoutes from "./routes/filterRoutes.js";
 import orderRoutes from "./routes/OrderManagement/orderRoutes.js";
-import successOrderRoutes from "./routes/OrderManagement/successOrderRoutes.js";
-import reportRoutes from "./routes/reportRoutesShop.js";
-import expenseRoutes from "./routes/Finance/ExpenseRoutes.js";
-import incomeRoutes from "./routes/Finance/IncomeRoutes.js";
-import invoiceRoutes from "./routes/Finance/InvoiceRoutes.js";
+import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js";
+import reportRoutes from './routes/reportRoutesShop.js';
+
+import InvoiceRoutes from "./routes/Finance/InvoiceRoutes.js";
+import TransactionRoutes from "./routes/Finance/transactionRoutes.js"
+
 import inquiryRoutes from "./routes/inquiryRoute.js";
 import reviewRoutes from "./routes/reviewRoute.js";
 import chatBotRoutes from "./routes/chatbotRoute.js";
 import blogRoutes from "./routes/blogRoute.js";
+//products, ai
+import compareRoutes from "./routes/compareRoutes.js";
+
 import suggestBuildRoutes from "./routes/suggestBuildRoutes.js";
 
 dotenv.config();
@@ -45,8 +49,16 @@ const corsOptions = {
   origin: "http://localhost:5173",  // adjust if your front end URL changes
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cache-Control"],
 };
+
+// Log every incoming request to server
+app.use((req, res, next) => {
+  console.log(`➡️ ${req.method} ${req.url}`);
+  next();
+});
+
+// Apply Middlewares
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
@@ -67,33 +79,21 @@ app.use("/api/prebuilds", prebuildRoutes);
 app.use("/api", uploadRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/reports", reportRoutes);
+app.use('/api/invoices', InvoiceRoutes);
+app.use("/api/transactions", TransactionRoutes);
 app.use('/api/reports', reportRoutes);
-//app.use('/api/successorder',orderRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/chatbot", chatBotRoutes);
 app.use("/api/blogs", blogRoutes);
-app.use('/api/auth',        authRoutes);
-app.use('/api/profile',     userRoutes);
-app.use('/api/faq',         faqRoutes);
-app.use('/api/ai',          aiRoutes);
-app.use('/api/products',    productsRoutes);
-app.use('/api/filters',     filterRoutes);
-app.use('/api/prebuilds',   prebuildRoutes);
-app.use('/api/upload',      uploadRoutes);
-app.use('/api/orders',      orderRoutes);
-app.use('/api/successorders', successOrderRoutes);
-app.use('/api/reports',     reportRoutes);
-app.use('/api/expenses',    expenseRoutes);
-app.use('/api/income',      incomeRoutes);
-app.use('/api/invoice',     invoiceRoutes);
-app.use('/api/inquiries',   inquiryRoutes);
-app.use('/api/reviews',     reviewRoutes);
+app.use("/api", compareRoutes);
+app.use("/api/successOrder", SuccessOrderRoutes);
 app.use("/api", suggestBuildRoutes);
 
-// ─── Health Check ───────────────────────────────────────────────────────────
-app.get('/', (req, res) => {
-  res.send('API is running...');
+
+// Home Route
+app.get("/", (req, res) => {
+  res.send("API is running...");
 });
 
 // ─── 404 Handler ────────────────────────────────────────────────────────────
@@ -106,6 +106,8 @@ app.use((err, req, res, next) => {
   console.error('Global Error:', err.stack);
   res.status(err.status || 500).json({ error: err.message || 'Something went wrong' });
 });
+
+
 
 // ─── Connect to MongoDB and Start Server ─────────────────────────────────────
 const PORT = process.env.PORT || 5000;

@@ -202,7 +202,7 @@ const About = () => {
                 auto-fix issues, it generates clear steps—so you can take action with confidence.  
               </p>
               <a
-                href="/ContactUs"
+                href="/AppointmenentAI"
                 className="inline-flex items-center text-white hover:text-gray-300 text-lg font-medium transition-colors"
               >
                 Try AI Diagnostics Now 

@@ -26,11 +26,30 @@ const Summary = ({ cart }) => {
                 return;
             }
 
-            const items = cart.map(item => ({
-                itemId: item._id, // assuming _id is the item ID
-                itemType: item.prebuildId ? "prebuild" : "product", // or however you're detecting type
-                quantity: item.quantity
-            }));
+            // const requiredLabels = ["Processor", "GPU", "RAM", "Storage", "Power Supply", "Casing"];
+
+            const items = cart.map(item => {
+                const isProduct = item.isProduct === true;
+                const rawSpecs = item.specs || [];
+              
+                const base = {
+                  itemId: item._id,
+                  itemType: isProduct ? "Product" : "PreBuild",
+                  quantity: item.quantity
+                };
+              
+                return !isProduct
+                  ? {
+                      ...base,
+                      specs: rawSpecs.map(spec => ({
+                        _id: spec.id,
+                        label: spec.label,
+                        value: spec.value
+                      }))
+                    }
+                  : base;
+              });
+              
     
             const orderData = {
                 customerId: customerId,

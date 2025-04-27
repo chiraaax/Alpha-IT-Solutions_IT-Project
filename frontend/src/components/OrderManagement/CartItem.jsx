@@ -1,35 +1,35 @@
 import React, { useState, useEffect } from "react";
 
-const CartItem = ({ item, specs = [], updateQuantity }) => { //TODo: edited
+const CartItem = ({ item, specs = [], updateQuantity }) => {
   const [showBulkOrderMessage, setShowBulkOrderMessage] = useState(false);
 
-  /**
+    /**
    * 
    * ToDo: Thi part got added
    * 
    * 
    */
-  const requiredLabels = [
-    "Processor",
-    "GPU",
-    "RAM",
-    "Storage",
-    "Power Supply",
-    "Casing",
-  ];
-
-  /**
-   * 
-   * ToDo: Thi part got added
-   * 
-   * 
-   */
-
-  // Only render if every one of those labels exists in specs
-  const hasAllSpecs = requiredLabels.every(label =>
-    specs.some(s => s.label === label)
-  );
-
+    const requiredLabels = [
+      "Processor",
+      "GPU",
+      "RAM",
+      "Storage",
+      "Power Supply",
+      "Casing",
+    ];
+  
+    /**
+     * 
+     * ToDo: Thi part got added
+     * 
+     * 
+     */
+  
+    // Only render if every one of those labels exists in specs
+    const hasAllSpecs = requiredLabels.every(label =>
+      specs.some(s => s.label === label)
+    );
+  
   // Ensure quantity is treated as a number
   const initialQuantity = parseInt(item.quantity, 10) || 1;
   const [quantity, setQuantity] = useState(initialQuantity);
@@ -86,12 +86,12 @@ const CartItem = ({ item, specs = [], updateQuantity }) => { //TODo: edited
         {item.image && (
           <img
             src={item.image}
-            alt={item.description || "Product"}
+            alt={item.description || "Item"}
             className="w-20 h-20 object-cover rounded"
           />
         )}
 
-    {/* /**
+        {/* /**
       * 
       * ToDo: This part got added
       * 
