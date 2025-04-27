@@ -85,23 +85,21 @@ const About = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 md:gap-32  gap-8">
           <div className="md:mb-24">
             <h2 className="text-5xl md:text-7xl font-bold mb-8 max-w-[50rem]">
-              AI at CodeTutor
+              AI at Alpha IT Solution
             </h2>
           </div>
           <div className="mb-24">
             <p className="text-xl text-gray-300 mb-8 max-w-[35rem]">
-              Write, edit, and update content — or generate it with the help of
-              AI — directly in CodeTutor, then publish with a click.Easily
-              create page layouts by adding the elements you want and pulling in
-              content from the CMS. Plus create reusable templates for dynamic
-              content — design the layout once and any new content will
-              automatically follow it.
+            Alpha IT Solution integrates advanced AI features to deliver a smarter, more efficient, 
+            and personalized experience for every user. From intelligent customer support to system 
+            diagnostics and smart shopping tools, our AI services are designed to make your journey 
+            smoother—whether you're browsing, building, or troubleshooting.
             </p>
             <a
               href="https://webflow.com/ai"
               className="inline-flex items-center text-white hover:text-gray-300 text-lg font-medium transition-colors"
             >
-              Discover AI at CodeTutor
+              Discover AI at Alpha IT Solution
               <HiArrowRight className="ml-2 w-5 h-5" />
             </a>
           </div>
@@ -133,24 +131,106 @@ const About = () => {
             <div className="md:mb-28 mb-16 md:h-72 border-b border-white/10 pb-16">
               <div className="max-w-[35ch] mb-4">
                 <h3 className="text-2xl font-semibold">
-                  Generate styled content quickly
+                  TechNova Support
                 </h3>
               </div>
               <p className="text-xl text-gray-300 mb-8 max-w-[35rem]">
-                codetutor's AI tools elevate your web projects through
-                contextual design and writing help, machine-powered translation,
-                and more.
+              TechNova Support is an intelligent assistant available 24/7 to answer your 
+              questions regarding store hours, product availability, PC configuration advice, 
+              order status, and technical support. It ensures you receive quick and accurate 
+              responses, enhancing your overall shopping experience.
               </p>
               <a
-                href="https://webflow.com/ai"
+                href="/ContactUs"
                 className="inline-flex items-center text-white hover:text-gray-300 text-lg font-medium transition-colors"
               >
-                Discover AI at CodeTutor
+                Chat with TechNova
                 <HiArrowRight className="ml-2 w-5 h-5" />
               </a>
             </div>
 
-            {/* Features List */}
+            <div className="md:mb-28 mb-16 md:h-72 border-b border-white/10 pb-16">
+              <div className="max-w-[35ch] mb-4">
+                <h3 className="text-2xl font-semibold">
+                  Smart Product Categorization
+                </h3>
+              </div>
+              <p className="text-xl text-gray-300 mb-8 max-w-[35rem]">
+                AI intelligently organizes products based on user behavior, trends, and specifications.
+                Quickly find what you need without endless scrolling.
+                Shopping becomes faster, smarter, and more personalized.
+                Experience effortless product discovery powered by AI.
+              </p>
+              <a
+                href="/ContactUs"
+                className="inline-flex items-center text-white hover:text-gray-300 text-lg font-medium transition-colors"
+              >
+                Browse Smarter
+                <HiArrowRight className="ml-2 w-5 h-5" />
+              </a>
+            </div>
+            <div className="md:mb-28 mb-16 md:h-72 border-b border-white/10 pb-16">
+              <div className="max-w-[35ch] mb-4">
+                <h3 className="text-2xl font-semibold">
+                  Build Compatibility Checker
+                </h3>
+              </div>
+              <p className="text-xl text-gray-300 mb-8 max-w-[35rem]">
+                Our AI checker ensures all your selected PC parts are fully compatible.
+                It prevents costly mistakes and boosts system performance.
+                Customize your dream build with confidence and ease.
+                AI guarantees a smooth and optimized setup every time.
+              </p>
+              <a
+                href="/ContactUs"
+                className="inline-flex items-center text-white hover:text-gray-300 text-lg font-medium transition-colors"
+              >
+                Try Build Checker Now
+                <HiArrowRight className="ml-2 w-5 h-5" />
+              </a>
+            </div>
+            <div className="md:mb-28 mb-16 md:h-72 border-b border-white/10 pb-16">
+              <div className="max-w-[35ch] mb-4">
+                <h3 className="text-2xl font-semibold">
+                  AI Computer Diagnosticians
+                </h3>
+              </div>
+              <p className="text-xl text-gray-300 mb-8 max-w-[35rem]">
+                Analyze, detect, and explain issues—powered by AI—based on your inputs, 
+                then guide you toward solutions. Quickly pinpoint problems by reviewing 
+                system logs, performance data, or error reports you provide. While it won't 
+                auto-fix issues, it generates clear steps—so you can take action with confidence.  
+              </p>
+              <a
+                href="/ContactUs"
+                className="inline-flex items-center text-white hover:text-gray-300 text-lg font-medium transition-colors"
+              >
+                Try AI Diagnostics Now 
+                <HiArrowRight className="ml-2 w-5 h-5" />
+              </a>
+            </div>
+            <div className="md:mb-28 mb-16 md:h-72 border-b border-white/10 pb-16">
+              <div className="max-w-[35ch] mb-4">
+                <h3 className="text-2xl font-semibold">
+                  Order & Finance Intelligence
+                </h3>
+              </div>
+              <p className="text-xl text-gray-300 mb-8 max-w-[35rem]">
+                AI streamlines order management and financial operations effortlessly.
+                It generates reports, detects fraud, and emails invoices automatically.
+                Secure your transactions and enhance customer satisfaction.
+                Smarter, safer, and faster — powered by intelligent automation.
+              </p>
+              <a
+                href="/ContactUs"
+                className="inline-flex items-center text-white hover:text-gray-300 text-lg font-medium transition-colors"
+              >
+                Launch Finance AI
+                <HiArrowRight className="ml-2 w-5 h-5" />
+              </a>
+            </div>
+
+            {/* Features List *
             <div ref={featuresRef} className="space-y-24">
               {features.map((feature, index) => (
                 <div
@@ -174,6 +254,7 @@ const About = () => {
                 </div>
               ))}
             </div>
+            */}
           </div>
         </div>
       </div>

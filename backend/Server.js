@@ -24,6 +24,8 @@ import incomeRoutes from "./routes/Finance/IncomeRoutes.js";
 import invoiceRoutes from "./routes/Finance/InvoiceRoutes.js";
 import inquiryRoutes from "./routes/inquiryRoute.js";
 import reviewRoutes from "./routes/reviewRoute.js";
+import chatBotRoutes from "./routes/chatbotRoute.js";
+import blogRoutes from "./routes/blogRoute.js";
 import suggestBuildRoutes from "./routes/suggestBuildRoutes.js";
 
 dotenv.config();
@@ -55,6 +57,26 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // ─── API Routes ─────────────────────────────────────────────────────────────
 app.use('/api/appointments', appointmentRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/profile", userRoutes);
+app.use("/api/faq", faqRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/products", productsRoutes);
+app.use("/api/filters", filterRoutes);
+app.use("/api/prebuilds", prebuildRoutes);
+app.use("/api", uploadRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/successorders", SuccessOrderRoutes);
+app.use("/api/reports", reportRoutes);
+app.use('/api/expenses', ExpenseRoutes);
+app.use('/api/income', IncomeRoutes);
+app.use('/api/invoice', InvoiceRoutes);
+app.use('/api/reports', reportRoutes);
+//app.use('/api/successorder',orderRoutes);
+app.use("/api/inquiries", inquiryRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/chatbot", chatBotRoutes);
+app.use("/api/blogs", blogRoutes);
 app.use('/api/auth',        authRoutes);
 app.use('/api/profile',     userRoutes);
 app.use('/api/faq',         faqRoutes);

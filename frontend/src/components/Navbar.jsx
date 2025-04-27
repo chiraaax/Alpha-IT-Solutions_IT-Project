@@ -20,13 +20,15 @@ const adminDropDownMenus = [
   { label: "Manage Inquiry", path: "/dashboard/InquiryManage"},
   { label: "Manage Review", path: "/dashboard/ReviewManage"},
   { label: "FAQ Manage", path: "/dashboard/FAQManage"},
+  { label: "Blog Manage", path: "/dashboard/BlogManage"},
 ];
 
 const userDropDownMenus = [
   { label: "Dashboard", path: "/dashboard" },
   { label: "Profile", path: "/dashboard/profile" },
   { label: "My Inquiries", path: "/dashboard/UserInquiries"},
-  { label: "My Reviews", path: "/dashboard/UserReviews"}
+  { label: "My Reviews", path: "/dashboard/UserReviews"},
+  { path: '/dashboard/user-profile_appointment', label: 'My Appointments' },
 ];
 
 const Navbar = () => {
