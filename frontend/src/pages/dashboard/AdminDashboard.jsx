@@ -18,9 +18,7 @@ const navItems = [
   { path: '/dashboard/customerOrder', label: 'Manage Customer Orders' },
   { path: '/dashboard/TransactionPage', label: 'Manage Transaction' },
   { path: '/dashboard/InvoicePage', label: 'Manage Invoice' },
-  
   { path: '/dashboard/prebuild-dashboard', label: 'Manage Custom Prebuild' },
-  
   { path: '/dashboard/InquiryManage', label: 'Inquiry Manage'},
   { path: '/dashboard/ReviewManage', label: 'Review Manage'},
   { path: '/dashboard/FAQManage', label: 'FAQ Manage'},

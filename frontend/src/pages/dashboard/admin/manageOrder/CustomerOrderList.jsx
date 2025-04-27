@@ -74,7 +74,7 @@ const CustomerOrderList = () => {
     const rows = ordersToPrint.map((order, index) => {
       const cod = order.codDetails || {};
       const pickup = order.pickupDetails || {};
-      return `
+      return ` 
         <tr>
           <td>${index + 1}</td>
           <td>${order.name}</td>
@@ -95,10 +95,12 @@ const CustomerOrderList = () => {
         <head>
           <title>Customer Orders Report</title>
           <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
+            body { font-family: Arial, sans-serif; padding: 20px; background-color: #121212; color: #fff; }
             table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { padding: 10px; border: 1px solid #ccc; }
-            th { background-color: #f0f0f0; }
+            th, td { padding: 15px; border: 1px solid #333; }
+            th { background-color: #1f1f1f; color: #fff; text-align: left; }
+            tr:nth-child(even) { background-color: #2c2c2c; }
+            tr:hover { background-color: #3c3c3c; }
           </style>
         </head>
         <body>
@@ -159,7 +161,7 @@ const CustomerOrderList = () => {
   };
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container" style={{ backgroundColor: "#121212", color: "#fff", minHeight: "100vh", padding: "20px" }}>
       <h1>Customer Orders</h1>
 
       <div style={{ marginBottom: "15px" }}>
@@ -168,23 +170,23 @@ const CustomerOrderList = () => {
           placeholder="Search by name or method..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ padding: "8px", width: "250px", marginRight: "10px"}}
+          style={{ padding: "10px", width: "250px", marginRight: "10px", borderRadius: "5px", backgroundColor: "#000", color: "#fff", border: "1px solid #555" }}
         />
 
         <select
           value={filterMethod}
           onChange={(e) => setFilterMethod(e.target.value)}
-          style={{ padding: "8px", marginRight: "10px"}}
+          style={{ padding: "10px", marginRight: "10px", borderRadius: "5px", backgroundColor: "#333", color: "#fff", border: "1px solid #555" }}
         >
-          <option style={{ color: "black" }} value="All">All Methods</option>
-          <option style={{ color: "black" }} value="COD">COD</option>
-          <option style={{ color: "black" }} value="Pickup">Pickup</option>
+          <option style={{ color: "white" }} value="All">All Methods</option>
+          <option style={{ color: "white" }} value="COD">COD</option>
+          <option style={{ color: "white" }} value="Pickup">Pickup</option>
         </select>
 
         <button
           onClick={() => handleGenerateReport(showHandedOver ? filteredHandedOverOrders : filteredOrders)}
           style={{
-            padding: "8px 16px",
+            padding: "10px 20px",
             backgroundColor: "#4CAF50",
             color: "#fff",
             border: "none",
@@ -196,75 +198,77 @@ const CustomerOrderList = () => {
         </button>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Payment Method</th>
-            <th>Address</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Status</th>
-            <th>Created At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {(showHandedOver ? filteredHandedOverOrders : filteredOrders).length > 0 ? (
-            (showHandedOver ? filteredHandedOverOrders : filteredOrders).map((order, index) => {
-              const cod = order.codDetails || {};
-              const pickup = order.pickupDetails || {};
-
-              return (
-                <tr
-                  key={order._id}
-                  onClick={() => handleOrderClick(order.SuccessorderId._id)}
-                  style={{
-                    cursor: "pointer",
-                    backgroundColor: getOrderBackgroundColor(order),
-                  }}
-                >
-                  <td>{index + 1}</td>
-                  <td>{order.name}</td>
-                  <td>{order.email}</td>
-                  <td>{order.phoneNo}</td>
-                  <td>{order.paymentMethod}</td>
-                  <td>{order.paymentMethod === "COD" ? cod.address : "-"}</td>
-                  <td>
-                    {order.paymentMethod === "COD"
-                      ? cod.deliveryDate
-                        ? new Date(cod.deliveryDate).toLocaleDateString()
-                        : "-"
-                      : pickup.pickupDate
-                      ? new Date(pickup.pickupDate).toLocaleDateString()
-                      : "-"}
-                  </td>
-                  <td>
-                    {order.paymentMethod === "COD"
-                      ? cod.deliveryTime || "-"
-                      : pickup.pickupTime || "-"}
-                  </td>
-                  <td>{order.SuccessorderId.status}</td>
-                  <td>{new Date(order.createdAt).toLocaleString()}</td>
-                </tr>
-              );
-            })
-          ) : (
+      <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: "500px", marginBottom: "30px" }}>
+        <table>
+          <thead>
             <tr>
-              <td colSpan="10" style={{ textAlign: "center" }}>
-                No orders found.
-              </td>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Payment Method</th>
+              <th>Address</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Status</th>
+              <th>Created At</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {(showHandedOver ? filteredHandedOverOrders : filteredOrders).length > 0 ? (
+              (showHandedOver ? filteredHandedOverOrders : filteredOrders).map((order, index) => {
+                const cod = order.codDetails || {};
+                const pickup = order.pickupDetails || {};
+
+                return (
+                  <tr
+                    key={order._id}
+                    onClick={() => handleOrderClick(order.SuccessorderId._id)}
+                    style={{
+                      cursor: "pointer",
+                      backgroundColor: getOrderBackgroundColor(order),
+                    }}
+                  >
+                    <td style={{ border: "1px solid #333", padding: "10px" }}>{index + 1}</td>
+                    <td style={{ border: "1px solid #333", padding: "10px" }}>{order.name}</td>
+                    <td style={{ border: "1px solid #333", padding: "10px" }}>{order.email}</td>
+                    <td style={{ border: "1px solid #333", padding: "10px" }}>{order.phoneNo}</td>
+                    <td style={{ border: "1px solid #333", padding: "10px" }}>{order.paymentMethod}</td>
+                    <td style={{ border: "1px solid #333", padding: "10px" }}>{order.paymentMethod === "COD" ? cod.address : "-"}</td>
+                    <td style={{ border: "1px solid #333", padding: "10px" }}>
+                      {order.paymentMethod === "COD"
+                        ? cod.deliveryDate
+                          ? new Date(cod.deliveryDate).toLocaleDateString()
+                          : "-"
+                        : pickup.pickupDate
+                        ? new Date(pickup.pickupDate).toLocaleDateString()
+                        : "-"}
+                    </td>
+                    <td style={{ border: "1px solid #333", padding: "10px" }}>
+                      {order.paymentMethod === "COD"
+                        ? cod.deliveryTime || "-"
+                        : pickup.pickupTime || "-"}
+                    </td>
+                    <td style={{ border: "1px solid #333", padding: "10px" }}>{order.SuccessorderId.status}</td>
+                    <td style={{ border: "1px solid #333", padding: "10px" }}>{new Date(order.createdAt).toLocaleString()}</td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="10" style={{ textAlign: "center" }}>
+                  No orders found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       <button
         onClick={toggleHandedOverTable}
         style={{
-          padding: "8px 16px",
+          padding: "10px 20px",
           marginTop: "20px",
           backgroundColor: "#FF5722",
           color: "#fff",
