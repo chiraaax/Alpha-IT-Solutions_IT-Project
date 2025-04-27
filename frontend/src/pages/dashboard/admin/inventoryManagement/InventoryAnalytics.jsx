@@ -48,7 +48,7 @@ export default function InventoryAnalytics() {
       try {
         const [prodRes, ordRes] = await Promise.all([
           axios.get("http://localhost:5000/api/products"),
-          axios.get("http://localhost:5000/api/successorders/admin/all", {
+          axios.get("http://localhost:5000/api/successOrder/admin/all", {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
           })
         ]);

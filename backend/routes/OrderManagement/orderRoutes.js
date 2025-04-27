@@ -43,9 +43,6 @@ router.post("/create", authMiddleware(["customer"]), async (req, res) => {
       return res
         .status(404)
         .json({ message: "SuccessOrder not found for this customer" });
-      return res
-        .status(404)
-        .json({ message: "SuccessOrder not found for this customer" });
     }
 
     let orderData = {
@@ -174,12 +171,6 @@ router.delete("/:id", async (req, res) => {
       console.log("Deleted related successOrder:", order.SuccessorderId);
     }
 
-    // 🔥 Delete associated successOrder using successOrderId in order
-    if (order.SuccessorderId) {
-      await SuccessOrder.findByIdAndDelete(order.SuccessorderId);
-      console.log("Deleted related successOrder:", order.SuccessorderId);
-    }
-
     await Order.findByIdAndDelete(id); 
     res.send({
       message: "Order and its related cart details deleted successfully.",
@@ -244,7 +235,6 @@ router.put("/:id", async (req, res) => {
 
     // Re-check the fraud status after the update using the updated order details
     const finalOrder = await updateFraudDetection(updatedOrder);
-    );
 
     res.json({
       message: adminConfirmationRequired
@@ -258,7 +248,6 @@ router.put("/:id", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
 
 
 export default router;
