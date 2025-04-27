@@ -100,7 +100,7 @@ export default function AppointmentDashboard() {
     setBookingError("");
 
     if (Object.keys(errors).length > 0) {
-      setBookingError("Please fix all errors before submitting.");
+      setBookingError("Please match the requested format");
       return;
     }
 
@@ -276,9 +276,6 @@ export default function AppointmentDashboard() {
           </div>
         )}
       </main>
-      <footer className="bg-gray-800 text-white text-center py-4">
-        <p>&copy; {new Date().getFullYear()} Computer Repair Services. All rights reserved.</p>
-      </footer>
     </div>
   );
 }

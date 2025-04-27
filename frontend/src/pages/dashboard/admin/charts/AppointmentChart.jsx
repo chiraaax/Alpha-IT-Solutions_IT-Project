@@ -245,7 +245,25 @@ function AppointmentAnalytics() {
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 border-t border-gray-200">
           <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-            <h4 className="font-medium text-gray-700 mb-3">By Status</h4>
+            <h4 className="font-medium text-gray-700 mb-3">
+              <div className="flex items-center space-x-2">
+                <span>By Status</span>
+                <span className="flex items-center text-xs space-x-1">
+                  <span className="inline-flex items-center">
+                    <span className="w-2 h-2 rounded-full bg-yellow-400 mr-1"></span>
+                    <span>Pending</span>
+                  </span>
+                  <span className="inline-flex items-center">
+                    <span className="w-2 h-2 rounded-full bg-green-400 mr-1"></span>
+                    <span>Accepted</span>
+                  </span>
+                  <span className="inline-flex items-center">
+                    <span className="w-2 h-2 rounded-full bg-red-400 mr-1"></span>
+                    <span>Rejected</span>
+                  </span>
+                </span>
+              </div>
+            </h4>
             <div className="h-64">
               <Bar data={statusChartData} options={chartOptions} />
             </div>
