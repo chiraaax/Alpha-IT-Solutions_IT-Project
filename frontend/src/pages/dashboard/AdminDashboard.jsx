@@ -5,14 +5,24 @@ import '../../styles/admin_dashboard.css'; // Import the CSS file
 
 const navItems = [
   { path: '/dashboard/admin', label: 'Dashboard' },
+  { path: '/dashboard/AdminProfile', label: 'Profile' },
   { path: '/dashboard/add-new-product', label: 'Add Product' },
   { path: '/dashboard/manage-products', label: 'Manage Products' },
   { path: '/dashboard/manage-inventory', label: 'Manage Products Inventory' },
-  { path: '/dashboard/users', label: 'Users' },
+  { path: '/dashboard/UserManage', label: 'User Manage' },
   { path: '/dashboard/manage-appointments', label: 'Manage Appointments' },
   { path: '/dashboard/filters', label: 'Add Filters' },
   { path: '/dashboard/create-custom-prebuild', label: 'Create Custom Prebuild' },
   { path: '/dashboard/prebuild-dashboard', label: 'Manage Custom Prebuild' },
+  { path: '/dashboard/manageOrder', label: 'Manage Order' },
+  { path: '/dashboard/customerOrder', label: 'Manage Customer Orders' },
+  { path: '/dashboard/TransactionPage', label: 'Manage Transaction' },
+  { path: '/dashboard/InvoicePage', label: 'Manage Invoice' },
+  { path: '/dashboard/prebuild-dashboard', label: 'Manage Custom Prebuild' },
+  { path: '/dashboard/InquiryManage', label: 'Inquiry Manage'},
+  { path: '/dashboard/ReviewManage', label: 'Review Manage'},
+  { path: '/dashboard/FAQManage', label: 'FAQ Manage'},
+  { path: '/dashboard/BlogManage', label: 'Blog Manage'},
 ];
 
 const AdminDashboard = () => {

@@ -15,11 +15,17 @@ import productsRoutes from "./routes/productsRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import prebuildRoutes from "./routes/prebuildRoutes.js"; 
 import filterRoutes from "./routes/filterRoutes.js";
-// import orderRoutes from "./routes/OrderManagement/orderRoutes.js";
-// import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js";
+import orderRoutes from "./routes/OrderManagement/orderRoutes.js";
+import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js";
 import reportRoutes from './routes/reportRoutesShop.js';
-import orderRoutes from "./routes/orderRoutes.js";
 
+import InvoiceRoutes from "./routes/Finance/InvoiceRoutes.js";
+import TransactionRoutes from "./routes/Finance/transactionRoutes.js"
+
+import inquiryRoutes from "./routes/inquiryRoute.js";
+import reviewRoutes from "./routes/reviewRoute.js";
+import chatBotRoutes from "./routes/chatbotRoute.js";
+import blogRoutes from "./routes/blogRoute.js";
 
 dotenv.config();
 const app = express();
@@ -29,14 +35,14 @@ const corsOptions = {
   origin: "http://localhost:5173", // Adjust if frontend URL changes
   credentials: true, 
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cache-Control"],
 };
 
 // Apply Middlewares
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Serve Static Uploads Folder
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
@@ -51,11 +57,16 @@ app.use("/api/products", productsRoutes);
 app.use("/api/filters", filterRoutes);
 app.use("/api/prebuilds", prebuildRoutes);
 app.use("/api", uploadRoutes);
-// app.use("/api/orders", orderRoutes);
-// app.use("/api/successorders", SuccessOrderRoutes);
-// app.use('/api/reports', reportRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/successorders", SuccessOrderRoutes);
+app.use("/api/reports", reportRoutes);
+app.use('/api/invoices', InvoiceRoutes);
+app.use("/api/transactions", TransactionRoutes);
 app.use('/api/reports', reportRoutes);
-app.use('/api/successorder', orderRoutes);
+app.use("/api/inquiries", inquiryRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/chatbot", chatBotRoutes);
+app.use("/api/blogs", blogRoutes);
 
 // Home Route
 app.get("/", (req, res) => {

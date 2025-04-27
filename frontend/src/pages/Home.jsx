@@ -7,6 +7,7 @@ import CustomerSection from '../components/CustomerSection'
 import About from '../components/About'
 import TryNow from '../components/TryNow'
 import OfferedProducts from '../components/shop/OfferedProducts'
+import UserBlog from '../components/Blog/UserBlog'
 
 const Home = () => {
   return (
@@ -18,7 +19,8 @@ const Home = () => {
      <DesignSection />
      <CustomerSection />
      <About />
-     <TryNow />
+     <UserBlog/>
+     
     </>
   )
 }
