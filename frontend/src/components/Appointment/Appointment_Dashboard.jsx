@@ -192,135 +192,150 @@ const AppointmentDashboard = () => {
         const doc = new jsPDF();
         
         // Colors
-        const primaryColor = "#2c3e50";  // Dark blue
-        const secondaryColor = "#7f8c8d"; // Gray
-        const accentColor = "#e74c3c";   // Red for status
-        const darkColor = "#1F2937";     // Dark gray
-        const lightColor = "#F9FAFB";    // Light gray
+        const primaryColor = "#2c3e50";
+        const secondaryColor = "#7f8c8d";
+        const accentColor = "#e74c3c";
+        const darkColor = "#1F2937";
+        const lightColor = "#F9FAFB";
+        
+        // Set compact layout
+        const compact = true;
+        const lineHeight = compact ? 5 : 7;
+        const sectionSpacing = compact ? 8 : 15;
         
         // Set default font
         doc.setFont("helvetica");
         
-        // Add logo (using the imported logo file)
-        const logoWidth = 35;
-        const logoHeight = 20;
-        doc.addImage(logo, "JPEG", 15, 15, logoWidth, logoHeight);
+        // Add logo
+        const logoWidth = 30; // Smaller logo
+        const logoHeight = 15;
+        doc.addImage(logo, "JPEG", 15, 10, logoWidth, logoHeight);
             
-        // Company info (right-aligned)
-        doc.setFontSize(10);
+        // Company info
+        doc.setFontSize(9); // Smaller font
         doc.setTextColor(secondaryColor);
-        doc.text("Alpha IT Solutions", 180, 20, { align: "right" });
-        doc.text("123 Galle Road, Colombo, Sri Lanka", 180, 25, { align: "right" });
-        doc.text("Phone: +94 112 345 678", 180, 30, { align: "right" });
+        doc.text("Alpha IT Solutions", 180, 15, { align: "right" });
+        doc.text("123 Galle Road, Colombo", 180, 20, { align: "right" });
+        doc.text("Phone: +94 112 345 678", 180, 25, { align: "right" });
         
-        // Document title (centered below logo)
-        doc.setFontSize(16);
+        // Document title
+        doc.setFontSize(14); // Smaller title
         doc.setTextColor(primaryColor);
         doc.setFont(undefined, "bold");
-        doc.text("APPOINTMENT REPORT", 105, 60, { align: "center" });
+        doc.text("APPOINTMENT REPORT", 105, 45, { align: "center" });
         
         // Document reference section
-        let yPos = 75;
+        let yPos = 60;
         
         // Horizontal line
         doc.setDrawColor(primaryColor);
         doc.setLineWidth(0.3);
         doc.line(15, yPos, 195, yPos);
-        yPos += 10;
+        yPos += 8;
         
         // Reference information
-        doc.setFontSize(10);
-        doc.setTextColor(secondaryColor);
-        doc.text("Appointment Date:", 15, yPos);
-        doc.text("Time Slot:", 15, yPos + 6);
-        
-        doc.setFontSize(11);
-        doc.setTextColor(primaryColor);
-        doc.text(selectedAppointment.date, 50, yPos);
-        doc.text(selectedAppointment.timeSlot, 50, yPos + 6);
-        
-        // Status badge (right-aligned)
-        doc.setFillColor("#ffeeee"); // Light red background
-        doc.setDrawColor(accentColor);
-        doc.roundedRect(160, yPos - 3, 30, 10, 2, 2, 'FD');
-        doc.setTextColor(accentColor);
         doc.setFontSize(9);
-        doc.text("ACTIVE", 175, yPos + 3, { align: "center" });
-        yPos += 20;
+        doc.setTextColor(secondaryColor);
+        doc.text("Date:", 15, yPos);
+        doc.text("Time:", 15, yPos + lineHeight);
+        
+        doc.setFontSize(10);
+        doc.setTextColor(primaryColor);
+        doc.text(selectedAppointment.date, 40, yPos);
+        doc.text(selectedAppointment.timeSlot, 40, yPos + lineHeight);
+        
+        // Status badge
+        doc.setFillColor("#ffeeee");
+        doc.setDrawColor(accentColor);
+        doc.roundedRect(160, yPos - 3, 25, 8, 2, 2, 'FD');
+        doc.setTextColor(accentColor);
+        doc.setFontSize(8);
+        doc.text("ACTIVE", 172.5, yPos + 2, { align: "center" });
+        yPos += lineHeight * 2 + sectionSpacing;
         
         // Customer information section
-        doc.setFontSize(14);
+        doc.setFontSize(12);
         doc.setTextColor(primaryColor);
-        doc.text("Customer Information", 15, yPos);
-        yPos += 8;
+        doc.text("Customer Info", 15, yPos);
+        yPos += 6;
         
         // Customer details table
         const customerFields = [
-            { label: "Full Name", value: selectedAppointment.name || "N/A" },
+            { label: "Name", value: selectedAppointment.name || "N/A" },
             { label: "Email", value: selectedAppointment.email || "N/A" },
-            { label: "Contact Number", value: selectedAppointment.phone || "N/A" },
+            { label: "Phone", value: selectedAppointment.phone || "N/A" },
             { label: "Address", value: selectedAppointment.address || "N/A" }
         ];
         
         customerFields.forEach((field) => {
-            doc.setFontSize(10);
+            doc.setFontSize(9);
             doc.setTextColor(secondaryColor);
             doc.text(`${field.label}:`, 15, yPos);
             
-            doc.setFontSize(11);
+            doc.setFontSize(10);
             doc.setTextColor(darkColor);
-            doc.text(field.value, 50, yPos);
-            yPos += 7;
+            doc.text(field.value, 40, yPos);
+            yPos += lineHeight;
         });
-        yPos += 10;
+        yPos += sectionSpacing;
         
         // Device information section
-        doc.setFontSize(14);
+        doc.setFontSize(12);
         doc.setTextColor(primaryColor);
-        doc.text("Device Information", 15, yPos);
-        yPos += 8;
+        doc.text("Device Info", 15, yPos);
+        yPos += 6;
         
         // Device details table
         const deviceFields = [
-            { label: "Device Type", value: selectedAppointment.deviceType || "N/A" },
-            { label: "Problem Type", value: selectedAppointment.problemType || "N/A" },
-            { label: "Pickup/Dropoff", value: selectedAppointment.pickupOrDropoff || "N/A" },
-            { label: "Chip-Level Repair", value: selectedAppointment.chipLevelRepair ? "Yes" : "No" }
+            { label: "Type", value: selectedAppointment.deviceType || "N/A" },
+            { label: "Problem", value: selectedAppointment.problemType || "N/A" },
+            { label: "Service", value: selectedAppointment.pickupOrDropoff || "N/A" },
+            { label: "Chip Repair", value: selectedAppointment.chipLevelRepair ? "Yes" : "No" }
         ];
         
         deviceFields.forEach((field) => {
-            doc.setFontSize(10);
+            doc.setFontSize(9);
             doc.setTextColor(secondaryColor);
             doc.text(`${field.label}:`, 15, yPos);
             
-            doc.setFontSize(11);
+            doc.setFontSize(10);
             doc.setTextColor(darkColor);
-            doc.text(field.value, 50, yPos);
-            yPos += 7;
+            doc.text(field.value, 40, yPos);
+            yPos += lineHeight;
         });
-        yPos += 10;
+        yPos += sectionSpacing;
         
         // Issue description section
-        doc.setFontSize(14);
+        doc.setFontSize(12);
         doc.setTextColor(primaryColor);
-        doc.text("Issue Description", 15, yPos);
-        yPos += 8;
+        doc.text("Issue", 15, yPos);
+        yPos += 6;
         
-        doc.setFontSize(10);
+        doc.setFontSize(9);
         doc.setTextColor(darkColor);
         const issueText = selectedAppointment.issueDescription || "No description provided";
         const issueLines = doc.splitTextToSize(issueText, 180);
-        issueLines.forEach(line => {
+        
+        // Limit to 5 lines maximum
+        const maxLines = 5;
+        const displayLines = issueLines.slice(0, maxLines);
+        displayLines.forEach(line => {
             doc.text(line, 15, yPos);
-            yPos += 6;
+            yPos += lineHeight - 1;
         });
-        yPos += 10;
+        
+        if (issueLines.length > maxLines) {
+            doc.setTextColor(secondaryColor);
+            doc.text(`... (${issueLines.length - maxLines} more lines)`, 15, yPos);
+            yPos += lineHeight;
+        }
+        yPos += sectionSpacing;
         
         // Additional information section
-        doc.setFontSize(12);
+        doc.setFontSize(11);
         doc.setTextColor(primaryColor);
-        doc.text("Additional Information:", 15, yPos);
-        yPos += 7;
+        doc.text("Additional Info", 15, yPos);
+        yPos += 6;
         
         const additionalFields = [
             { label: "Attempted Fixes", value: selectedAppointment.attemptedFixes ? "Yes" : "No" },
@@ -329,27 +344,27 @@ const AppointmentDashboard = () => {
         ];
         
         additionalFields.forEach((field) => {
-            doc.setFontSize(10);
+            doc.setFontSize(9);
             doc.setTextColor(secondaryColor);
             doc.text(`${field.label}:`, 15, yPos);
             
-            doc.setFontSize(11);
+            doc.setFontSize(10);
             doc.setTextColor(darkColor);
             doc.text(field.value, 50, yPos);
-            yPos += 7;
+            yPos += lineHeight;
         });
-        yPos += 15;
+        yPos += sectionSpacing;
         
-        // Progress status section
-        doc.setFontSize(14);
+        // Progress status section (compact version)
+        doc.setFontSize(12);
         doc.setTextColor(primaryColor);
         doc.text("Repair Progress", 15, yPos);
-        yPos += 8;
+        yPos += 6;
         
-        const circleRadius = 4;
-        const circleSpacing = 30;
+        const circleRadius = 3;
+        const circleSpacing = 25;
         const startX = 20;
-        const progressY = yPos + 10;
+        const progressY = yPos + 8;
 
         progressStages.forEach((stage, index) => {
             const x = startX + index * circleSpacing;
@@ -366,35 +381,34 @@ const AppointmentDashboard = () => {
             doc.circle(x, progressY, circleRadius, "F");
 
             doc.setTextColor(isActive ? accentColor : secondaryColor);
-            doc.setFontSize(8);
-            doc.text(stage, x, progressY + circleRadius + 5, { align: "center" });
+            doc.setFontSize(7);
+            doc.text(stage, x, progressY + circleRadius + 4, { align: "center" });
         });
-        yPos += 30;
+        yPos += 20;
         
         // Signature section
-        if (sign) { // Only add signature if it exists
-            const signatureWidth = 30;
-            const signatureHeight = 15;
+        if (sign) {
+            const signatureWidth = 25;
+            const signatureHeight = 12;
             const signatureX = 160;
             const signatureY = yPos;
             doc.addImage(sign, "PNG", signatureX, signatureY, signatureWidth, signatureHeight);
 
-            doc.setFontSize(10);
+            doc.setFontSize(9);
             doc.setTextColor(secondaryColor);
-            doc.text("Authorized Signature:", 15, yPos + 10);
+            doc.text("Signature:", 15, yPos + 8);
             
-            doc.setFontSize(11);
+            doc.setFontSize(10);
             doc.setTextColor(darkColor);
-            doc.text("John Doe", 160, yPos + signatureHeight + 5);
-            yPos += 30;
+            doc.text("John Doe", 160, yPos + signatureHeight + 4);
+            yPos += 20;
         }
         
         // Footer
-        doc.setFontSize(8);
+        doc.setFontSize(7);
         doc.setTextColor(secondaryColor);
-        doc.text("Please show this report when the device is handed over.", 105, yPos, { align: "center" });
-        yPos += 5;
-        doc.text("For any questions, please call our support line at +94 112 345 678", 105, yPos, { align: "center" });
+        doc.text("Please show this report when the device is handed over.", 105, 280, { align: "center" });
+        doc.text("For any questions, please call our support line at +94 112 345 678", 105, 285, { align: "center" });
         
         // Page border
         doc.setDrawColor(lightColor);
@@ -408,7 +422,6 @@ const AppointmentDashboard = () => {
         alert("Failed to generate report. Please check the console for details.");
     }
 };
-
   // Calculate min and max dates for the date picker
   const today = new Date();
   const oneYearLater = new Date();
@@ -499,7 +512,6 @@ const AppointmentDashboard = () => {
       background: "#2c2f33",
       borderColor: "#555",
       color: "#777",
-      cursor: "not-allowed",
     },
     cardHeader: {
       display: "flex",
