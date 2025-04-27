@@ -224,7 +224,7 @@ export const getAllInquiries = async (req, res) => {
     try {
         const inquiries = await Inquiry.find()
             .populate('userId', 'fullName email')
-            .select('fullName email contactNumber productName additionalDetails inquiryType status attachment userApproval');
+            .select('fullName email contactNumber productName inquirySubject additionalDetails inquiryType status attachment userApproval');
 
         const categorizedInquiries = {
             General: inquiries.filter(inq => inq.inquiryType === 'General'),
@@ -292,7 +292,7 @@ export const addToFAQ = async (req, res) => {
         await inquiry.save();
 
         const newFAQ = new FAQ({
-            question: inquiry.additionalDetails || "No details provided.",  //Prevent null/undefined
+            question: inquiry.inquirySubject || "No inquiry subject provided.",  //Prevent null/undefined
             answer: inquiry.adminAnswer,
             category: inquiry.inquiryType
         });

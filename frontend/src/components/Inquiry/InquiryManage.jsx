@@ -9,7 +9,7 @@ function InquiryManage() {
         Support: [],
     });
     const [loading, setLoading] = useState(false);
-    const [faqForm, setFaqForm] = useState({ id: null, answer: "", userApproval: false, });
+    const [faqForm, setFaqForm] = useState({ id: null, answer: "", userApproval: false });
     const [message, setMessage] = useState({ type: "", text: "" }); 
 
     useEffect(() => {
@@ -20,7 +20,7 @@ function InquiryManage() {
         try {
             const token = localStorage.getItem("token");
             const { data } = await axios.get("http://localhost:5000/api/inquiries/all-inquiries", {
-                headers: { Authorization:   `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` }
             });
 
             setInquiries(data.inquiries);
@@ -36,15 +36,22 @@ function InquiryManage() {
             setLoading(true);
             const token = localStorage.getItem("token");
             const response = await axios.put(
-                (`http://localhost:5000/api/inquiries/resolve/${id}`),
-                { status: "Resolved" }, // Updating the status
-                { headers: { Authorization:  `Bearer ${token}`  } }
+                `http://localhost:5000/api/inquiries/resolve/${id}`,
+                { status: "Resolved" },
+                { headers: { Authorization: `Bearer ${token}` } }
             );
             console.log("Resolve Inquiry Response:", response.data);
 
-            setInquiries(inquiries.map(inquiry => 
-                inquiry._id === id ? { ...inquiry, status: "Resolved", resolvedAt: new Date() } : inquiry
-            ));
+            // Update the inquiry status immediately in the UI
+            setCategorizedInquiries(prev => {
+                const updated = {...prev};
+                for (const category in updated) {
+                    updated[category] = updated[category].map(inquiry => 
+                        inquiry._id === id ? { ...inquiry, status: "Resolved", resolvedAt: new Date() } : inquiry
+                    );
+                }
+                return updated;
+            });
 
             setMessage({ type: "success", text: "Inquiry resolved successfully." });
             
@@ -57,7 +64,6 @@ function InquiryManage() {
     };
 
     const handleAddToFAQ = async (id) => {
-
         if (!faqForm.answer.trim()) {
             setMessage({ type: "error", text: "Please enter an answer before submitting." });
             return;
@@ -68,22 +74,24 @@ function InquiryManage() {
             const token = localStorage.getItem("token");
     
             const response = await axios.post(
-                (`http://localhost:5000/api/inquiries/add-to-faq/${id}`),  //  Send ID as URL param
+                `http://localhost:5000/api/inquiries/add-to-faq/${id}`,
                 { userApproval: true, answer: faqForm.answer },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
     
-            console.log(" API Response:", response.data);
+            console.log("API Response:", response.data);
     
             if (response.status === 201) {
                 setMessage({ type: "success", text: "Inquiry added to FAQ successfully." });
-                setFaqForm({ id: null, answer: "" }); 
+                setFaqForm({ id: null, answer: "" });
+                // Refresh the inquiries after successful addition to FAQ
+                fetchInquiries();
             } else {
                 setMessage({ type: "error", text: response.data.message || "Failed to add inquiry to FAQ." });
             }
         } catch (error) {
             setMessage({ type: "error", text: error.response?.data?.message || "Failed to add inquiry to FAQ." });
-            console.error(" API Error:", error.response?.data || error.message);
+            console.error("API Error:", error.response?.data || error.message);
         } finally {
             setLoading(false);
         }
@@ -97,7 +105,14 @@ function InquiryManage() {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            setInquiries(inquiries.filter(inquiry => inquiry._id !== id));
+            // Remove the inquiry immediately from the UI
+            setCategorizedInquiries(prev => {
+                const updated = {...prev};
+                for (const category in updated) {
+                    updated[category] = updated[category].filter(inquiry => inquiry._id !== id);
+                }
+                return updated;
+            });
 
             setMessage({ type: "success", text: response.data.message });
 
@@ -109,9 +124,9 @@ function InquiryManage() {
         }
     };
 
-  return (
-    <div className="p-8 bg-gray-50 min-h-screen">
-        <MessageDisplay message={message} />
+    return (
+        <div className="p-8 bg-gray-50 min-h-screen">
+            <MessageDisplay message={message} />
             <h3 className="text-4xl font-extrabold mb-6 text-gray-800 uppercase tracking-wide text-center relative">
                 <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
                     🛠️ Inquiry Management
@@ -178,18 +193,15 @@ function InquiryManage() {
                                                         </button>
                                                         <button
                                                             onClick={() => {
-                                                                console.log("Checking User Approval:", inquiry.userApproval); 
-
                                                                 if (!inquiry.userApproval) {
                                                                     alert("User approval is required to add this inquiry to FAQ.");
                                                                     return;
                                                                 }
-                                                                console.log("✅ User Approval is TRUE, opening form...");
                                                                 setFaqForm({ id: inquiry._id, answer: "" });
                                                             }}
                                                             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
                                                         >
-                                                             Add to FAQ
+                                                            Add to FAQ
                                                         </button>
                                                         {faqForm.id === inquiry._id && inquiry.userApproval === true && (
                                                             <div className="mt-2 flex flex-wrap gap-2">
@@ -201,7 +213,7 @@ function InquiryManage() {
                                                                     className="border p-2 rounded-lg w-full md:w-auto"
                                                                 />
                                                                 <button
-                                                                    onClick={() => handleAddToFAQ(inquiry._id)} //  Pass actual value
+                                                                    onClick={() => handleAddToFAQ(inquiry._id)}
                                                                     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all"
                                                                 >
                                                                     ✅ Submit
@@ -224,7 +236,8 @@ function InquiryManage() {
                 </div>
             ))}
         </div>
-)};
+    );
+};
 
 // Message Component
 const MessageDisplay = ({ message }) => {
@@ -237,4 +250,4 @@ const MessageDisplay = ({ message }) => {
     );
 };
 
-export default InquiryManage
+export default InquiryManage;

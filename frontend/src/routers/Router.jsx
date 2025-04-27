@@ -6,7 +6,7 @@ import CustomPreBuilds from '../components/CustomBuilds/CustomPreBuilds';
 import AppointmentDashboard from '../components/Appointment/Appointment_Dashboard';
 import AppointmentForm from '../components/Appointment/Appointment_form';
 import AppointmenentAI from "../components/Appointment/AppointmentAi";
-import DraftedTechniciansReports from '../components/DraftedTechniciansReports';
+import DraftedTechniciansReports from '../components/Appointment/DraftedTechniciansReports';
 import Login from '../components/Register/Login';
 import Register from '../components/Register/Register';
 import ForgotPassword from '../components/Register/ForgotPassword';
@@ -16,32 +16,41 @@ import FAQ from '../components/Register/FAQ';
 import ProductCategory from '../components/shop/ProductCategory';
 import ProtectedRoute from "../routers/ProtectedRoute";  
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
+import ContactUs from '../components/Contact/ContactUs';
+import AdminPanel from '../pages/dashboard/admin/dashboard/AdminDMain' 
 
 import AddProduct from '../pages/dashboard/admin/addProduct/AddProduct';
 import ManageProducts from '../pages/dashboard/admin/manageProducts/ManageProducts';
 import ManageInventory from '../pages/dashboard/admin/inventoryManagement/ManageInventory';
 import ProductDetails from '../components/shop/ProductDetails';
 import SearchPage from '../components/shop/search/SearchPage';
-import ManageAppointments from "../pages/dashboard/manage-appointments";
+import ManageAppointments from "../pages/dashboard/appointment/manage-appointments";
 import ManageOrder from "../pages/dashboard/admin/manageOrder/OrderList";
 import CustomerOrder from "../pages/dashboard/admin/manageOrder/CustomerOrderList";
 import ExpensePage from "../pages/dashboard/Finance/ExpensePage";
 import IncomePage from "../pages/dashboard/Finance/IncomePage";
 import InvoicePage from "../pages/dashboard/Finance/InvoicePage";
+import UserAppointment from "../pages/dashboard/appointment/user-profile_appointment"
 
 import Profile from '../components/Register/Profile';
 import UserManage from '../components/Register/UserManage';
 import AdminProfile from '../components/Register/AdminProfile';
 
+//Blog Components
+import BlogManage from '../components/Blog/BlogManage';
+import UserBlog from '../components/Blog/UserBlog';
+
 //Inquiry Components
 import InquiryForm from '../components/Inquiry/InquiryForm';
 import InquiryManage from '../components/Inquiry/InquiryManage';
 import UserInquiries from '../components/Inquiry/UserInquiries';
+import InquiryChart from '../components/InquiryChart/InquiryChart';
 
 //Review Components
 import UserReviews from '../components/Reviews/UserReviews';
 import ReviewManage from '../components/Reviews/ReviewManage';
 import ReviewForm from '../components/Reviews/ReviewForm';
+import ReviewChart from '../components/ReviewChart/ReviewChart';
 
 // CustomBuilds Components
 import GamingBuilds from '../components/CustomBuilds/GamingBuilds';
@@ -77,12 +86,15 @@ const router = createBrowserRouter([
       { path: 'AppointmenentAI', element: <ProtectedRoute><AppointmenentAI /></ProtectedRoute> },
       { path: 'draftedTechnicianReport', element: <ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
       { path: 'appointment-form', element: <ProtectedRoute><AppointmentForm /></ProtectedRoute> },
+      
 
       { path: 'faq', element: <FAQ /> },
       { path: 'ReviewForm', element:<ReviewForm/>},
       { path: 'UserReviews', element:<UserReviews/>},
       { path: 'InquiryForm', element:<InquiryForm/>},
       { path: 'UserInquiries', element:<UserInquiries/>},
+      { path: 'ContactUs', element:<ContactUs/>},
+      { path: 'UserBlog', element:<UserBlog/>},
 
       // CustomBuilds routes
       { path: 'custom-prebuilds', element: <CustomPreBuilds /> },
@@ -127,13 +139,13 @@ const router = createBrowserRouter([
       { path: '', element: <div>Dashboard Home</div> },
       { path: 'reviews', element: <div>Reviews</div> },
       { path: 'report-shop', element: <CatalogReportInline/> },
-      
+      {path: 'user-profile_appointment', element: <UserAppointment /> },
       { path: 'Profile', element: <div><Profile/></div> },
       { path: 'UserInquiries', element: <div><UserInquiries/></div> },
       { path: 'UserReviews', element:<div><UserReviews/></div>},
 
       // Admin routes
-      { path: 'admin', element: <ProtectedRoute allowedRoles={["admin"]}><div>Admin Panel</div></ProtectedRoute> },
+      { path: 'admin', element: <ProtectedRoute allowedRoles={["admin"]}><div><AdminPanel/></div></ProtectedRoute> },
       { path: 'add-new-product', element: <ProtectedRoute allowedRoles={["admin"]}><AddProduct /></ProtectedRoute> },
       { path: 'manage-products', element: <ProtectedRoute allowedRoles={["admin"]}><ManageProducts /></ProtectedRoute> },
       { path: 'manage-inventory', element: <ProtectedRoute allowedRoles={["admin"]}><ManageInventory /></ProtectedRoute> },
@@ -151,8 +163,11 @@ const router = createBrowserRouter([
       { path: 'ReviewManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><ReviewManage/></div></ProtectedRoute> },
       { path: 'InquiryManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><InquiryManage/></div></ProtectedRoute>},
       { path: 'FAQManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><FAQManage/></div></ProtectedRoute>},
+      { path: 'BlogManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><BlogManage/></div></ProtectedRoute>},
       { path: 'AdminProfile', element: <ProtectedRoute allowedRoles={["admin"]}><div><AdminProfile/></div></ProtectedRoute>},
-      
+      { path: 'InquiryChart', element: <ProtectedRoute allowedRoles={["admin"]}><div><InquiryChart/></div></ProtectedRoute>},
+      { path: 'ReviewChart', element: <ProtectedRoute allowedRoles={["admin"]}><div><ReviewChart/></div></ProtectedRoute>},
+
     ]
   }
 ]);
