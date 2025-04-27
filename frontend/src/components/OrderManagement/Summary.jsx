@@ -29,26 +29,31 @@ const Summary = ({ cart }) => {
             // const requiredLabels = ["Processor", "GPU", "RAM", "Storage", "Power Supply", "Casing"];
 
             const items = cart.map(item => {
-                const isProduct = item.isProduct === true;
-                const rawSpecs = item.specs || [];
+                const rawSpecs = Array.isArray(item.specs) ? item.specs : [];
+                const isPreBuild = rawSpecs.length > 0 && rawSpecs.every(spec => spec.label && spec.value);
               
                 const base = {
                   itemId: item._id,
-                  itemType: isProduct ? "Product" : "PreBuild",
+                  itemType: isPreBuild ? "PreBuild" : "Product",
                   quantity: item.quantity
                 };
               
-                return !isProduct
-                  ? {
-                      ...base,
-                      specs: rawSpecs.map(spec => ({
+                if (isPreBuild) {
+                  return {
+                    ...base,
+                    specs: rawSpecs.map(spec => ({
                         _id: spec.id,
-                        label: spec.label,
-                        value: spec.value
-                      }))
-                    }
-                  : base;
+                      label: spec.label || "Unknown",
+                      value: spec.value || ""
+                    }))
+                  };
+                }
+              
+                return base;
               });
+              
+              
+              
               
     
             const orderData = {

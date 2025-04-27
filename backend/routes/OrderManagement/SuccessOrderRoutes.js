@@ -2,9 +2,12 @@ import express from "express";
 import SuccessOrder from "../../models/OrderManagement/SuccessOrder.js";
 import User from "../../models/userModel.js";
 import authMiddleware from "../../middleware/authMiddleware.js";
+import Order from "../../models/OrderManagement/Order.js";
+
 
 const router = express.Router();
 
+// route.post("/successOrder", create);
 // route.post("/successOrder", create);
 router.post("/create", authMiddleware(["customer"]), async (req, res) => {
   try {
@@ -14,7 +17,7 @@ router.post("/create", authMiddleware(["customer"]), async (req, res) => {
     const requiredLabels = ["Processor", "GPU", "RAM", "Storage", "Power Supply", "Casing"];
 
     for (const item of req.body.items) {
-      if (item.itemType === "prebuild") {
+      if (item.itemType === "PreBuild") {
         const labels = (item.specs || []).map(s => s.label);
         const missing = requiredLabels.filter(l => !labels.includes(l));
     
@@ -118,5 +121,64 @@ router.put("/:id", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+/**
+ * 
+ * routes used for product inventory stock count 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+*/
+router.get('/admin/all', authMiddleware(["admin", "staff"]), async (req, res) => {
+  try {
+    const orders = await SuccessOrder.find()
+      .populate({
+        path: 'items.itemId',
+        select: 'description category',
+        strictPopulate: false, // ADD THIS (important for mongoose >=7)
+      })
+      .sort({ createdAt: -1 });
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: "No success orders found." });
+    }
+
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error("Error fetching all success orders:", error.stack);
+    res.status(500).json({ errorMessage: error.message });
+  }
+});
+
+
+
+// GET a single SuccessOrder by its ID
+router.get('/single/:id', async (req, res) => {
+  try {
+    const successOrder = await SuccessOrder.findById(req.params.id)
+      .populate('customerId', 'name email phoneNo');
+
+    if (!successOrder) {
+      return res.status(404).json({ message: "SuccessOrder not found" });
+    }
+
+    // Now also find related Order
+    const relatedOrder = await Order.findOne({ SuccessorderId: successOrder._id });
+
+    res.json({
+      successOrder,
+      relatedOrder,
+    });
+  } catch (error) {
+    console.error("Error fetching single SuccessOrder:", error.stack);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+
 
 export default router;

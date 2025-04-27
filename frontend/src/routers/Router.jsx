@@ -65,6 +65,7 @@ import OrderList from '../components/OrderManagement/OrderList';
 import ImageUploader from '../components/shop/ai/ImageUploader';
 
 
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -108,6 +109,7 @@ const router = createBrowserRouter([
       //ai product routes
       { path: 'AI-Engine', element: <ProtectedRoute allowedRoles={["user", "admin"]}><ImageUploader /></ProtectedRoute> },
 
+      
     ]
   },
 

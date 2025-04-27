@@ -66,21 +66,21 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("orderStatusMap");
-    // Clear the cart by dispatching a CLEAR_CART action.
     dispatch({ type: 'CLEAR_CART' });
-    // Purge persisted Redux state.
     persistor.purge();
-    // Call the logout function from AuthContext.
+  
     if (logout) {
       logout();
     } else {
       console.log('Logging out...');
     }
+  
     setIsDropDownOpen(false);
-    // Redirect the user to the login page.
     navigate('/login');
+    window.location.reload(); 
   };
+  
+  
 
   return (
     <header

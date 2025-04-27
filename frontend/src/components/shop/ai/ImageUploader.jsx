@@ -18,8 +18,7 @@ const ImageUploader = () => {
   const navigate = useNavigate();
   const [uploadCounter, setUploadCounter] = useState(1); 
 
-
-  const storageKey = user ? `aiHistory_${user.id}` : null;
+  const storageKey = user ? `aiHistory_${user._id}` : null;
 
   const extractKeywords = (text) => {
     const stopwords = ["the", "is", "in", "at", "of", "on", "and", "a", "an", "to", "with"];
@@ -52,15 +51,19 @@ const ImageUploader = () => {
   };
 
   useEffect(() => {
-    if (user && storageKey) {
-      const stored = JSON.parse(localStorage.getItem(storageKey)) || [];
-      setHistory(stored);
+    if (!user) {
+      setHistory([]); 
+      return;
     }
-  }, [user, storageKey]);
+    const storageKey = `aiHistory_${user._id}`;
+    const stored = JSON.parse(localStorage.getItem(storageKey)) || [];
+    setHistory(stored);
+  }, [user]);
+  
 
   const updateHistory = (fileName, desc, imageDataUrl, tags = [], metadata = {}) => {
     const newEntry = {
-      id: uploadCounter, 
+      id: Date.now() + Math.random(),  
       fileName,
       image: imageDataUrl,
       description: desc,
@@ -69,11 +72,12 @@ const ImageUploader = () => {
     };
     const newHistory = [newEntry, ...history];
     setHistory(newHistory);
+  
     if (storageKey) {
       localStorage.setItem(storageKey, JSON.stringify(newHistory));
     }
-    setUploadCounter(uploadCounter + 1); 
   };
+  
   
 
   const handleImageChange = (e) => {

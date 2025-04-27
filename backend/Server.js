@@ -29,6 +29,8 @@ import reviewRoutes from "./routes/reviewRoute.js";
 import compareRoutes from "./routes/compareRoutes.js";
 
 
+
+
 dotenv.config();
 const app = express();
 
@@ -69,6 +71,7 @@ app.use('/api/reports', reportRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api", compareRoutes);
+app.use("/api/successOrder", SuccessOrderRoutes);
 
 
 // Home Route
