@@ -227,8 +227,7 @@ return (
   <div className="absolute inset-0 bg-cyan-400 opacity-20 blur-md z-0
     transform scale-105 group-hover:opacity-30 transition-opacity duration-300"></div>
 </div>
-  </div>
-          <p className="text-xl text-center text-white/90 mb-6 max-w-3xl mx-auto  ">
+  </div>          <p className="text-xl text-center text-white/90 mb-6 max-w-3xl mx-auto  ">
           Discover Balanced Performance Budget Builds Tailored for Handle Everday Workload            
           </p>
  <div className="flex flex-col md:flex-row items-center justify-center gap-6 p-8 rounded-lg">

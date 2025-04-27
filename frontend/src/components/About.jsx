@@ -182,10 +182,10 @@ const About = () => {
                 AI guarantees a smooth and optimized setup every time.
               </p>
               <a
-                href="/ContactUs"
+                href="/AI-build-suggestor"
                 className="inline-flex items-center text-white hover:text-gray-300 text-lg font-medium transition-colors"
               >
-                Try Build Checker Now
+                Try Build Compatibility Checker Now
                 <HiArrowRight className="ml-2 w-5 h-5" />
               </a>
             </div>
