@@ -4,6 +4,7 @@ import ReviewChart from "../../../../components/ReviewChart/ReviewChart";
 import AppointmentAnalytics from "../charts/AppointmentChart";
 import OrderChart from "../../../../components/orderChart/orderChart";
 import OrderSuccessDashboard from "../../../../components/orderChart/OrderSuccessDashboard";
+import TransactionDashboard from "../charts/TransactionDashboard";
 
 const Dashboard = () => {
   const [activeChart, setActiveChart] = useState(null);
@@ -88,6 +89,21 @@ const Dashboard = () => {
           {activeChart === "Successorder" && (
             <div style={chartContainer}>
               <OrderSuccessDashboard />
+            </div>
+          )}
+
+          <button
+            style={{
+              ...chartButton,
+              ...(activeChart === "transaction" ? activeButtonStyle : {}),
+            }}
+            onClick={() => handleChartClick("transaction")}
+          >
+            Transaction Analytics
+          </button>
+          {activeChart === "transaction" && (
+            <div style={chartContainer}>
+              <TransactionDashboard />
             </div>
           )}
         </section>
