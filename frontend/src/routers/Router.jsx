@@ -18,6 +18,7 @@ import ProtectedRoute from "../routers/ProtectedRoute";
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
 import ContactUs from '../components/Contact/ContactUs';
 import AdminPanel from '../pages/dashboard/admin/dashboard/AdminDMain' 
+import AboutUs from '../components/Aboutus';
 
 import AddProduct from '../pages/dashboard/admin/addProduct/AddProduct';
 import ManageProducts from '../pages/dashboard/admin/manageProducts/ManageProducts';
@@ -27,8 +28,7 @@ import SearchPage from '../components/shop/search/SearchPage';
 import ManageAppointments from "../pages/dashboard/appointment/manage-appointments";
 import ManageOrder from "../pages/dashboard/admin/manageOrder/OrderList";
 import CustomerOrder from "../pages/dashboard/admin/manageOrder/CustomerOrderList";
-import ExpensePage from "../pages/dashboard/Finance/ExpensePage";
-import IncomePage from "../pages/dashboard/Finance/IncomePage";
+import SuccessOrder from '../pages/dashboard/admin/manageOrder/SuccessOrder';
 import InvoicePage from "../pages/dashboard/Finance/InvoicePage";
 import UserAppointment from "../pages/dashboard/appointment/user-profile_appointment"
 
@@ -71,6 +71,7 @@ import PickupForm from '../components/OrderManagement/pickupForm';
 import CodForm from '../components/OrderManagement/CodForm';
 import CatalogReportInline from '../pages/dashboard/user/shop/report/CatalogReportInline ';
 import OrderList from '../components/OrderManagement/OrderList';
+import TransactionPage from '../pages/dashboard/Finance/TransactionPage';
 import ImageUploader from '../components/shop/ai/ImageUploader';
 import UserInventoryDashboard from '../components/shop/UserInventoryDashboard';
 
@@ -83,6 +84,7 @@ const router = createBrowserRouter([
     children: [
       { path: '', element: <Home /> },
       { path: 'products/:category', element: <ProductCategory /> },
+      { path: 'about', element: <AboutUs/> },
       { path: 'appointment', element: <ProtectedRoute><AppointmentDashboard /></ProtectedRoute> },
       { path: 'AppointmenentAI', element: <ProtectedRoute><AppointmenentAI /></ProtectedRoute> },
       { path: 'draftedTechnicianReport', element: <ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
@@ -157,9 +159,10 @@ const router = createBrowserRouter([
       { path: 'prebuild-dashboard', element: <ProtectedRoute allowedRoles={["admin"]}><PreBuildDashboard /></ProtectedRoute>  },
       { path: 'manageOrder', element: <ProtectedRoute allowedRoles={["admin"]}><ManageOrder /></ProtectedRoute>  },
       { path: 'customerOrder', element: <ProtectedRoute allowedRoles={["admin"]}><CustomerOrder /></ProtectedRoute>  },
-      { path: 'expensePage', element: <ExpensePage /> },
-      { path: 'incomePage', element: <IncomePage /> },
-      { path: 'invoicePage', element: <InvoicePage /> },
+      { path: 'SuccessOrder/:id', element: <ProtectedRoute allowedRoles={["admin"]}><SuccessOrder /></ProtectedRoute>  },
+      { path: 'invoicePage', element: <ProtectedRoute allowedRoles={["admin"]}><InvoicePage /></ProtectedRoute>  },
+      { path: 'TransactionPage', element: <ProtectedRoute allowedRoles={["admin"]}><TransactionPage /></ProtectedRoute>  },
+      { path: 'InvoicePage', element: <ProtectedRoute allowedRoles={["admin"]}><InvoicePage /></ProtectedRoute>  },
       { path: 'prebuild-dashboard', element: <ProtectedRoute allowedRoles={["admin"]}><PreBuildDashboard /></ProtectedRoute>  },
       { path: 'ReviewManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><ReviewManage/></div></ProtectedRoute> },
       { path: 'InquiryManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><InquiryManage/></div></ProtectedRoute>},

@@ -234,26 +234,6 @@ function InquiryChart() {
                 </div>
             </div>
             
-            <div className="p-6 border-t border-gray-200">
-                <h4 className="font-medium text-gray-700 mb-4">Top Inquiry Subjects</h4>
-                <div className="space-y-3">
-                    {inquiries.slice(0, 5).map((inquiry, index) => (
-                        <div key={inquiry._id || index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-                            <div className="flex items-center">
-                                <span className="text-gray-500 w-6 text-center">{index + 1}.</span>
-                                <span className="font-medium text-gray-700">{inquiry.inquirySubject || "No subject"}</span>
-                            </div>
-                            <span className="text-sm text-gray-500">
-                                {inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleDateString('en-US', {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric'
-                                }) : "N/A"}
-                            </span>
-                        </div>
-                    ))}
-                </div>
-            </div>
         </div>
     </div>
  )

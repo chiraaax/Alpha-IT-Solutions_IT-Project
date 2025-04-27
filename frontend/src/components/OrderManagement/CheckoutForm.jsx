@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import PickupForm from "./pickupForm";
 import CodForm from "./CodForm";
@@ -9,6 +9,10 @@ import "../../styles/OrderManagement/CheckoutForm.css";
 const CheckoutForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  // For state
+  const location = useLocation();
+  const editMode = location.state?.editMode;
   
   const timeSlots = [
     "9:00 AM - 11:00 AM",
@@ -185,12 +189,19 @@ const CheckoutForm = () => {
     }
   };
 
-  useEffect(() => {
-    if (successOrder) {
-      console.log("Order after placement:", successOrder);
-    }
-  }, [successOrder]);
+  // useEffect(() => {
+  //   if (successOrder) {
+  //     console.log("Order after placement:", successOrder);
+  //   }
+  // }, [successOrder]);
 
+  useEffect(() => {
+    if (editMode) {
+      setSuccessOrder(true);
+      setCanModify(true);
+    }
+  }, [editMode]);
+  
   const handleUpdate = async () => {
     console.log("Updating Order ID:", successOrder.order._id);
     const confirmUpdate = window.confirm("Are you sure you want to update this order?");

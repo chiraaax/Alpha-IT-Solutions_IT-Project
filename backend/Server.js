@@ -19,9 +19,8 @@ import orderRoutes from "./routes/OrderManagement/orderRoutes.js";
 import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js";
 import reportRoutes from './routes/reportRoutesShop.js';
 
-import ExpenseRoutes from "./routes/Finance/ExpenseRoutes.js";
-import IncomeRoutes from "./routes/Finance/IncomeRoutes.js";
 import InvoiceRoutes from "./routes/Finance/InvoiceRoutes.js";
+import TransactionRoutes from "./routes/Finance/transactionRoutes.js"
 
 import inquiryRoutes from "./routes/inquiryRoute.js";
 import reviewRoutes from "./routes/reviewRoute.js";
@@ -39,7 +38,7 @@ const corsOptions = {
   origin: "http://localhost:5173", 
   credentials: true, 
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cache-Control"],
 };
 
 // Log every incoming request to server
@@ -70,9 +69,8 @@ app.use("/api", uploadRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/successorders", SuccessOrderRoutes);
 app.use("/api/reports", reportRoutes);
-app.use('/api/expenses', ExpenseRoutes);
-app.use('/api/income', IncomeRoutes);
-app.use('/api/invoice', InvoiceRoutes);
+app.use('/api/invoices', InvoiceRoutes);
+app.use("/api/transactions", TransactionRoutes);
 app.use('/api/reports', reportRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/reviews", reviewRoutes);

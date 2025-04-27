@@ -1,49 +1,44 @@
-import { FiLayout, FiUploadCloud, FiBarChart, FiServer, FiArrowDown } from 'react-icons/fi';
+import { FiCpu, FiTool, FiSliders, FiServer } from 'react-icons/fi';
 
 const FeaturesSection = () => {
   const features = [
     {
-      icon: <FiLayout className="w-8 h-8" />,
-      title: "Design and build",
-      description: "Designers can take control of HTML, CSS, and JavaScript in a visual canvas — while marketers can work with pre-made, design-approved building blocks.",
-      link: "#design-build"
+      icon: <FiCpu className="w-8 h-8" />,
+      title: "Custom PC Builds",
+      description: "We design and build high-performance custom PCs tailored to your needs, whether you're a gamer, developer, or content creator."
     },
     {
-      icon: <FiUploadCloud className="w-8 h-8" />,
-      title: "Publish and edit",
-      description: "Choose how you want to add, edit, and update content at scale with our CMS: visually in our platform or programmatically through our headless APIs.",
-      link: "#publish-edit"
+      icon: <FiTool className="w-8 h-8" />,
+      title: "PC Repair & Service",
+      description: "Our expert technicians provide comprehensive repair and maintenance services for all types of PCs, from hardware upgrades to troubleshooting."
     },
     {
-      icon: <FiBarChart className="w-8 h-8" />,
-      title: "Analyze and optimize",
-      description: "Transform your site into your most valuable marketing asset with native tools for AI-powered personalization, A/B testing, SEO, localization, and more.",
-      link: "#analyze-optimize"
+      icon: <FiSliders className="w-8 h-8" />,
+      title: "AI-Enhanced Services & Assistance",
+      description: "From smart diagnostics to personalized system upgrades, we offer AI-driven services and AI assistance to optimize your PC’s performance and functionality."
     },
     {
       icon: <FiServer className="w-8 h-8" />,
-      title: "Scale and collaborate",
-      description: "15,000 websites are published every hour. Confidently scale your site with tools for hosting, security, compliance, and publishing — plus connect to your tech stack with integrations and APIs.",
-      link: "#scale-collaborate"
+      title: "Computer Sales & IT Solutions",
+      description: "We offer a wide range of computers for sale, from desktops to laptops, along with IT solutions, hosting services, and cloud infrastructure to meet your business needs."
     }
   ];
 
   return (
     <div className='bg-primary'>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-32 ">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-        {features.map((feature, index) => (
-          <div key={index} className="flex flex-col text-white border-t border-white/20 pt-8">
-            <div className="mb-4 text-white" aria-hidden="true">
-              {feature.icon}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-32">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+          {features.map((feature, index) => (
+            <div key={index} className="flex flex-col text-white border-t border-white/20 pt-8">
+              <div className="mb-4 text-white" aria-hidden="true">
+                {feature.icon}
+              </div>
+              <h3 className="text-lg font-medium mb-2">{feature.title}</h3>
+              <p className="text-gray-500 mb-4 flex-1">{feature.description}</p>
             </div>
-            <h3 className="text-lg font-medium mb-2">{feature.title}</h3>
-            <p className="text-gray-500 mb-4 flex-1">{feature.description}</p>
-            
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
     </div>
   );
 };

@@ -2,7 +2,7 @@ import express from "express";
 import Order from "../../models/OrderManagement/Order.js";
 import SuccessOrder from "../../models/OrderManagement/SuccessOrder.js";
 import authMiddleware from "../../middleware/authMiddleware.js";
-// import User from "../../models/userModel.js";
+import { detectFraud, updateFraudDetection } from "../../utils/fraudDetection.js";
 
 const router = express.Router();
 
@@ -40,6 +40,9 @@ router.post("/create", authMiddleware(["customer"]), async (req, res) => {
       .sort({ createdAt: -1 });
 
     if (!Successorder) {
+      return res
+        .status(404)
+        .json({ message: "SuccessOrder not found for this customer" });
       return res
         .status(404)
         .json({ message: "SuccessOrder not found for this customer" });
@@ -93,6 +96,13 @@ router.post("/create", authMiddleware(["customer"]), async (req, res) => {
       return res.status(400).json({ message: "Invalid pickup time slot" });
     }
 
+    // Await fraud detection since it's asynchronous
+    let fraudReasons = await detectFraud(orderData); 
+    if (fraudReasons.length > 0) {
+      orderData.isFraudulent = true;
+      orderData.fraudReason = fraudReasons.join(", ");
+    }
+
     const order = new Order(orderData);
     await order.save();
     console.log("Order saved:", order);
@@ -108,7 +118,7 @@ router.post("/create", authMiddleware(["customer"]), async (req, res) => {
 // GET all orders
 router.get("/all", async (req, res) => {
   try {
-    const order = await Order.find();
+    const order = await Order.find().populate('SuccessorderId');
     if (!order || order.length === 0) {
       return res.status(404).json({ message: "Order data not found" });
     }
@@ -121,13 +131,13 @@ router.get("/all", async (req, res) => {
 // GET a single order by ID
 router.get("/:id", async (req, res) => {
   try {
-    const id = decodeURIComponent(req.params.id); // Decode email from URL
+    const id = decodeURIComponent(req.params.id); 
     console.log("Received GET request for id:", id);
 
     const order = await Order.findById(id);
     if (!order) {
-      return res.status(404).json({ errorMessage: error.message });
-    }
+      return res.status(404).json({ message: "Order not found" });
+    }    
     res.json(order);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -135,11 +145,11 @@ router.get("/:id", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
-  const id = decodeURIComponent(req.params.id); // fixed here
+  const id = decodeURIComponent(req.params.id); 
   console.log("Received DELETE request for order ID:", id);
 
   try {
-    const order = await Order.findById(id); // fixed from findOne({ id }) to findById(id)
+    const order = await Order.findById(id);
 
     if (!order) {
       return res.status(404).send("Order not found.");
@@ -149,10 +159,13 @@ router.delete("/:id", async (req, res) => {
     const orderCreatedAt = new Date(order.createdAt);
     const timeDifference = now - orderCreatedAt;
 
+    let adminConfirmation = req.body.adminConfirmation; 
+
     if (timeDifference > 24 * 60 * 60 * 1000) {
       return res
         .status(400)
-        .send("Orders can only be deleted within 24 hours of creation.");
+        .json({message: "Order is placed within 24 hours. Admin confirmation required to delete."});
+        // .send("Orders can only be deleted within 24 hours of creation.");
     }
 
     // 🔥 Delete associated successOrder using successOrderId in order
@@ -161,7 +174,13 @@ router.delete("/:id", async (req, res) => {
       console.log("Deleted related successOrder:", order.SuccessorderId);
     }
 
-    await Order.findByIdAndDelete(id); // fix this as well
+    // 🔥 Delete associated successOrder using successOrderId in order
+    if (order.SuccessorderId) {
+      await SuccessOrder.findByIdAndDelete(order.SuccessorderId);
+      console.log("Deleted related successOrder:", order.SuccessorderId);
+    }
+
+    await Order.findByIdAndDelete(id); 
     res.send({
       message: "Order and its related cart details deleted successfully.",
     });
@@ -186,10 +205,9 @@ router.put("/:id", async (req, res) => {
     const currentTime = new Date();
     const diffHours = (currentTime - orderTime) / (1000 * 60 * 60);
 
+    let adminConfirmationRequired = false;
     if (diffHours > 24) {
-      return res.status(400).json({
-        message: "Order cannot be updated after 24 hours",
-      });
+      adminConfirmationRequired = true; // Flag for admin confirmation if more than 24 hours have passed
     }
 
     // Prepare updateData based on payment method
@@ -204,6 +222,17 @@ router.put("/:id", async (req, res) => {
       unsetFields.codDetails = "";
     }
 
+    // Update fraud detection based on the updated fields
+    let fraudReasons = await detectFraud(setFields);
+    if (fraudReasons.length > 0) {
+      setFields.isFraudulent = true;
+      setFields.fraudReason = fraudReasons.join(", ");
+    } else {
+      setFields.isFraudulent = false;
+      setFields.fraudReason = "";
+    }
+
+    // Update the order in the database with the new fraud detection logic
     const updatedOrder = await Order.findByIdAndUpdate(
       id,
       {
@@ -213,9 +242,16 @@ router.put("/:id", async (req, res) => {
       { new: true, runValidators: true }
     );
 
+    // Re-check the fraud status after the update using the updated order details
+    const finalOrder = await updateFraudDetection(updatedOrder);
+    );
+
     res.json({
-      message: "Order updated successfully",
-      order: updatedOrder,
+      message: adminConfirmationRequired
+        ? "Order updated successfully. Admin confirmation is recommended since the order was placed over 24 hours ago."
+        : "Order updated successfully.",
+      adminConfirmationRequired,
+      order: finalOrder,
     });
   } catch (error) {
     console.error("Error updating order:", error);

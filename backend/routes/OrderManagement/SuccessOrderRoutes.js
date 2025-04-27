@@ -2,12 +2,20 @@ import express from "express";
 import SuccessOrder from "../../models/OrderManagement/SuccessOrder.js";
 import User from "../../models/userModel.js";
 import authMiddleware from "../../middleware/authMiddleware.js";
+import sendEmail from "../../utils/sendEmail.js";
+import Transaction from "../../models/Finance/Transaction.js";
+import Product from "../../models/Product.js";
+import PreBuild from "../../models/PreBuild.js";
+import Invoice from "../../models/Finance/Invoice.js";
+import { createInvoicePDF } from "../../utils/invoicePdf.js"
+import fs from 'fs';
+
+import authMiddleware from "../../middleware/authMiddleware.js";
 import Order from "../../models/OrderManagement/Order.js";
 
 
 const router = express.Router();
 
-// route.post("/successOrder", create);
 // route.post("/successOrder", create);
 router.post("/create", authMiddleware(["customer"]), async (req, res) => {
   try {
@@ -36,6 +44,8 @@ router.post("/create", authMiddleware(["customer"]), async (req, res) => {
     }
 
     const customerId = req.user._id;
+
+    
 
     // Check if the user exists in the database
     const user = await User.findById(customerId);
@@ -71,8 +81,68 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// Get all orders for a particular customer OR all orders if admin
+router.get("/admin/:id", authMiddleware(), async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Access denied. Admins only." });
+    }
+
+    const orderId = req.params.id;
+
+    // 🔥 Fetch order and populate customer details
+    const order = await SuccessOrder.findById(orderId).populate({
+      path: "customerId",
+      select: "name email contactNumber" // 🎯 Only select necessary fields
+    });
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found." });
+    }
+
+    res.json(order);
+  } catch (error) {
+    console.error("Error fetching order with customer details:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
+
+
 // GET all orders
 router.get('/successOrder/all',authMiddleware(["customer"]) , async (req, res) => {
+  try {
+    // Ensure user is authenticated and has admin role
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized access" });
+    }
+
+    // Check if user is admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Forbidden access" });
+    }
+
+    console.log("Fetching all orders");
+
+    const orders = await SuccessOrder.find()
+      .populate("items.itemId") // populate details for product/prebuild
+      .sort({ createdAt: -1 }); // most recent first
+
+    console.log("Fetched orders:", orders);
+
+    if (orders.length === 0) {
+      return res.status(404).json({ message: "No orders found" });
+    }
+
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error("Error fetching orders:", error.stack); 
+    res.status(500).json({ errorMessage: error.message });
+  }
+});
+
+
+router.get('/successOrder/all',authMiddleware("customer") , async (req, res) => {
   try {
     // Ensure user is authenticated
     if (!req.user) {
@@ -97,27 +167,130 @@ router.get('/successOrder/all',authMiddleware(["customer"]) , async (req, res) =
   } catch (error) {
     console.error("Error fetching orders:", error.stack); 
     console.error(error); // Log the error for debugging
+    console.error("Error fetching orders:", error.stack); 
+    console.error(error); // Log the error for debugging
     res.status(500).json({ errorMessage: error.message });
   }
 });
 
 // PUT successorder
-router.put("/:id", async (req, res) => {
-  try {
-    const { status } = req.body;
-    const updatedOrder = await SuccessOrder.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true }
-    );
+// router.put("/:id", async (req, res) => {
+//   try {
+//     const { status } = req.body;
+//     const updatedOrder = await SuccessOrder.findByIdAndUpdate(
+//       req.params.id,
+//       { status },
+//       { new: true }
+//     );
 
-    if (!updatedOrder) {
+//     if (!updatedOrder) {
+//       return res.status(404).json({ message: "Order not found" });
+//     }
+
+//     res.json(updatedOrder);
+//   } catch (err) {
+//     console.error("Update order error:", err);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// });
+
+router.put('/admin/updatestatus/:id', authMiddleware("admin"), async (req, res) => {
+  const { status } = req.body;
+  const orderId = req.params.id;
+
+  try {
+    const order = await SuccessOrder.findByIdAndUpdate(orderId, { status }, { new: true }).populate('customerId');
+
+    if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    res.json(updatedOrder);
-  } catch (err) {
-    console.error("Update order error:", err);
+    // Fetch item details for invoice (name, price, quantity)
+    const populatedItems = [];
+
+    for (const item of order.items) {
+      let itemDetails;
+
+      if (item.itemType === 'Product') {
+        itemDetails = await Product.findById(item.itemId);
+      } else if (item.itemType === 'PreBuild') {
+        itemDetails = await PreBuild.findById(item.itemId);
+      }
+
+      if (itemDetails) {
+        populatedItems.push({
+          name: `(${item.itemType}) - Category: ${itemDetails.category} | Description: ${itemDetails.description}`,
+          price: itemDetails.price,
+          quantity: item.quantity
+        });
+      }
+    }
+
+    // Send Email to customer about status update
+    await sendEmail(
+      order.customerId.email,
+      `Your Order Status is now ${status}`,
+      `We would like to inform you that your order status has been updated to: <strong style="color:rgb(78, 76, 175);">${status}</strong>.<br/>
+      If you have any questions, feel free to contact us.`,
+      { useTemplate: true }
+    );
+
+    // If status becomes "handedOver", create transaction and send invoice
+    if (status === "handedOver") {
+      // Create Transaction
+      await Transaction.create({
+        amount: order.totalAmount,
+        type: 'Income',
+        category: 'sales',
+        description: "Income from customer order's"
+      });
+
+      // Create Invoice
+      const newInvoice = new Invoice({
+        customerName: order.customerId.name,
+        items: populatedItems,
+        totalAmount: order.totalAmount,
+        status: 'Paid', // or 'Pending' if not yet paid
+        date: new Date(),
+      });
+
+      const savedInvoice = await newInvoice.save();
+      console.log('Invoice created automatically ✅');
+
+      // Generate Invoice PDF
+      if (!fs.existsSync('invoices')) {
+        fs.mkdirSync('invoices');
+      }
+      const invoicePath = `invoices/invoice_${savedInvoice._id}.pdf`;
+
+      createInvoicePDF(savedInvoice, invoicePath);
+
+      // Small wait to make sure PDF is written
+      setTimeout(async () => {
+        // Send Email with Invoice PDF
+        await sendEmail(
+          order.customerId.email,
+          `Your Invoice from Alpha IT Solutions`,
+          `Thank you for your order! Please find attached your invoice.`,
+          {
+            attachments: [
+              {
+                filename: `invoice_${savedInvoice._id}.pdf`,
+                path: invoicePath
+              }
+            ],
+            useTemplate: false // or true if you want an HTML body
+          }
+        );
+
+        // Optional: Delete the PDF after sending if you don't want to store it
+        // fs.unlinkSync(invoicePath);
+      }, 2000); // 2 seconds delay
+    }
+
+    res.json(order);
+  } catch (error) {
+    console.error("Error updating status:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
