@@ -118,7 +118,7 @@ const router = createBrowserRouter([
       { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },  
       { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, 
        // Updated route for your custom dashboard
-      { path: 'ai-customize-build', element: <AICustomizeBuild /> }, 
+
       { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, 
       { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, 
 

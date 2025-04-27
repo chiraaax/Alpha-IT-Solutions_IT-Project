@@ -11,7 +11,7 @@ import appointmentRoutes from "./routes/appointmentRoutes.js";
 import authRoutes from "./routes/authRoute.js";
 import userRoutes from "./routes/userRoute.js";
 import faqRoutes from "./routes/faqRoute.js";
-import aiRoutes from "./routes/appointmentAiRoutes.js";
+import aiRoutes from "./routes/appointmentairoutes.js";
 import productsRoutes from "./routes/productsRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import prebuildRoutes from "./routes/prebuildRoutes.js";
@@ -87,8 +87,9 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/chatbot", chatBotRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api", compareRoutes);
-app.use("/api/successOrder", SuccessOrderRoutes);
 app.use("/api", suggestBuildRoutes);
+app.use("/api/successorders", SuccessOrderRoutes);
+app.use("/api/successOrder", SuccessOrderRoutes);
 
 
 // Home Route
