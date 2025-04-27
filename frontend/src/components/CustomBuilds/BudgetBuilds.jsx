@@ -4,8 +4,17 @@ import axios from "axios";
 import { useTheme } from "./ThemeContext";
 import { FaSun, FaMoon, FaChevronUp } from "react-icons/fa";
 import { motion } from "framer-motion";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend
+} from "recharts";
 
-// API URL for gaming builds
+// API URL for budget builds
 const API_URL = "http://localhost:5000/api/prebuilds/category/Budget";
 
 // Function to format price correctly
@@ -16,9 +25,9 @@ const formatPrice = (price) => {
   }).format(price);
 };
 
-const GamingBuilds = () => {
+const BudgetBuilds = () => {
   const { isDark, toggleTheme } = useTheme();
-  const [gamingBuilds, setGamingBuilds] = useState([]);
+  const [budgetBuilds, setBudgetBuilds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedBuilds, setSelectedBuilds] = useState([]);
@@ -26,16 +35,16 @@ const GamingBuilds = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const navigate = useNavigate();
 
-  // Fetching gaming builds data from API
+  // Fetching budget builds data from API
   useEffect(() => {
     axios
       .get(API_URL)
       .then((response) => {
         if (response.data && Array.isArray(response.data.data)) {
-          setGamingBuilds(response.data.data);
+          setBudgetBuilds(response.data.data);
         } else {
           setError("Invalid API response format.");
-          setGamingBuilds([]);
+          setBudgetBuilds([]);
         }
         setLoading(false);
       })
@@ -91,10 +100,10 @@ const GamingBuilds = () => {
     return selectedBuilds.some((build) => build._id === buildId);
   };
 
-  // Navigate to gaming build details
+  // Navigate to budget build details
   const handleNavigate = useCallback(
     (id) => {
-      navigate(`/gaming-builds/${id}`);
+      navigate(`/budget-builds/${id}`);
     },
     [navigate]
   );
@@ -128,21 +137,65 @@ const GamingBuilds = () => {
     }
   };
 
-  return (
-    <div className={`min-h-screen ${isDark ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
-      {/* Hero Section */}
-      <div className={`relative overflow-hidden ${isDark ? "bg-gradient-to-r from-purple-900 to-blue-900" : "bg-gradient-to-r from-blue-500 to-purple-600"} py-20`}>
-        <div className="absolute inset-0 opacity-60">
-          <div className="absolute inset-0 bg-transparent opacity-10" />
-          <div className="h-full w-full bg-[url('https://images.unsplash.com/photo-1551033541-2075d8363c66?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')] bg-cover bg-center" />
-        </div>
-        <div className="container mx-auto px-4 relative z-10">                      
-      <div className="text-8xl flex flex-col items-center text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-lime-400 to-teal-500 mb-4">
-      <span className="font-bold bg-clip-text bg-gradient-to-r from-green-400 via-lime-400 to-teal-500 mb-10">
+  // Return the .value for a given spec key, or null if not found
+const getProductSpec = (productId, key) => {
+  const product = productsLookup[productId];
+  if (!product?.specs) return null;
+  const specObj = product.specs.find(s => s.key === key);
+  return specObj ? specObj.value : null;
+};
+
+// Safely extract the leading integer from any spec value, else 0
+const parseSpecNumber = (specValue) => {
+  if (typeof specValue !== "string") return 0;
+  const m = specValue.match(/(\d+)/);
+  return m ? parseInt(m[1], 10) : 0;
+};
+
+// Then wrap your ram-capacity lookup in another helper
+const getRamCapacityGB = (productId) => {
+  const raw = getProductSpec(productId, "ramCapacity");
+  return parseSpecNumber(raw);
+};
+
+// In your BudgetBuilds component, alongside getRamCapacityGB:
 
 
+// Safely extract storage capacity in GB from specs (e.g. “500GB”, “1.5 TB”, “2 nas drive bays” → tries to pull “500GB” or “1.5 TB”)
+// e.g. just above your component’s return:
+const getStorageCapacityGB = (productId) => {
+  const raw = getProductSpec(productId, "storageCapacity");
+  if (typeof raw !== "string") return 0;
+  const m = raw.match(/([\d.]+)\s*(GB|TB)/i);
+  if (!m) return 0;
+  const num = parseFloat(m[1]);
+  const unit = m[2].toUpperCase();
+  return unit === "TB" ? num * 1024 : num;
+};
 
-        Budget Builds </span>
+const getPowerSupplyWattage = (productId) => {
+  // look up the raw spec value, e.g. "750W" or "650 W"
+  const raw =
+    getProductSpec(productId, "wattage") ||
+    getProductSpec(productId, "powerOutput");
+  if (typeof raw !== "string") return 0;
+  const m = raw.match(/(\d+)\s*W/i);
+  return m ? parseInt(m[1], 10) : 0;
+};
+return (
+  <div className={`min-h-screen ${isDark ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
+    {/* Hero Section */}
+    <div className={`relative overflow-hidden ${isDark ? "bg-gradient-to-r from-purple-900 to-blue-900" : "bg-gradient-to-r from-blue-500 to-purple-600"} py-20`}>
+      <div className="absolute inset-0 opacity-60">
+        <div className="absolute inset-0 bg-transparent opacity-10" />
+        <div className="h-full w-full bg-[url('https://images.unsplash.com/photo-1551033541-2075d8363c66?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')] bg-cover bg-center" />
+      </div>
+      <div className="container mx-auto px-4 relative z-10">                      
+    <div className="text-8xl flex flex-col items-center text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-lime-400 to-teal-500 mb-4">
+    <span className="font-bold bg-clip-text bg-gradient-to-r from-green-400 via-lime-400 to-teal-500 mb-10">
+
+
+    Budget Builds </span>
         </div>
 
           <p className="text-xl text-center text-white/90 mb-6 max-w-3xl mx-auto  ">
@@ -179,6 +232,7 @@ const GamingBuilds = () => {
       )}
 
       <div className="container mx-auto px-6 py-16">
+
         {/* Loading States */}
         {loading ? (
           <div className="flex justify-center items-center h-64">
@@ -189,9 +243,9 @@ const GamingBuilds = () => {
             <p className="font-semibold">Error</p>
             <p>{error}</p>
           </div>
-        ) : gamingBuilds.length === 0 ? (
+        ) : budgetBuilds.length === 0 ? (
           <div className="text-center p-10 bg-gray-100 rounded-lg">
-            <p className="text-xl font-semibold text-gray-600">No gaming builds available at the moment.</p>
+            <p className="text-xl font-semibold text-gray-600">No budget builds available at the moment.</p>
             <p className="mt-2 text-gray-500">Please check back later for new builds.</p>
           </div>
         ) : (
@@ -201,7 +255,7 @@ const GamingBuilds = () => {
             initial="hidden"
             animate="visible"
           >
-            {gamingBuilds.map((build) => (
+            {budgetBuilds.map((build) => (
               <motion.div
                 key={build._id}
                 variants={itemVariants}
@@ -209,19 +263,19 @@ const GamingBuilds = () => {
                 {`cursor-pointer group rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 ${
                   isDark ? "bg-gray-800 hover:bg-gray-750" : "bg-white hover:bg-gray-50"
                 }`}
-                onClick={(e) => handleNavigate(build._id)()}
+                onClick={(e) => handleNavigate(build._id)}
                 
               >
                 <div className="relative overflow-hidden">
                   <img
-                    src={build.image || "https://via.placeholder.com/800x600?text=Gaming+Build"}
+                    src={build.image || "https://via.placeholder.com/800x600?text=Budget+Build"}
                     alt={build.category}
                     className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div 
                     className={`absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 text-white`}
-                    onClick={(e) => handleNavigate(build._id)()}
+                    onClick={(e) => handleNavigate(build._id)}
                   >
                     <button
                       onClick={(e) => {
@@ -272,7 +326,7 @@ const GamingBuilds = () => {
                       </div>
                       <div className={`text-lg ${isDark ? "text-gray-400" : "text-gray-600"}`}>
                         <span className="font-medium">GPU:</span>
-                        <p className="truncate">{getProductDescription(build.gpu, "Gaming Graphics")}</p>
+                        <p className="truncate">{getProductDescription(build.gpu, "Budget Graphics")}</p>
                       </div>                      
                     </div>
                   </div>
@@ -284,8 +338,35 @@ const GamingBuilds = () => {
       </div>
 
       {/* Comparison Modal */}
-      {selectedBuilds.length === 2 && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+      {selectedBuilds.length === 2 && (() => {
+        const [firstBuild, secondBuild] = selectedBuilds;
+
+        const chartData = [
+          {
+            name: "Price (LKR)",
+            [firstBuild.description]: firstBuild.price,
+            [secondBuild.description]: secondBuild.price,
+          },
+          {
+            name: "RAM (GB)",
+            [firstBuild.description]: getRamCapacityGB(firstBuild.ram),
+            [secondBuild.description]: getRamCapacityGB(secondBuild.ram),
+          },
+          
+          {
+            name: "Storage (GB)",
+            [firstBuild.description]: getStorageCapacityGB(firstBuild.storage),
+            [secondBuild.description]: getStorageCapacityGB(secondBuild.storage),
+          },
+          {
+            name: "Power Supply (W)",
+            [firstBuild.description]: getPowerSupplyWattage(firstBuild.psu),
+            [secondBuild.description]: getPowerSupplyWattage(secondBuild.psu),
+          },
+        ];
+
+        return (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -307,58 +388,154 @@ const GamingBuilds = () => {
               </button>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
-              {selectedBuilds.map((build) => (
-                <div 
-                  key={build._id}
-                  className={`rounded-xl overflow-hidden shadow-lg ${
-                    isDark ? "bg-gray-800" : "bg-white"
-                  }`}
-                >
-                  <img
-                    src={build.image || "https://via.placeholder.com/800x600?text=Gaming+Build"}
-                    alt={build.category}
-                    className="w-full h-80 object-cover"
-                  />
-                  <div className="p-5">
-                    <h3 className="text-2xl font-bold mb-2">{build.description}</h3>
-                    <p className="text-xl font-mono font-bold text-green-500 mb-6">{formatPrice(build.price)}</p>
-
-                    <div className={`p-4 rounded-lg mb-4 ${isDark ? "bg-gray-700" : "bg-sky-200"}`}>
-                      <h4 className="text-xl font-bold mb-3 border-b pb-2">Specifications</h4>
-                      
-                      {[
-                        { label: "Processor :", value: getProductDescription(build.processor, build.processor) },
-                        { label: "GPU :", value: getProductDescription(build.gpu, build.gpu) },
-                        { label: "RAM :", value: getProductDescription(build.ram, build.ram) },
-                        { label: "Storage :", value: getProductDescription(build.storage, build.storage) },
-                        { label: "Power Supply :", value: getProductDescription(build.powerSupply, build.powerSupply) },
-                        { label: "Casing :", value: getProductDescription(build.casings, build.casings) }
-                      ].map((spec, index) => (
-                        <div key={index} className="flex mb-3 mt-5 ">
-                          <span className={`font-black ${isDark ? "text-purple-200" : "text-gray-700"}`}>{spec.label}</span>                          
-                          <div key={index} className="flex mb-3 ml-3">
-                          <span className={isDark ? "text-gray-200" : "text-gray-600"}>{spec.value}</span>
-                        </div>
-                        </div>
-                      ))}
+              {/* Build Cards */}
+              <div className="grid md:grid-cols-2 gap-8">
+                {[firstBuild, secondBuild].map((build) => (
+                  <div
+                    key={build._id}
+                    className={`rounded-xl overflow-hidden shadow-lg ${
+                      isDark ? "bg-gray-800" : "bg-white"
+                    }`}
+                  >
+                    <img
+                      src={build.image || "https://via.placeholder.com/800x600?text=Budget+Build"}
+                      alt={build.category}
+                      className="w-full h-80 object-cover"
+                    />
+                    <div className="p-5">
+                      <h3 className="text-2xl font-bold mb-2">{build.description}</h3>
+                      <p className="text-xl font-mono font-bold text-green-500 mb-6">
+                        {formatPrice(build.price)}
+                      </p>
+                      <div className={`p-4 rounded-lg mb-4 ${isDark ? "bg-gray-700" : "bg-sky-200"}`}>
+                        <h4 className="text-xl font-bold mb-3 border-b pb-2">Specifications</h4>
+                        {[
+                          { label: "Processor :", value: getProductDescription(build.processor, build.processor) },
+                          { label: "GPU :", value: getProductDescription(build.gpu, build.gpu) },
+                          { label: "RAM :", value: getProductDescription(build.ram, build.ram) },
+                          { label: "Storage :", value: getProductDescription(build.storage, build.storage) },
+                          { label: "Power Supply :", value: getProductDescription(build.powerSupply, build.powerSupply) },
+                          { label: "Casing :", value: getProductDescription(build.casings, build.casings) }
+                        ].map((spec, i) => (
+                          <div key={i} className="flex mb-3 mt-5">
+                            <span className={`font-black ${isDark ? "text-purple-200" : "text-gray-700"}`}>
+                              {spec.label}
+                            </span>
+                            <span className={`ml-3 ${isDark ? "text-gray-200" : "text-gray-600"}`}>
+                              {spec.value}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => handleNavigate(build._id)}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+                      >
+                        View Build Details
+                      </button>
                     </div>
-
-                    <button
-                      onClick={() => handleNavigate(build._id)}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
-                    >
-                      View Build Details
-                    </button>
                   </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      )}
+                ))}
+              </div>
+
+              {/* Specs Comparison Chart */}
+              {/* Price Comparison */}
+              <div className="mt-8">
+                <h3 className="text-xl font-bold mb-4 text-center">Price Comparison (LKR)</h3>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart
+                    data={[
+                      { name: firstBuild.description, value: firstBuild.price },
+                      { name: secondBuild.description, value: secondBuild.price },
+                    ]}
+                    margin={{ top: 10, right: 20, left: 0, bottom: 5 }}
+                  >
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip formatter={(val) =>
+                      new Intl.NumberFormat('en-US', { style: 'currency', currency: 'LKR' }).format(val)
+                    }/>
+                    <Bar dataKey="value" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* RAM Comparison */}
+              <div className="mt-12">
+                <h3 className="text-xl font-bold mb-4 text-center">RAM Comparison (GB)</h3>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart
+                    data={[
+                      { name: firstBuild.description, value: getRamCapacityGB(firstBuild.ram) },
+                      { name: secondBuild.description, value: getRamCapacityGB(secondBuild.ram) },
+                    ]}
+                    margin={{ top: 10, right: 20, left: 0, bottom: 5 }}
+                  >
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="value" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            {/* Storage Comparison */}
+            {/* Storage Comparison */}
+<div className="mt-12">
+  <h3 className="text-xl font-bold mb-4 text-center">Storage Comparison (GB)</h3>
+  <ResponsiveContainer width="100%" height={200}>
+    <BarChart
+      data={[
+        {
+          name: firstBuild.description,
+          value: getStorageCapacityGB(firstBuild.storage),
+        },
+        {
+          name: secondBuild.description,
+          value: getStorageCapacityGB(secondBuild.storage),
+        },
+      ]}
+      margin={{ top: 10, right: 20, left: 0, bottom: 5 }}
+    >
+      <XAxis dataKey="name" />
+      <YAxis />
+      <Tooltip formatter={(val) => `${val} GB`} />
+      <Bar dataKey="value" />
+    </BarChart>
+  </ResponsiveContainer>
+</div>
+
+{/* PSU Comparison */}
+<div className="mt-12">
+  <h3 className="text-xl font-bold mb-4 text-center">
+    Power Supply Comparison (W)
+  </h3>
+  <ResponsiveContainer width="100%" height={200}>
+    <BarChart
+      data={[
+        {
+          name: firstBuild.description,
+          value: getPowerSupplyWattage(firstBuild.powerSupply),
+        },
+        {
+          name: secondBuild.description,
+          value: getPowerSupplyWattage(secondBuild.powerSupply),
+        },
+      ]}
+      margin={{ top: 10, right: 20, left: 0, bottom: 5 }}
+    >
+      <XAxis dataKey="name" />
+      <YAxis />
+      <Tooltip formatter={(val) => `${val} W`} />
+      <Bar dataKey="value" />
+    </BarChart>
+  </ResponsiveContainer>
+</div>
+            </motion.div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
 
-export default GamingBuilds;
+export default BudgetBuilds;

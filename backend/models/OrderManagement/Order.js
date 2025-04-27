@@ -3,12 +3,24 @@ import mongoose from "mongoose";
 const codSchema = new mongoose.Schema({
   address: { type: String, required: true },
   deliveryDate: { type: Date, required: true },
-  deliveryTime: { type: String, required: true },
+  deliveryTime: { type: String,enum: [
+    "9:00 AM - 11:00 AM",
+    "11:00 AM - 1:00 PM",
+    "2:00 PM - 4:00 PM",
+    "4:00 PM - 6:00 PM",
+    "6:00 PM - 8:00 PM",
+  ], required: true },
 });
 
 const pickupSchema = new mongoose.Schema({
   pickupDate: { type: Date, required: true },
-  pickupTime: { type: String, required: true },
+  pickupTime: { type: String,enum: [
+    "9:00 AM - 11:00 AM",
+    "11:00 AM - 1:00 PM",
+    "2:00 PM - 4:00 PM",
+    "4:00 PM - 6:00 PM",
+    "6:00 PM - 8:00 PM",
+  ], required: true },
 });
 
 const orderSchema = new mongoose.Schema({

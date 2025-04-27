@@ -1,13 +1,14 @@
 import express from "express";
 import SuccessOrder from "../../models/OrderManagement/SuccessOrder.js";
 import User from "../../models/userModel.js";
-// import Order from "../../models/OrderManagement/Order.js";
+import authMiddleware from "../../middleware/authMiddleware.js";
+
 const router = express.Router();
 
 // route.post("/successOrder", create);
-router.post("/create", async (req, res) => {
+router.post("/create", authMiddleware(["customer"]), async (req, res) => {
   try {
-    const { customerId, totalAmount, status, items } = req.body;
+    const { totalAmount, status, items } = req.body;
 
     // Validate each item's itemType
     for (const item of items) {
@@ -15,6 +16,8 @@ router.post("/create", async (req, res) => {
         return res.status(400).json({ message: "Invalid itemType. It must be 'product' or 'prebuild'." });
       }
     }
+
+    const customerId = req.user._id;
 
     // Check if the user exists in the database
     const user = await User.findById(customerId);

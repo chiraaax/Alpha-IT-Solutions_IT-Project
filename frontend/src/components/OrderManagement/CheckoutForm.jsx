@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import PickupForm from "./pickupForm";
 import CodForm from "./CodForm";
@@ -8,7 +8,15 @@ import "../../styles/OrderManagement/CheckoutForm.css";
 
 const CheckoutForm = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   
+  const timeSlots = [
+    "9:00 AM - 11:00 AM",
+    "11:00 AM - 1:00 PM",
+    "2:00 PM - 4:00 PM",
+    "4:00 PM - 6:00 PM",
+    "6:00 PM - 8:00 PM",
+  ];
   const [formData, setFormData] = useState({
     name: "",
     phoneNo: "",
@@ -27,14 +35,45 @@ const CheckoutForm = () => {
   });
 
   const [successOrder, setSuccessOrder] = useState(null);
+  const [canModify, setCanModify] = useState(true);
 
   useEffect(() => {
-    if (id) {
+    const savedOrder = localStorage.getItem("successOrder");
+    if (savedOrder) {
+      const parsedOrder = JSON.parse(savedOrder);
+      setSuccessOrder(parsedOrder);
+  
+      const order = parsedOrder.order;
+
+      setFormData({
+        name: order.name,
+        phoneNo: order.phoneNo,
+        email: order.email,
+        paymentMethod: order.paymentMethod,
+      });
+
+      if (order.paymentMethod === "COD") {
+        setCodData({
+          address: order.codDetails.address,
+          deliveryDate: order.codDetails.deliveryDate,
+          deliveryTime: order.codDetails.deliveryTime,
+          saveAddress: order.codDetails.saveAddress || false,
+        });
+      } else {
+        setPickupData({
+          pickupDate: order.pickupDetails.pickupDate,
+          pickupTime: order.pickupDetails.pickupTime,
+        });
+      }
+  
+      checkTimeLimit(order);
+    } else if (id) {
       axios
         .get(`http://localhost:5000/api/orders/${id}`)
         .then((response) => {
           const order = response.data;
           setSuccessOrder(order);
+          localStorage.setItem("successOrder", JSON.stringify(order));
           setFormData({
             // id: order._id,
             name: order.name,
@@ -113,13 +152,30 @@ const CheckoutForm = () => {
       ...(formData.paymentMethod === "COD" ? codData : pickupData),
     };
 
+    const token = localStorage.getItem("token"); // ⬅️ Get the token from storage
+
+    if (!token) {
+      alert("You must be logged in to place an order.");
+      navigate("/login");
+      return;
+    }
+
     try {
       const response = await axios.post(
         "http://localhost:5000/api/orders/create",
-        orderData
+        orderData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // ⬅️ Add token here
+          },
+        }
       );
+      // setSuccessOrder(response.data);
       setSuccessOrder(response.data);
+      localStorage.setItem("successOrder", JSON.stringify(response.data));
+      
       alert("Order placed successfully!");
+      localStorage.setItem("orderPlaced", "true");
     } catch (error) {
       console.error(
         "Error placing order:",
@@ -134,28 +190,6 @@ const CheckoutForm = () => {
       console.log("Order after placement:", successOrder);
     }
   }, [successOrder]);
-
-  // const handleDelete = async () => {
-  //   console.log("Deleting Order ID:", successOrder._id);
-  //   if (!id) {
-  //     alert("Order not found. Id is required.");
-  //     return;
-  //   }
-
-  //   const confirmDelete = window.confirm(
-  //     "Are you sure you want to delete this order?"
-  //   );
-  //   if (!confirmDelete) return;
-
-  //   try {
-  //     const result = await deleteOrder();
-  //     alert(result.message || "Order deleted successfully!");
-  //     setSuccessOrder(null);
-  //   } catch (error) {
-  //     console.error("Error deleting order:", error);
-  //     alert("Failed to delete order.");
-  //   }
-  // };
 
   const handleUpdate = async () => {
     console.log("Updating Order ID:", successOrder.order._id);
@@ -186,6 +220,9 @@ const CheckoutForm = () => {
       alert(result.message || "Order updated successfully!");
       // setSuccessOrder({ ...successOrder, ...updatedOrderData });
       setSuccessOrder({ ...successOrder, order: { ...successOrder.order, ...updatedOrderData } });
+      localStorage.setItem("successOrder", JSON.stringify({
+        order: { ...successOrder.order, ...updatedOrderData }
+      }));
 
     } catch (error) {
       console.error("Error updating order:", error);
@@ -209,6 +246,9 @@ const CheckoutForm = () => {
       const result = await deleteOrder(successOrder.order._id);
       alert(result.message || "Order deleted successfully!");
       setSuccessOrder(null);
+      localStorage.removeItem("successOrder");
+
+      navigate("/shoppingcart");
     } catch (error) {
       console.error("Error deleting order:", error);
       alert("Failed to delete order.");
@@ -218,7 +258,7 @@ const CheckoutForm = () => {
   return (
     <div className="form-container">
       <h2 className="header">Checkout</h2>
-      {!successOrder ? (
+      {!successOrder/* || !localStorage.getItem("orderPlaced")*/ ? (
         <form className="form" onSubmit={handleSubmit}>
           <label className="label">Full Name</label>
           <input
@@ -337,7 +377,7 @@ const CheckoutForm = () => {
         </div>
       )}
 
-      {successOrder && (
+      {successOrder && canModify && (
         <div className="order-details-container">
           <h2 className="header">Order Details</h2>
           <div>
@@ -407,13 +447,18 @@ const CheckoutForm = () => {
                 </div>
                 <div className="input-group">
                   <strong>Delivery Time:</strong>
-                  <input
+                  <select
                     type="time"
                     name="deliveryTime"
                     value={codData.deliveryTime}
                     onChange={handleCodChange}
                     className="edit-input"
-                  />
+                  >
+                    <option value="">Select a time slot</option>
+                    {timeSlots.map((slot, index) => (
+                      <option key={index} value={slot}>{slot}</option>
+                    ))}
+                  </select>
                 </div>
               </>
             )}
@@ -431,13 +476,18 @@ const CheckoutForm = () => {
                 </div>
                 <div className="input-group">
                   <strong>Pickup Time:</strong>
-                  <input
+                  <select
                     type="time"
                     name="pickupTime"
                     value={pickupData.pickupTime}
                     onChange={handlePickupChange}
                     className="edit-input"
-                  />
+                  >
+                    <option value="">Select a time slot</option>
+                    {timeSlots.map((slot, index) => (
+                      <option key={index} value={slot}>{slot}</option>
+                    ))}
+                    </select>
                 </div>
               </>
             )}
@@ -449,6 +499,12 @@ const CheckoutForm = () => {
                 Save Changes
               </button>
             </div>
+            <button
+  className="cart-button"
+  onClick={() => navigate("/shoppingcart")}
+>
+  Go to Shopping Cart
+</button>
           </div>
         </div>
       )}

@@ -1,7 +1,34 @@
 import React, { useState, useEffect } from "react";
 
-const CartItem = ({ item, updateQuantity }) => {
+const CartItem = ({ item, specs = [], updateQuantity }) => { //TODo: edited
   const [showBulkOrderMessage, setShowBulkOrderMessage] = useState(false);
+
+  /**
+   * 
+   * ToDo: Thi part got added
+   * 
+   * 
+   */
+  const requiredLabels = [
+    "Processor",
+    "GPU",
+    "RAM",
+    "Storage",
+    "Power Supply",
+    "Casing",
+  ];
+
+  /**
+   * 
+   * ToDo: Thi part got added
+   * 
+   * 
+   */
+
+  // Only render if every one of those labels exists in specs
+  const hasAllSpecs = requiredLabels.every(label =>
+    specs.some(s => s.label === label)
+  );
 
   // Ensure quantity is treated as a number
   const initialQuantity = parseInt(item.quantity, 10) || 1;
@@ -63,6 +90,27 @@ const CartItem = ({ item, updateQuantity }) => {
             className="w-20 h-20 object-cover rounded"
           />
         )}
+
+    {/* /**
+      * 
+      * ToDo: This part got added
+      * 
+      * 
+      */ }
+        {/* Only show specs if all six are present */}
+      {hasAllSpecs && (
+        <ul className="mt-2 text-sm text-gray-300">
+          {requiredLabels.map(label => {
+            const spec = specs.find(s => s.label === label);
+            return (
+              <li key={label} className="flex">
+                <span className="w-24 font-mono text-gray-500">{label}:</span>
+                <span className="font-medium">{spec.value}</span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
 
         <div className="flex-1">
           {item.description && <p className="text-gray-400">{item.description}</p>}
