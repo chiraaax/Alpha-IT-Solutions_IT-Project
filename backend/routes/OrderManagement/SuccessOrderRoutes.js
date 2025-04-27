@@ -132,6 +132,27 @@ router.put("/:id", async (req, res) => {
  * 
  * 
 */
+
+router.get(
+  "/my",
+  authMiddleware(["customer"]),
+  async (req, res) => {
+    try {
+      const orders = await SuccessOrder
+        .find({ customerId: req.user._id })
+        .populate("items.itemId", "description price image")
+        .sort({ createdAt: -1 });
+
+      if (!orders.length) {
+        return res.status(404).json({ message: "No orders found for you." });
+      }
+      res.json(orders);
+    } catch (err) {
+      console.error("❌ GET /my SuccessOrders:", err);
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+);
 router.get('/admin/all', authMiddleware(["admin", "staff"]), async (req, res) => {
   try {
     const orders = await SuccessOrder.find()
@@ -174,6 +195,66 @@ router.get('/single/:id', async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching single SuccessOrder:", error.stack);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// 📊 Customer Inventory & Purchase Analytics
+router.get('/analytics/me', authMiddleware(["customer"]), async (req, res) => {
+  try {
+    const customerId = req.user._id;
+
+    const orders = await SuccessOrder.find({ customerId })
+      .populate('items.itemId', 'description price')
+      .sort({ createdAt: -1 });
+
+    if (!orders.length) {
+      return res.status(404).json({ message: "No orders found for you." });
+    }
+
+    let totalSpent = 0;
+    let totalOrders = orders.length;
+    const productCounts = {};
+
+    orders.forEach(order => {
+      totalSpent += order.totalAmount;
+      order.items.forEach(item => {
+        const key = item.itemId?.description || item.itemId?._id?.toString() || "Unknown Product";
+        productCounts[key] = (productCounts[key] || 0) + (item.quantity || 1);
+      });
+    });
+
+    const topProducts = Object.entries(productCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([product, count]) => ({ product, unitsPurchased: count }));
+
+    const last7Days = new Date();
+    last7Days.setDate(last7Days.getDate() - 7);
+
+    const recentOrders = orders
+      .filter(order => new Date(order.createdAt) > last7Days)
+      .map(order => ({
+        id: order._id,
+        totalAmount: order.totalAmount,
+        date: order.createdAt,
+        items: order.items.map(it => ({
+          description: it.itemId?.description || "Unknown",
+          quantity: it.quantity
+        }))
+      }));
+
+    res.json({
+      totalOrders,
+      totalSpent,
+      topProducts,
+      recentOrders,
+      suggestion: topProducts.length
+        ? `You seem to love ${topProducts[0].product}! Check out new arrivals.`
+        : "Start shopping to get personalized suggestions!"
+    });
+  } catch (err) {
+    console.error("❌ GET /analytics/me error:", err);
     res.status(500).json({ message: "Server error" });
   }
 });

@@ -31,18 +31,22 @@ import blogRoutes from "./routes/blogRoute.js";
 import compareRoutes from "./routes/compareRoutes.js";
 
 
-
-
 dotenv.config();
 const app = express();
 
 // CORS Configuration
 const corsOptions = {
-  origin: "http://localhost:5173" || PORT, 
+  origin: "http://localhost:5173", 
   credentials: true, 
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
+
+// Log every incoming request to server
+app.use((req, res, next) => {
+  console.log(`➡️ ${req.method} ${req.url}`);
+  next();
+});
 
 // Apply Middlewares
 app.use(cors(corsOptions));
@@ -88,6 +92,7 @@ app.use((err, req, res, next) => {
   console.error("Global Error: ", err.stack);
   res.status(500).send("Something went wrong!");
 });
+
 
 // Connect to MongoDB
 mongoose

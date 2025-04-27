@@ -72,6 +72,7 @@ import CodForm from '../components/OrderManagement/CodForm';
 import CatalogReportInline from '../pages/dashboard/user/shop/report/CatalogReportInline ';
 import OrderList from '../components/OrderManagement/OrderList';
 import ImageUploader from '../components/shop/ai/ImageUploader';
+import UserInventoryDashboard from '../components/shop/UserInventoryDashboard';
 
 
 
@@ -138,7 +139,7 @@ const router = createBrowserRouter([
       // Customer routes
       { path: '', element: <div>Dashboard Home</div> },
       { path: 'reviews', element: <div>Reviews</div> },
-      { path: 'report-shop', element: <CatalogReportInline/> },
+      { path: 'report-shop', element: <UserInventoryDashboard/> },
       {path: 'user-profile_appointment', element: <UserAppointment /> },
       { path: 'Profile', element: <div><Profile/></div> },
       { path: 'UserInquiries', element: <div><UserInquiries/></div> },

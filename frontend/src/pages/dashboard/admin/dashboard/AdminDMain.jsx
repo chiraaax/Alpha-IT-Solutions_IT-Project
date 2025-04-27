@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import InquiryChart from "../../../../components/InquiryChart/InquiryChart";
 import ReviewChart from "../../../../components/ReviewChart/ReviewChart";
 import AppointmentAnalytics from "../charts/AppointmentChart";
+import InventoryAnalytics from "../inventoryManagement/InventoryAnalytics";
 
 const Dashboard = () => {
   const [activeChart, setActiveChart] = useState(null);
@@ -14,6 +15,20 @@ const Dashboard = () => {
     <div style={dashboardContainer}>
       <main style={mainContent}>
         <section style={chartListSection}>
+        <button
+            style={{
+              ...chartButton,
+              ...(activeChart === "inventory" ? activeButtonStyle : {}),
+            }}
+            onClick={() => handleChartClick("inventory")}
+          >
+            Inventory Analytics
+          </button>
+          {activeChart === "inventory" && (
+            <div style={chartContainer}>
+              <InventoryAnalytics />
+            </div>
+          )}
           <button
             style={{
               ...chartButton,

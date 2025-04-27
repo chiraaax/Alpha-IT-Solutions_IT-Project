@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import InventoryProductModal from "./InventoryManagement";
-import InventoryAnalytics from './InventoryAnalytics';
+
 
 // Storage helpers for persisting order button state
 const STORAGE_KEY = "orderStatusMap";
@@ -420,7 +420,6 @@ const handleMarkOutOfStock = async (productId) => {
     
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
-      <InventoryAnalytics />
         <h2 className="text-3xl font-bold text-blue-900">Product Inventory</h2>
         <div className="flex space-x-2">
           <button
