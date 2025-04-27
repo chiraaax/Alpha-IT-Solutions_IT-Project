@@ -9,7 +9,6 @@ const TransactionPage = () => {
     const [selectedType, setSelectedType] = useState("All");
     const [reportData, setReportData] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0); // Store the total amount (income - expenses)
-
     const reportRef = useRef();
 
     useEffect(() => {
@@ -48,6 +47,24 @@ const TransactionPage = () => {
     };
 
     const deleteTransaction = async (id) => {
+        const transaction = transactions.find(txn => txn._id === id);
+
+        if (transaction.category === "Invoice") {
+            if (!window.confirm("This is an Invoice transaction. Deleting it will also remove the Invoice. Are you sure?")) {
+                return;
+            }
+            // Delete the Invoice automatically here if needed
+            try {
+                await fetch(`http://localhost:5000/api/invoices/${id}`, { method: "DELETE" }); 
+                console.log("Linked invoice deleted successfully!");
+            } catch (error) {
+                console.error("Failed to delete linked invoice:", error);
+            }
+        } else {
+            if (!window.confirm("Are you sure you want to delete this transaction?")) {
+                return;
+            }
+        }
         try {
             await fetch(`http://localhost:5000/api/transactions/${id}`, { method: "DELETE" });
             setTransactions(transactions.filter(transaction => transaction._id !== id));
@@ -58,6 +75,7 @@ const TransactionPage = () => {
     };
 
     const handleEditClick = (transaction) => {
+        if (!window.confirm("Do you want to edit this transaction?")) return;
         setEditingTransaction(transaction._id);
         setFormData({
             amount: transaction.amount,
@@ -71,11 +89,35 @@ const TransactionPage = () => {
     const updateTransaction = async (e) => {
         e.preventDefault();
         try {
+            // Protect Invoice category
+            const existingTransaction = transactions.find(txn => txn._id === editingTransaction);
+            if (existingTransaction.category === "Invoice" && formData.category !== "Invoice") {
+                alert("Category 'Invoice' cannot be changed!");
+                return;
+            }
             await fetch(`http://localhost:5000/api/transactions/${editingTransaction}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
             });
+
+            // If Invoice related, update Invoice too
+            if (existingTransaction.category === "Invoice") {
+                try {
+                    await fetch(`http://localhost:5000/api/invoices/${editingTransaction}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            amount: formData.amount,
+                            date: formData.date,
+                            description: formData.description
+                        }),
+                    });
+                    console.log("Linked invoice updated successfully!");
+                } catch (error) {
+                    console.error("Failed to update linked invoice:", error);
+                }
+            }
             setEditingTransaction(null);
             setFormData({ amount: "", type: "Expense", category: "", date: "", description: "" });
             fetchTransactions();
@@ -103,30 +145,22 @@ const TransactionPage = () => {
         const total = incomeTotal - expenseTotal;
         setTotalAmount(total);
 
-        // Alert if the total amount goes below 0
-        if (total < 0) {
-            alert("Warning: Total amount is negative!");
-        }
     };
 
     // Calculate and display Current Balance when selectedCategory and selectedType are "All"
     const getCurrentBalance = () => {
-        if (selectedCategory === "All" && selectedType === "All") {
-            // Calculate the overall balance (income - expenses) when no filters are applied
-            const incomeTotal = transactions.filter(txn => txn.type === "Income").reduce((sum, txn) => sum + Number(txn.amount), 0);
-            const expenseTotal = transactions.filter(txn => txn.type === "Expense").reduce((sum, txn) => sum + Number(txn.amount), 0);
-            const balance = (incomeTotal - expenseTotal).toFixed(2); // Ensure two decimal points
-    
-            // Check if the balance is negative and alert the user
-            if (parseFloat(balance) < 0) {
-                alert("Warning: Your balance is negative!");
-            }
-    
-            return balance;
+        // Calculate the overall balance (income - expenses) even when filters are applied
+        const incomeTotal = transactions.filter(txn => txn.type === "Income").reduce((sum, txn) => sum + Number(txn.amount), 0);
+        const expenseTotal = transactions.filter(txn => txn.type === "Expense").reduce((sum, txn) => sum + Number(txn.amount), 0);
+        const balance = (incomeTotal - expenseTotal).toFixed(2); // Ensure two decimal points
+        
+        // Check if the balance is negative and alert the user
+        if (parseFloat(balance) < 0) {
+            alert("Warning: Your curent balance is negative!");
         }
-        return 0; // If filters are applied, return 0 for the "Current Balance"
-    };
     
+        return balance;
+    };
 
     const handlePrint = () => {
         const printContents = reportRef.current.innerHTML;

@@ -28,31 +28,26 @@ const OrderList = () => {
       try {
         const token = localStorage.getItem("token");
         
-        // Fetch all success orders
         const successRes = await axios.get("http://localhost:5000/api/successorders/successOrder/all", {
           headers: {
             Authorization: `Bearer ${token}`,
             "Cache-Control": "no-cache",
           },
         });
-  
         const successOrders = Array.isArray(successRes.data) ? successRes.data : [successRes.data];
-        console.log("Fetched success orders:", successOrders);
-  
-        // Fetch all orders
+    
         const ordersRes = await axios.get("http://localhost:5000/api/orders/all", {
           headers: { Authorization: `Bearer ${token}` },
         });
-  
         const allOrders = Array.isArray(ordersRes.data) ? ordersRes.data : [ordersRes.data];
-        console.log("Fetched all orders:", allOrders);
-  
-        // Filter orders that match successOrder._id
+    
         const detailedOrders = successOrders.map((sOrder) => {
-          const matchedOrder = allOrders.find(order => order.SuccessorderId === sOrder._id);
+          const matchedOrder = allOrders.find(order => 
+            order.SuccessorderId && order.SuccessorderId._id === sOrder._id
+          );
           return matchedOrder ? { ...sOrder, details: matchedOrder } : null;
-        }).filter(Boolean); // Remove nulls if any order is not found
-  
+        }).filter(Boolean);
+    
         console.log("Detailed orders with match:", detailedOrders);
         setOrders(detailedOrders);
       } catch (error) {
@@ -63,7 +58,7 @@ const OrderList = () => {
     };
   
     fetchOrders();
-  }, []);
+  }, []);  
   
 
   const handleDelete = async (orderId) => {

@@ -105,7 +105,7 @@ router.get("/admin/:id", authMiddleware(), async (req, res) => {
 
 // GET all orders
 // GET all orders (admin access)
-router.get('/successOrder/allOrders', authMiddleware(), async (req, res) => {
+router.get('/successOrder/allOrders', authMiddleware("admin"), async (req, res) => {
   try {
     // Ensure user is authenticated and has admin role
     if (!req.user) {
@@ -137,7 +137,7 @@ router.get('/successOrder/allOrders', authMiddleware(), async (req, res) => {
 });
 
 
-router.get('/successOrder/all',authMiddleware() , async (req, res) => {
+router.get('/successOrder/all',authMiddleware("customer") , async (req, res) => {
   try {
     // Ensure user is authenticated
     if (!req.user) {

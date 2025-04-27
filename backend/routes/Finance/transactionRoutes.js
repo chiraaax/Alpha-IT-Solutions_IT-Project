@@ -1,7 +1,35 @@
 import express from "express";
 import Transaction from "../../models/Finance/Transaction.js";
+import suspiciousTransaction from "../../utils/suspiciousTransaction.js"
+
+// Fraud Detection Logic
+const AMOUNT_THRESHOLD = 1000000; // Flag transactions larger than 1000000
+const TRANSACTION_TIME_WINDOW = 60 * 60 * 1000; // 1 hour in milliseconds
+const MAX_TRANSACTIONS_PER_HOUR = 5;
 
 const router = express.Router();
+
+const detectFraud = async (transaction) => {
+    let suspicious = false;
+
+    // 1. Check for large transaction amounts
+    if (transaction.amount > AMOUNT_THRESHOLD) {
+        suspicious = true;
+    }
+
+    // 2. Check for transaction frequency in the same category within a time window
+    const recentTransactions = await Transaction.find({
+        category: transaction.category,
+        date: { $gte: new Date(Date.now() - TRANSACTION_TIME_WINDOW) }
+    });
+
+    if (recentTransactions.length >= MAX_TRANSACTIONS_PER_HOUR) {
+        suspicious = true;
+    }
+
+    // Mark the transaction as suspicious if any condition is met
+    transaction.isSuspicious = suspicious;
+};
 
 // Get all transactions
 router.get("/all", async (req, res) => {
@@ -18,8 +46,24 @@ router.post("/add", async (req, res) => {
     try {
         const { amount, type, category, date, description } = req.body;
         const newTransaction = new Transaction({ amount, type, category, date, description });
+
+        // Run fraud detection logic before saving
+        await detectFraud(newTransaction);
+
         await newTransaction.save();
         res.status(201).json(newTransaction);
+
+        // Log or handle suspicious transactions if any
+        if (newTransaction.isSuspicious) {
+            console.log("Suspicious transaction detected:", newTransaction);
+            try {
+
+                await suspiciousTransaction(newTransaction);
+                alert("A suspicious transaction has been detected. The admin will review it.");
+            } catch (error) {
+                console.error("Error handling suspicious transaction:", error);
+            }
+        }
     } catch (error) {
         res.status(500).json({ message: "Error adding transaction", error });
     }

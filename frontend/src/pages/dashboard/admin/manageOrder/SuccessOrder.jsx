@@ -50,14 +50,31 @@ const SuccessOrder = () => {
       return;
     }
 
+    // Check if the order is Fraudulent
+    if (order.isFraudulent === true) {
+      const reason = order.fraudReason || "No specific reason provided."; // Show reason if available
+      const confirmManualCheck = window.confirm(
+        `This order is marked as Fraudulent.\nReason: ${reason}\nPlease ensure a manual check before updating the status.`
+      );
+      if (!confirmManualCheck) {
+        return; // If admin cancels, stop the update
+      }
+    }
+
     // ⏰ Check if 24 hours passed since createdAt
     const createdAt = new Date(order.createdAt);
     const now = new Date();
     const hoursPassed = (now - createdAt) / (1000 * 60 * 60); // milliseconds to hours
 
     if (hoursPassed < 24) {
-      alert("You can update the status only after 24 hours from order creation!");
-      return;
+      // alert("You can update the status only after 24 hours from order creation!");
+      // return;
+      const confirmUpdate = window.confirm(
+        `It's been only ${hoursPassed.toFixed(2)} hours since order creation.\nAre you sure you want to update the status now?`
+      );
+      if (!confirmUpdate) {
+        return; // If admin cancels, stop the update
+      }
     }
 
     try {

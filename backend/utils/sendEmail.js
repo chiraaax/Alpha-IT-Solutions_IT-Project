@@ -1,5 +1,4 @@
 // sendEmail.js
-// sendEmail.js
 import nodemailer from 'nodemailer';
 import orderStatusUpdate from '../emailTemplates/orderStatusUpdate.js'; // optional, for HTML templates
 import dotenv from 'dotenv';

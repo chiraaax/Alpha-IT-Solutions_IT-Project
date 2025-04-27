@@ -11,6 +11,7 @@ const InvoicePage = () => {
     const [status, setStatus] = useState('Pending');
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [filter, setFilter] = useState('All');
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         fetchInvoices();
@@ -118,7 +119,18 @@ const InvoicePage = () => {
     };
 
     const handleDeleteInvoice = (invoiceId) => {
-        if (window.confirm('Are you sure you want to delete this invoice?')) {
+        const invoiceToDelete = invoices.find(inv => inv._id === invoiceId);
+        if (invoiceToDelete && window.confirm(`Are you sure you want to delete this invoice and its associated transaction?`)) {
+            // Delete the transaction if it exists
+            if (invoiceToDelete.status === 'Paid') {
+                axios.delete(`http://localhost:5000/api/transactions/${invoiceId}`)
+                    .then(() => {
+                        console.log('Transaction deleted successfully');
+                    })
+                    .catch(err => console.error('Error deleting transaction', err));
+            }
+
+            // Delete the invoice
             axios.delete(`http://localhost:5000/api/invoices/${invoiceId}`)
                 .then(() => {
                     alert('Invoice deleted successfully!');
@@ -146,10 +158,64 @@ const InvoicePage = () => {
     const filteredInvoices = invoices.filter(invoice => {
         if (filter === 'All') return true;
         return invoice.status === filter;
-    });
+    }).filter(invoice =>
+        invoice.customerName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const totalEarnings = invoices.filter(inv => inv.status === 'Paid').reduce((sum, inv) => sum + inv.totalAmount, 0);
     const totalPending = invoices.filter(inv => inv.status === 'Pending').reduce((sum, inv) => sum + inv.totalAmount, 0);
+
+    const generateReport = () => {
+        const reportData = filteredInvoices.map(invoice => (
+            `<tr>
+                <td>${invoice.customerName}</td>
+                <td>LKR ${invoice.totalAmount}</td>
+                <td>${invoice.status}</td>
+                <td>${invoice.date}</td>
+                <td>
+                    ${invoice.items.map(item => `${item.name} (Price: LKR ${item.price}, Qty: ${item.quantity})`).join('<br>')}
+                </td>
+            </tr>`
+        )).join('');
+    
+        const reportHtml = `
+            <html>
+                <head>
+                    <style>
+                        body { font-family: Arial, sans-serif; }
+                        .report-table { width: 100%; border-collapse: collapse; }
+                        .report-table th, .report-table td { border: 1px solid #000; padding: 8px; text-align: left; }
+                        .report-table th { background-color: #f2f2f2; }
+                        h2 { text-align: center; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Invoice Report</h2>
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Customer Name</th>
+                                <th>Total Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${reportData}
+                        </tbody>
+                    </table>
+                    <br />
+                    <button onclick="window.print()">Print Report</button>
+                </body>
+            </html>
+        `;
+    
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(reportHtml);
+        printWindow.document.close();
+    };
+    
 
     return (
         <div className="invoice-management-container">
@@ -165,6 +231,23 @@ const InvoicePage = () => {
                 <button onClick={() => setFilter('All')} className={filter === 'All' ? 'active' : ''}>All</button>
                 <button onClick={() => setFilter('Pending')} className={filter === 'Pending' ? 'active' : ''}>Pending</button>
                 <button onClick={() => setFilter('Paid')} className={filter === 'Paid' ? 'active' : ''}>Paid</button>
+            </div>
+
+            <div className="top-controls">
+                {/* Search Bar */}
+                <div className="search-bar">
+                <input
+                    type="text"
+                    placeholder="Search by Customer Name"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                </div>
+
+                {/* Generate Report Button */}
+                <div className="generate-report">
+                    <button onClick={generateReport}>Generate Report</button>
+                </div>
             </div>
 
             {/* Content Grid */}

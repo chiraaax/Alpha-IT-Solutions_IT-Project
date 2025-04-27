@@ -221,3 +221,34 @@
     background-color: #dc3545;
     color: white;
 }
+
+.top-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px; /* space between search bar and button */
+    margin: 20px 0; /* space at top and bottom */
+}
+
+.search-bar input {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 250px;
+}
+
+.generate-report button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.generate-report button:hover {
+    background-color: #45a049;
+}
