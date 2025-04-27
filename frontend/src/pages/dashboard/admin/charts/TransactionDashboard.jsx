@@ -132,15 +132,15 @@ function TransactionDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         <div className="lg:col-span-4">
-          <InfoCard title="Current Balance" value={`$${analytics.currentBalance.toFixed(2)}`} color="bg-purple-500" icon="💰" />
+          <InfoCard title="Current Balance" value={`LKR ${analytics.currentBalance.toFixed(2)}`} color="bg-purple-500" icon="💰" />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         <InfoCard title="Total Transactions" value={analytics.totalTransactions} color="bg-blue-500" icon="📊" />
         <InfoCard title="Suspicious Transactions" value={analytics.suspiciousTransactions} color="bg-orange-400" icon="🚨" />
-        <InfoCard title="Total Income" value={`$${analytics.totalIncome.toFixed(2)}`} color="bg-green-400" icon="💵" />
-        <InfoCard title="Total Expense" value={`$${analytics.totalExpense.toFixed(2)}`} color="bg-red-300" icon="💳" />
+        <InfoCard title="Total Income" value={`LKR ${analytics.totalIncome.toFixed(2)}`} color="bg-green-400" icon="💵" />
+        <InfoCard title="Total Expense" value={`LKR ${analytics.totalExpense.toFixed(2)}`} color="bg-red-300" icon="💳" />
         <InfoCard title="Fraudulent Transactions" value={analytics.fraudAnalysis.length} color="bg-yellow-500" icon="🚨" />
       </div>
 

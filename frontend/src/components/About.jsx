@@ -222,7 +222,7 @@ const About = () => {
                 Smarter, safer, and faster — powered by intelligent automation.
               </p>
               <a
-                href="/ContactUs"
+                href="/OrderSupportChat"
                 className="inline-flex items-center text-white hover:text-gray-300 text-lg font-medium transition-colors"
               >
                 Launch Finance AI

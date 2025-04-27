@@ -25,17 +25,44 @@ const OrderSupportChat = () => {
   const nav = useNavigate();
 
   const [step, setStep] = useState(1);
+  const [email, setEmail] = useState(""); 
   const [orderId, setOrderId] = useState("");
   const [issue, setIssue] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [error, setError] = useState("");
   const [resp, setResp] = useState("");
   const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState("");
+
+  // Function to fetch the latest successful order by customer email
+  const fetchLatestOrder = async (userEmail) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/orders/all`);
+      const data = await response.json();
+      console.log("orders:", data);
+
+      const userOrders = data.filter(order => order.email === userEmail);
+      console.log("orders:", userOrders);
+      if (userOrders.length > 0) {
+        const latestOrder = userOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+
+        if (latestOrder._id) {
+          setOrderId(latestOrder._id);
+        } else {
+          setError("No successful orders found.");
+        }
+      } else {
+        setError("No successful orders found.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Error fetching order. Please try again.");
+    }
+  };
 
   /* ---------------- API call ---------------- */
   const askAI = async () => {
     setBusy(true);
-    setErr("");
+    setError("");
     try {
       const prompt = `Order ID: ${orderId}. Issue: ${issue}. ${
         errorMsg && `Error message: ${errorMsg}.`
@@ -46,9 +73,10 @@ const OrderSupportChat = () => {
         body: JSON.stringify({ prompt }),
       });
       const d = await r.json();
-      r.ok ? setResp(d.response) : setErr(d.error || "Failed to get answer.");
-    } catch (error) {
-      setErr("Request failed. Try again.");
+      r.ok ? setResp(d.response) : setError(d.error || "Failed to get answer.");
+    } catch (err) {
+      console.error(err);
+      setError("Request failed. Try again.");
     } finally {
       setBusy(false);
     }
@@ -60,7 +88,13 @@ const OrderSupportChat = () => {
       l.startsWith("- ") ? <li key={i}>{l.slice(2)}</li> : <p key={i}>{l}</p>
     );
 
-  const next = () => setStep((s) => s + 1);
+  const next = async () => {
+    if (step === 1 && email.trim()) {
+      await fetchLatestOrder(email.trim());
+    }
+    setStep((s) => s + 1);
+  };
+
   const back = () => setStep((s) => s - 1);
 
   /* ---------------- UI ---------------- */
@@ -105,13 +139,13 @@ const OrderSupportChat = () => {
         {step === 1 && (
           <>
             <h2 style={{ textAlign: "center", marginBottom: 24 }}>
-              Enter your Order ID
+              Enter your Email
             </h2>
             <input
-              type="text"
-              value={orderId}
-              placeholder="Enter your Order ID"
-              onChange={(e) => setOrderId(e.target.value)}
+              type="email"
+              value={email}
+              placeholder="Enter your Email"
+              onChange={(e) => setEmail(e.target.value)}
               style={{
                 width: "100%",
                 padding: 16,
@@ -132,9 +166,9 @@ const OrderSupportChat = () => {
                 Back
               </button>
               <button
-                style={btnStyle(BLUE, !orderId.trim())}
+                style={btnStyle(BLUE, !email.trim())}
                 onClick={next}
-                disabled={!orderId.trim()}
+                disabled={!email.trim()}
               >
                 Next
               </button>
@@ -225,7 +259,7 @@ const OrderSupportChat = () => {
         )}
 
         {/* ---------- ERROR ---------- */}
-        {err && (
+        {error && (
           <p
             style={{
               marginTop: 32,
@@ -235,7 +269,7 @@ const OrderSupportChat = () => {
               color: RED,
             }}
           >
-            {err}
+            {error}
           </p>
         )}
 
@@ -264,7 +298,7 @@ const OrderSupportChat = () => {
             </div>
             <button
               style={{ ...btnStyle(BLUE), width: "100%", marginTop: 36 }}
-              onClick={() => nav("/order-update-form")}
+              onClick={() => nav("/OrderList")}
             >
               Update Order
             </button>

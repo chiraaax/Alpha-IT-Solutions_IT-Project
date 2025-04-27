@@ -17,8 +17,8 @@ const Summary = ({ cart }) => {
     const total = subtotal + tax;
 
     const formatCurrency = (amount) =>
-        new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
-
+        new Intl.NumberFormat("en-US", { style: "currency", currency: "LKR" }).format(amount);
+    
     const handleCheckout = async () => {
         try {
             if (!total || isNaN(total)) {
