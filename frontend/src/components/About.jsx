@@ -95,13 +95,6 @@ const About = () => {
             diagnostics and smart shopping tools, our AI services are designed to make your journey 
             smoother—whether you're browsing, building, or troubleshooting.
             </p>
-            <a
-              href="https://webflow.com/ai"
-              className="inline-flex items-center text-white hover:text-gray-300 text-lg font-medium transition-colors"
-            >
-              Discover AI at Alpha IT Solution
-              <HiArrowRight className="ml-2 w-5 h-5" />
-            </a>
           </div>
         </div>
 
