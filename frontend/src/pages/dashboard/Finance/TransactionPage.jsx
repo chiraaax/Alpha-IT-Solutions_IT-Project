@@ -95,6 +95,11 @@ const TransactionPage = () => {
                 alert("Category 'Invoice' cannot be changed!");
                 return;
             }
+            //protect sales category
+            if (existingTransaction.category === "sales" && formData.category !== "sales") {
+                alert("Category 'sales' cannot be changed!");
+                return;
+            }
             await fetch(`http://localhost:5000/api/transactions/${editingTransaction}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },

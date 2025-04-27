@@ -179,7 +179,7 @@ function OrderSuccessDashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <InfoCard title="Avg Order Value" value={`$${analytics.averageOrderValue.toFixed(2)}`} color="bg-purple-500" icon="💲" />
+        <InfoCard title="Avg Order Value" value={`LKR ${analytics.averageOrderValue.toFixed(2)}`} color="bg-purple-500" icon="💲" />
         <InfoCard title="Avg Order Frequency" value={analytics.averageOrderFrequency.toFixed(2)} color="bg-teal-500" icon="🔄" />
         <InfoCard title="Unique Customers" value={analytics.uniqueCustomersSize} color="bg-indigo-500" icon="👥" />
       </div>
