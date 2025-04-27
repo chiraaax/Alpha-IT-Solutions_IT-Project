@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom'; // Ensure you're using 'react-router-dom' for routing
 import { HiArrowRight } from 'react-icons/hi';
-import axios from "axios";
-import { motion } from "framer-motion";
+
 import { BsPlayFill, BsPauseFill } from 'react-icons/bs';
 import { Cpu, Zap, AlertTriangle } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
@@ -89,29 +88,6 @@ const DesignSection = () => {
   const [glitchText, setGlitchText] = useState(false);
   const navigate = useNavigate();
 
-    // Animation variants
-    const containerVariants = {
-      hidden: { opacity: 0 },
-      visible: {
-        opacity: 1,
-        transition: {
-          staggerChildren: 0.1
-        }
-      }
-    };
-  
-    const itemVariants = {
-      hidden: { y: 20, opacity: 0 },
-      visible: {
-        y: 0,
-        opacity: 1,
-        transition: {
-          duration: 0.5
-        }
-      }
-    };
-
-
     useEffect(() => {
       let glitchInterval;
       let textInterval;
@@ -188,10 +164,6 @@ const DesignSection = () => {
   return (
     
  <section className="overflow-hidden py24 bg-gradient-to-tr from-gray-900 via-blue-950 to-gray-950 dark:from-black dark:via-gray-900 dark:to-gray-950 relative">
-      
-      
-      
-
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16 relative z-10">
         
             {/* Header Section with animated reveal */}
@@ -213,9 +185,7 @@ const DesignSection = () => {
         </p>         
               
               <div className="flex mt-8 justify-self-center lg:justify-self-start gap-8 items-center flex-col lg:flex-row lg:gap-8 lg:items-start lg:mt-0 lg:mb-8"> 
-                
-                
-                
+                              
                 <Link 
   to="/custom-prebuilds" 
   onClick={handleCustomPreBuildsClick} 
