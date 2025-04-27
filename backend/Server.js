@@ -17,6 +17,7 @@ import prebuildRoutes from "./routes/prebuildRoutes.js";
 import filterRoutes from "./routes/filterRoutes.js";
 import orderRoutes from "./routes/OrderManagement/orderRoutes.js";
 import SuccessOrderRoutes from "./routes/OrderManagement/SuccessOrderRoutes.js";
+import taxRoutes from "./routes/Finance/taxRoutes.js";
 import reportRoutes from './routes/reportRoutesShop.js';
 
 import InvoiceRoutes from "./routes/Finance/InvoiceRoutes.js";
@@ -62,6 +63,7 @@ app.use("/api/successorders", SuccessOrderRoutes);
 app.use("/api/reports", reportRoutes);
 app.use('/api/invoices', InvoiceRoutes);
 app.use("/api/transactions", TransactionRoutes);
+app.use("/api/taxes", taxRoutes);
 app.use('/api/reports', reportRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/reviews", reviewRoutes);

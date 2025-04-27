@@ -73,7 +73,7 @@ function TransactionDashboard() {
 
   const calculateSaleTrends = () => {
     const salesByDate = {};
-    transactions.filter(t => t.type === "Income").forEach(t => {
+    transactions.filter(t => t.type === "Income" && t.category === "sales").forEach(t => {
       const date = new Date(t.date).toLocaleDateString(); // Group by date
       salesByDate[date] = (salesByDate[date] || 0) + t.amount;
     });
