@@ -5,6 +5,7 @@ const itemSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     refPath: "items.itemType"
+
   },
   itemType: {
     type: String,

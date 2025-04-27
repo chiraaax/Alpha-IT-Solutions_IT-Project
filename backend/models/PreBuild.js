@@ -17,7 +17,7 @@ const preBuildSchema = new mongoose.Schema(
       required: true,
       min: 0, // Ensure price is non-negative
     },
-    processor: { // Changed from cpu
+    processor: { 
       type: String,
       required: true,
     },
@@ -33,11 +33,11 @@ const preBuildSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    powerSupply: { // Changed from psu
+    powerSupply: {
       type: String,
       required: true,
     },
-    casings: { // Changed from casing
+    casings: {
       type: String,
       required: true,
     },

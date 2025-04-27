@@ -60,7 +60,6 @@ import BudgetBuilds from '../components/CustomBuilds/BudgetBuilds';
 import GamingBuildDetail from '../components/CustomBuilds/GamingBuildDetail';
 import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail'; 
 import CreateCustomBuild from '../components/CustomBuilds/CreateCustomPreBuild';
-import AICustomizeBuild from '../components/CustomBuilds/AICustomizeBuild'; 
 import PreBuildDashboard from "../components/CustomBuilds/PreBuildDashboard";
 import EditCustomPreBuild from '../components/CustomBuilds/EditCustomPreBuild';
 import AdminFiltersPage from '../pages/dashboard/admin/filterProducts/AdminFiltersPage';
@@ -74,6 +73,11 @@ import CodForm from '../components/OrderManagement/CodForm';
 import CatalogReportInline from '../pages/dashboard/user/shop/report/CatalogReportInline ';
 import OrderList from '../components/OrderManagement/OrderList';
 import TransactionPage from '../pages/dashboard/Finance/TransactionPage';
+import ImageUploader from '../components/shop/ai/ImageUploader';
+import UserInventoryDashboard from '../components/shop/UserInventoryDashboard';
+
+import PreBuild from '../../../backend/models/PreBuild';
+import BuildSuggestor from '../components/CustomBuilds/CustomBuildsAI/BuildSuggestor';
 
 
 const router = createBrowserRouter([
@@ -104,7 +108,7 @@ const router = createBrowserRouter([
       { path: 'search', element: <SearchPage /> },
       { path: 'gaming-builds', element: <GamingBuilds /> },
       { path: 'budget-builds', element: <BudgetBuilds /> },        
-      { path: 'gaming-builds/:id', element: <GamingBuildDetail /> },
+      { path: 'gaming-builds/:id', element: <ProtectedRoute><GamingBuildDetail /></ProtectedRoute> },
       
       //order routes
       { path: 'ShoppingCart', element: <ProtectedRoute><ShoppingCart /></ProtectedRoute> },
@@ -116,9 +120,20 @@ const router = createBrowserRouter([
       { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },  
       { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, 
        // Updated route for your custom dashboard
-      { path: 'ai-customize-build', element: <AICustomizeBuild /> }, 
+
+      { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, 
+      { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, 
+
+      //ai product routes
+      { path: 'AI-Engine', element: <ProtectedRoute allowedRoles={["user", "admin"]}><ImageUploader /></ProtectedRoute> },
+
+      
+
       { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, // ✅ New Route
       { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, // Updated route for your custom dashboard
+
+      //AI Build Suggestor Route
+      { path: 'AI-build-suggestor', element: <ProtectedRoute allowedRoles={["user", "admin"]}><BuildSuggestor /></ProtectedRoute> }, 
     ]
   },
 
@@ -135,7 +150,7 @@ const router = createBrowserRouter([
       // Customer routes
       { path: '', element: <div>Dashboard Home</div> },
       { path: 'reviews', element: <div>Reviews</div> },
-      { path: 'report-shop', element: <CatalogReportInline/> },
+      { path: 'report-shop', element: <UserInventoryDashboard/> },
       {path: 'user-profile_appointment', element: <UserAppointment /> },
       { path: 'Profile', element: <div><Profile/></div> },
       { path: 'UserInquiries', element: <div><UserInquiries/></div> },
