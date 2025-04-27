@@ -100,7 +100,7 @@ export default function AppointmentDashboard() {
     setBookingError("");
 
     if (Object.keys(errors).length > 0) {
-      setBookingError("Please fix all errors before submitting.");
+      setBookingError("Please match the requested format");
       return;
     }
 
