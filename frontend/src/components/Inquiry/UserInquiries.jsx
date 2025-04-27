@@ -1,14 +1,62 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "../../context/authContext";
-import { toast } from "react-toastify";
+
+// Custom Message Component (positioned top-right)
+const MessageComponent = ({ type, message, onClose }) => {
+  if (!message) return null;
+
+  const baseStyles = "fixed top-6 right-6 p-4 rounded-lg shadow-xl flex items-center max-w-md z-50 transition-all duration-300";
+  const iconStyles = "mr-3 text-xl";
+  
+  const typeStyles = {
+    success: `${baseStyles} bg-green-100 border-l-4 border-green-500 text-green-700`,
+    error: `${baseStyles} bg-red-100 border-l-4 border-red-500 text-red-700`,
+    warning: `${baseStyles} bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700`,
+    info: `${baseStyles} bg-blue-100 border-l-4 border-blue-500 text-blue-700`,
+  };
+
+  const icons = {
+    success: '✅',
+    error: '❌',
+    warning: '⚠️',
+    info: 'ℹ️'
+  };
+
+  return (
+    <div className={typeStyles[type]}>
+      <span className={iconStyles}>{icons[type]}</span>
+      <div>
+        <p className="font-medium">{type.charAt(0).toUpperCase() + type.slice(1)}</p>
+        <p>{message}</p>
+      </div>
+      <button 
+        onClick={onClose}
+        className="ml-4 text-gray-500 hover:text-gray-700"
+      >
+        &times;
+      </button>
+    </div>
+  );
+};
 
 function UserInquiries() {
     const { user, setUser } = useContext(AuthContext);
-
     const [inquiries, setInquiries] = useState([]);
     const [editingInquiry, setEditingInquiry] = useState(null);
     const [updatedData, serUpdatedData] = useState({});
+    
+    // Message state
+    const [message, setMessage] = useState({ text: "", type: "", show: false });
+
+    const showMessage = (text, type = "info") => {
+      setMessage({ text, type, show: true });
+      setTimeout(() => setMessage({ text: "", type: "", show: false }), 5000);
+    };
+
+    const closeMessage = () => {
+      setMessage({ text: "", type: "", show: false });
+    };
 
     useEffect(() => {
         console.log("User data:", user); 
@@ -33,7 +81,7 @@ function UserInquiries() {
                     headers: { 
                         Authorization: `Bearer ${token}`,
                     },
-                    timeout: 10000 // 10 second timeout
+                    timeout: 10000
                 }
             );
     
@@ -52,19 +100,18 @@ function UserInquiries() {
             });
     
             if (error.code === 'ECONNABORTED') {
-                toast.error("Request timed out. Please check your connection.");
+                showMessage("Request timed out. Please check your connection.", "error");
             } 
             else if (error.response?.status === 503) {
-                toast.error("Server busy. Please try again shortly.");
+                showMessage("Server busy. Please try again shortly.", "error");
             }
             else if (error.message.includes("Invalid response")) {
-                toast.error("Data format error. Contact support.");
+                showMessage("Data format error. Contact support.", "error");
             }
             else {
-                toast.error("Failed to load inquiries. Please refresh.");
+                showMessage("Failed to load inquiries. Please refresh.", "error");
             }
             
-            // Set empty array on error to prevent UI issues
             setInquiries([]); 
         }
     };
@@ -74,19 +121,18 @@ function UserInquiries() {
         if (!isConfirmed) return;
 
         try {
-            // Frontend time validation (duplicates backend check for UX)
             const createdTime = new Date(createdAt).getTime();
             const currentTime = Date.now();
             const hoursDiff = (currentTime - createdTime) / (1000 * 60 * 60);
 
             if (hoursDiff > 24) {
-                toast.error(`This inquiry is ${Math.round(hoursDiff)} hours old. Deletion is only allowed within 24 hours.`);
+                showMessage(`This inquiry is ${Math.round(hoursDiff)} hours old. Deletion is only allowed within 24 hours.`, "error");
                 return;
             }
 
             const token = localStorage.getItem("token");
             if (!token) {
-                toast.error("Authentication required. Please log in again.");
+                showMessage("Authentication required. Please log in again.", "error");
                 return;
             }
 
@@ -99,14 +145,14 @@ function UserInquiries() {
                     headers: { 
                         Authorization: `Bearer ${token}`,
                     },
-                    timeout: 10000 // 10 second timeout
+                    timeout: 10000
                 }
             );
 
-            // Verify successful deletion
-            toast.success("Deletion confirmed!");
+            showMessage("Deletion confirmed!", "success");
         } catch (error) {
             console.error("Error deleting inquiry:", error);
+            showMessage("Failed to delete inquiry.", "error");
         }
     };
 
@@ -120,7 +166,7 @@ function UserInquiries() {
 
         if (!resolvedAt) return "No resolution time set";
     
-        const deletionTime = new Date(resolvedAt).getTime() + 48 * 60 * 60 * 1000; // 48 hours after resolution
+        const deletionTime = new Date(resolvedAt).getTime() + 48 * 60 * 60 * 1000;
         const now = Date.now();
         const difference = deletionTime - now;
     
@@ -143,22 +189,20 @@ function UserInquiries() {
         e.preventDefault();
     
         try {
-            // Frontend time validation (duplicates backend check for UX)
             const hoursSinceCreation = (Date.now() - new Date(updatedData.createdAt)) / (1000 * 60 * 60);
             if (hoursSinceCreation > 24) {
-                toast.error(`This inquiry is ${Math.round(hoursSinceCreation)} hours old. Updates are only allowed within 24 hours.`);
+                showMessage(`This inquiry is ${Math.round(hoursSinceCreation)} hours old. Updates are only allowed within 24 hours.`, "error");
                 return;
             }
     
-            // Input validation
             if (!updatedData.inquirySubject || !updatedData.additionalDetails) {
-                toast.error("Please provide both subject and details");
+                showMessage("Please provide both subject and details", "error");
                 return;
             }
     
             const token = localStorage.getItem("token");
             if (!token) {
-                toast.error("Authentication required. Please log in again.");
+                showMessage("Authentication required. Please log in again.", "error");
                 return;
             }
     
@@ -179,35 +223,43 @@ function UserInquiries() {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
-                    timeout: 10000 // 10 second timeout
+                    timeout: 10000
                 }
             );
     
-            // Verify successful update
             if (response.data?.updatedInquiry) {
                 setInquiries(prev => prev.map(inquiry => 
                     inquiry._id === updatedData._id ? response.data.updatedInquiry : inquiry
                 ));
-                toast.success("Update confirmed!");
+                showMessage("Update confirmed!", "success");
             }
             setEditingInquiry(null);
     
         } catch (error) {
             console.error("Error updating inquiry:", error);
+            showMessage("Failed to update inquiry.", "error");
         }
     };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 p-8">
+      {/* Message Component */}
+      {message.show && (
+        <MessageComponent 
+          type={message.type} 
+          message={message.text} 
+          onClose={closeMessage}
+        />
+      )}
 
-    {/* Inquiry Section */}
-    <h2 className="text-4xl font-extrabold text-center text-blue-400 mb-4 tracking-wide">
-         My Inquiries
-    </h2>
-    <p className="text-lg text-center text-gray-300 opacity-80 mb-8">
-        View and manage your submitted inquiries. You can update, delete, or track the status of each inquiry here.
-    </p>
-    
+      {/* Inquiry Section */}
+      <h2 className="text-4xl font-extrabold text-center text-blue-400 mb-4 tracking-wide">
+           My Inquiries
+      </h2>
+      <p className="text-lg text-center text-gray-300 opacity-80 mb-8">
+          View and manage your submitted inquiries. You can update, delete, or track the status of each inquiry here.
+      </p>
+      
       <div className="bg-gray-800 shadow-xl rounded-lg p-6 max-w-4xl mx-auto border border-gray-700">
             {inquiries.length === 0 ? (
                 <p className="text-center text-gray-400">No inquiries submitted yet.</p>
@@ -275,7 +327,6 @@ function UserInquiries() {
             )}
       </div>
     </div>
-
   );
 }
 

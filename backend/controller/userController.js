@@ -4,11 +4,11 @@ import bcrypt from 'bcryptjs';
 
 export const updateUser = async(req, res) => {
     try{
-        const {name, email} = req.body;
+        const {name, email, contactNumber, address} = req.body;
         const updatedUser = await User.findByIdAndUpdate(
             req.user.id,
             {name, email, contactNumber, address},
-            {new: true}
+            {new: true, maxTimeMS: 5000}
         );
 
         if(!updatedUser){
@@ -17,23 +17,30 @@ export const updateUser = async(req, res) => {
 
         res.status(200).json({
             message: "User updated successfully", 
-            user: {
-                id: updatedUser._id,
-                name: updatedUser.name,
-                email: updatedUser.email,
-                contactNumber: updatedUser.contactNumber,
-                address: updatedUser.address,
-            }
+            user: updatedUser
         });
 
     }catch(error){
-        res.status(500).json({ message: "Error updating user", error: error.message });
+        console.error("Update User Error:", {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
+
+        if (error.name === 'MongoServerError' || error.message.includes('operation timed out')) {
+            return res.status(503).json({ message: "Database operation timed out" });
+        }
+        res.status(500).json({ 
+            message: "Error updating user",
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }    
 };
 
 export const deleteUser = async(req, res) => {
     try{
-        const user = await User.findByIdAndDelete(req.user.id);
+        const user = await User.findByIdAndDelete(req.user.id)
+            .maxTimeMS(5000);
 
         if(!user){
             return res.status(404).json({message: "User not found"});
@@ -45,14 +52,27 @@ export const deleteUser = async(req, res) => {
         });
 
     }catch(error){
-        res.status(500).json({ message: "Error deleting user", error: error.message });
+        console.error("Delete User Error:", {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
+
+        if (error.name === 'MongoServerError' || error.message.includes('operation timed out')) {
+            return res.status(503).json({ message: "Database operation timed out" });
+        }
+        res.status(500).json({ 
+            message: "Error deleting user",
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 };
 
 export const changePassword = async(req, res) => {
     try{
         const {oldPassword, newPassword} = req.body;
-        const user = await User.findById(req.user.id);
+        const user = await User.findById(req.user.id)
+            .maxTimeMS(5000);
 
         if(!user){
             return res.status(404).json({message: "User not found"});
@@ -64,14 +84,26 @@ export const changePassword = async(req, res) => {
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         user.password = hashedPassword;
-        await user.save();
+        await user.save({ maxTimeMS: 5000 });
 
         res.status(200).json({
             message: "Password changed successfully",
             logout: true //Signal frontend to log out
         });
     }catch(error){
-        res.status(500).json({message: "Error changing password", error: error.message});
+        console.error("Change Password Error:", {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
+
+        if (error.name === 'MongoServerError' || error.message.includes('operation timed out')) {
+            return res.status(503).json({ message: "Database operation timed out" });
+        }
+        res.status(500).json({
+            message: "Error changing password",
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 };
 
