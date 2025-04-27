@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify"; // ✅ Import ToastContainer
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Break from './components/Break';
-import { ThemeProvider } from './components/CustomBuilds/ThemeContext'; // Import ThemeProvider
+import { ThemeProvider } from './components/CustomBuilds/ThemeContext'; 
 import './App.css';
 import "react-toastify/dist/ReactToastify.css";
 
