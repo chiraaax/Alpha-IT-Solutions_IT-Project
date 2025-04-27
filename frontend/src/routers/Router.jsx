@@ -76,6 +76,7 @@ import UserInventoryDashboard from '../components/shop/UserInventoryDashboard';
 
 import PreBuild from '../../../backend/models/PreBuild';
 import BuildSuggestor from '../components/CustomBuilds/CustomBuildsAI/BuildSuggestor';
+import PreBuildAnalytics from '../components/CustomBuilds/PreBuildAnalytics';
 
 
 const router = createBrowserRouter([
@@ -129,7 +130,7 @@ const router = createBrowserRouter([
 
       { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, // ✅ New Route
       { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, // Updated route for your custom dashboard
-
+      { path: 'prebuild-analytics', element: <PreBuildAnalytics></PreBuildAnalytics>},
       //AI Build Suggestor Route
       { path: 'AI-build-suggestor', element: <ProtectedRoute allowedRoles={["user", "admin"]}><BuildSuggestor /></ProtectedRoute> }, 
     ]
