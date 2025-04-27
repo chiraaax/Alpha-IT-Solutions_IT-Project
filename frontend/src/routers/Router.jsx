@@ -18,6 +18,7 @@ import ProtectedRoute from "../routers/ProtectedRoute";
 import DashboardLayout from "../pages/dashboard/DashboardLayout";
 import ContactUs from '../components/Contact/ContactUs';
 import AdminPanel from '../pages/dashboard/admin/dashboard/AdminDMain' 
+import AboutUs from '../components/Aboutus';
 
 import AddProduct from '../pages/dashboard/admin/addProduct/AddProduct';
 import ManageProducts from '../pages/dashboard/admin/manageProducts/ManageProducts';
@@ -80,6 +81,7 @@ const router = createBrowserRouter([
     children: [
       { path: '', element: <Home /> },
       { path: 'products/:category', element: <ProductCategory /> },
+      { path: 'about', element: <AboutUs/> },
       { path: 'appointment', element: <ProtectedRoute><AppointmentDashboard /></ProtectedRoute> },
       { path: 'AppointmenentAI', element: <ProtectedRoute><AppointmenentAI /></ProtectedRoute> },
       { path: 'draftedTechnicianReport', element: <ProtectedRoute><DraftedTechniciansReports /></ProtectedRoute> },
