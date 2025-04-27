@@ -70,6 +70,8 @@ import ShoppingCart from '../pages/OrderManagement/ShoppingCart';
 import CheckoutForm from '../components/OrderManagement/CheckoutForm';
 import PickupForm from '../components/OrderManagement/pickupForm';
 import CodForm from '../components/OrderManagement/CodForm';
+import orderAI from '../components/OrderManagement/orderAI';
+import OrderSupportChat from '../components/OrderManagement/OrderSupportChat';
 import CatalogReportInline from '../pages/dashboard/user/shop/report/CatalogReportInline ';
 import OrderList from '../components/OrderManagement/OrderList';
 import TransactionPage from '../pages/dashboard/Finance/TransactionPage';
@@ -117,6 +119,9 @@ const router = createBrowserRouter([
       { path: 'CheckoutForm/:email', element: <ProtectedRoute><CheckoutForm /></ProtectedRoute> },
       { path: 'PickupForm', element: <ProtectedRoute><PickupForm /></ProtectedRoute> },
       { path: 'CodForm', element: <ProtectedRoute><CodForm /></ProtectedRoute> },
+      { path: 'orderAI', element: <ProtectedRoute><orderAI /></ProtectedRoute> },
+      { path: 'OrderSupportChat', element: <ProtectedRoute><OrderSupportChat /></ProtectedRoute> },
+
       { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },  
       { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, 
        // Updated route for your custom dashboard
