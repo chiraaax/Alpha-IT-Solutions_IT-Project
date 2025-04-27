@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import InquiryChart from "../../../../components/InquiryChart/InquiryChart";
 import ReviewChart from "../../../../components/ReviewChart/ReviewChart";
 import AppointmentAnalytics from "../charts/AppointmentChart";
+import OrderChart from "../../../../components/orderChart/orderChart";
+import OrderSuccessDashboard from "../../../../components/orderChart/OrderSuccessDashboard";
 
 const Dashboard = () => {
   const [activeChart, setActiveChart] = useState(null);
@@ -56,6 +58,36 @@ const Dashboard = () => {
           {activeChart === "appointment" && (
             <div style={chartContainer}>
               <AppointmentAnalytics />
+            </div>
+          )}
+
+          <button
+            style={{
+              ...chartButton,
+              ...(activeChart === "order" ? activeButtonStyle : {}),
+            }}
+            onClick={() => handleChartClick("order")}
+          >
+            Order Overview
+          </button>
+          {activeChart === "order" && (
+            <div style={chartContainer}>
+              <OrderChart />
+            </div>
+          )}
+
+          <button
+            style={{
+              ...chartButton,
+              ...(activeChart === "Successorder" ? activeButtonStyle : {}),
+            }}
+            onClick={() => handleChartClick("Successorder")}
+          >
+            SuccessOrder Overview
+          </button>
+          {activeChart === "Successorder" && (
+            <div style={chartContainer}>
+              <OrderSuccessDashboard />
             </div>
           )}
         </section>
