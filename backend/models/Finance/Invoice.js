@@ -5,7 +5,10 @@ const InvoiceSchema = new mongoose.Schema({
     items: [{ name: String, price: Number, quantity: Number }],
     totalAmount: Number,
     status: { type: String, enum: ['Paid', 'Pending'], default: 'Pending' },
-    date: Date
+    date: {
+        type: Date,
+        default: Date.now
+    },
 });
 
 export default mongoose.model("Invoice", InvoiceSchema);

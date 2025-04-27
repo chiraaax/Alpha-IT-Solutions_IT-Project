@@ -3,6 +3,8 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import cartReducer from './features/cart/cartReducer';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage
+import axios from 'axios';
+
 
 const persistConfig = {
   key: 'root',

@@ -68,20 +68,21 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    // Clear the cart by dispatching a CLEAR_CART action.
     dispatch({ type: 'CLEAR_CART' });
-    // Purge persisted Redux state.
     persistor.purge();
-    // Call the logout function from AuthContext.
+  
     if (logout) {
       logout();
     } else {
       console.log('Logging out...');
     }
+  
     setIsDropDownOpen(false);
-    // Redirect the user to the login page.
     navigate('/login');
+    window.location.reload(); 
   };
+  
+  
 
   return (
     <header
@@ -155,6 +156,7 @@ const Navbar = () => {
                     <li>
                       <button 
                         onClick={handleLogout} 
+                        
                         className="w-full text-left px-4 py-2 rounded-lg text-white font-semibold transition-all duration-300 shadow-md"
                         style={{
                           textAlign: "center",

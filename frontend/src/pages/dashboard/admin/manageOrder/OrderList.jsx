@@ -20,7 +20,7 @@ const OrderList = () => {
           return;
         }
 
-        const response = await fetch("http://localhost:5000/api/successorders/successorder/all", {
+        const response = await fetch("http://localhost:5000/api/successorders/successOrder/allOrders", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -61,7 +61,7 @@ const OrderList = () => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:5000/api/successorders/successorder/${selectedOrder._id}`,
+        `http://localhost:5000/api/successorders/${selectedOrder._id}`,
         {
           method: "PUT",
           headers: {
@@ -105,7 +105,7 @@ const OrderList = () => {
         <tr>
           <td>${index + 1}</td>
           <td>${order.customerId}</td>
-          <td>$${order.totalAmount.toFixed(2)}</td>
+          <td>LKR${order.totalAmount.toFixed(2)}</td>
           <td>${order.status}</td>
           <td>${new Date(order.createdAt).toLocaleString()}</td>
         </tr>
@@ -213,7 +213,7 @@ const OrderList = () => {
                 <tr key={order._id} onClick={() => handleRowClick(order)}>
                   <td>{index + 1}</td>
                   <td>{order.customerId}</td>
-                  <td>${order.totalAmount.toFixed(2)}</td>
+                  <td>LKR {order.totalAmount.toFixed(2)}</td>
                   <td>{order.status}</td>
                   <td>{new Date(order.createdAt).toLocaleString()}</td>
                 </tr>
