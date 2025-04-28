@@ -62,7 +62,7 @@ import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail';
 import CreateCustomBuild from '../components/CustomBuilds/CreateCustomPreBuild';
 import PreBuildDashboard from "../components/CustomBuilds/PreBuildDashboard";
 import EditCustomPreBuild from '../components/CustomBuilds/EditCustomPreBuild';
-import AdminFiltersPage from '../pages/dashboard/admin/filterProducts/AdminFiltersPage';
+
 
 
 //order management
@@ -70,7 +70,6 @@ import ShoppingCart from '../pages/OrderManagement/ShoppingCart';
 import CheckoutForm from '../components/OrderManagement/CheckoutForm';
 import PickupForm from '../components/OrderManagement/pickupForm';
 import CodForm from '../components/OrderManagement/CodForm';
-import orderAI from '../components/OrderManagement/orderAI';
 import OrderSupportChat from '../components/OrderManagement/OrderSupportChat';
 import CatalogReportInline from '../pages/dashboard/user/shop/report/CatalogReportInline ';
 import OrderList from '../components/OrderManagement/OrderList';
@@ -78,8 +77,8 @@ import TransactionPage from '../pages/dashboard/Finance/TransactionPage';
 import ImageUploader from '../components/shop/ai/ImageUploader';
 import UserInventoryDashboard from '../components/shop/UserInventoryDashboard';
 
-import PreBuild from '../../../backend/models/PreBuild';
 import BuildSuggestor from '../components/CustomBuilds/CustomBuildsAI/BuildSuggestor';
+import AllInventoryRelated from '../pages/dashboard/admin/inventoryManagement/AllInventoryRelated';
 
 
 const router = createBrowserRouter([
@@ -163,12 +162,9 @@ const router = createBrowserRouter([
 
       // Admin routes
       { path: 'admin', element: <ProtectedRoute allowedRoles={["admin"]}><div><AdminPanel/></div></ProtectedRoute> },
-      { path: 'add-new-product', element: <ProtectedRoute allowedRoles={["admin"]}><AddProduct /></ProtectedRoute> },
-      { path: 'manage-products', element: <ProtectedRoute allowedRoles={["admin"]}><ManageProducts /></ProtectedRoute> },
-      { path: 'manage-inventory', element: <ProtectedRoute allowedRoles={["admin"]}><ManageInventory /></ProtectedRoute> },
+      { path: 'add-new-product', element: <ProtectedRoute allowedRoles={["admin"]}><AllInventoryRelated /></ProtectedRoute> },
       { path: 'UserManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><UserManage/></div></ProtectedRoute> },
       { path: 'manage-appointments', element: <ProtectedRoute allowedRoles={["admin"]}><ManageAppointments /></ProtectedRoute> },
-      { path: 'filters', element: <ProtectedRoute allowedRoles={["admin"]}>< AdminFiltersPage/></ProtectedRoute> },
       { path: 'create-custom-prebuild', element: <ProtectedRoute allowedRoles={["admin"]}><CreateCustomBuild /></ProtectedRoute> },
       { path: 'prebuild-dashboard', element: <ProtectedRoute allowedRoles={["admin"]}><PreBuildDashboard /></ProtectedRoute>  },
       { path: 'manageOrder', element: <ProtectedRoute allowedRoles={["admin"]}><ManageOrder /></ProtectedRoute>  },

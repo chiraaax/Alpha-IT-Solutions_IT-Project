@@ -8,8 +8,11 @@ const FilterForm = ({ existingFilter }) => {
   // Form state
   const [category, setCategory] = useState(existingFilter?.category || "");
   const [priceRange, setPriceRange] = useState(
+    
     existingFilter?.priceRange || { min: 0, max: 0 }
   );
+
+
   const [availability, setAvailability] = useState(
     existingFilter?.availability || []
   );
@@ -95,26 +98,57 @@ const FilterForm = ({ existingFilter }) => {
         <div className="mb-6">
           <label className="block text-sky-300 mb-2">Price Range:</label>
           <div className="flex space-x-4">
-            <input
-              type="number"
-              placeholder="Min (-1 or greater)"
-              value={priceRange.min}
-              onChange={(e) =>
-                setPriceRange({ ...priceRange, min: Number(e.target.value) })
+          <input
+            type="number"
+            placeholder="Min (-1 or greater)"
+            value={priceRange.min !== undefined ? priceRange.min : ''}
+            onChange={(e) => {
+              let value = e.target.value;
+              if (value.length > 1 && value.startsWith('0')) {
+                value = value.replace(/^0+/, '');
+                if (value === '') value = '0';
               }
-              required
-              className="w-1/2 p-3 bg-gray-800 text-sky-100 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-sky-500"
-            />
-            <input
-              type="number"
-              placeholder="Max"
-              value={priceRange.max}
-              onChange={(e) =>
-                setPriceRange({ ...priceRange, max: Number(e.target.value) })
+              const numericValue = Number(value);
+              if (numericValue >= 0 || value === '') {
+                setPriceRange({ ...priceRange, min: value === '' ? '' : numericValue });
               }
-              required
-              className="w-1/2 p-3 bg-gray-800 text-sky-100 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-sky-500"
-            />
+            }}
+            onKeyDown={(e) => {
+              if (e.key === '-' && e.target.selectionStart !== 0) {
+                e.preventDefault();  // Allow "-" only as first character if you really want "-1"
+              }
+              if (e.key === 'e' || e.key === '+') {
+                e.preventDefault(); // Block exponential or plus
+              }
+            }}
+            required
+            className="w-1/2 p-3 bg-gray-800 text-sky-100 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-sky-500"
+          />
+
+          <input
+            type="number"
+            placeholder="Max"
+            value={priceRange.max !== undefined ? priceRange.max : ''}
+            onChange={(e) => {
+              let value = e.target.value;
+              if (value.length > 1 && value.startsWith('0')) {
+                value = value.replace(/^0+/, '');
+                if (value === '') value = '0';
+              }
+              const numericValue = Number(value);
+              if (numericValue >= 0 || value === '') {
+                setPriceRange({ ...priceRange, max: value === '' ? '' : numericValue });
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === '-' || e.key === 'e' || e.key === '+') {
+                e.preventDefault();
+              }
+            }}
+            required
+            className="w-1/2 p-3 bg-gray-800 text-sky-100 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-sky-500"
+          />
+
           </div>
         </div>
         <div className="mb-6">

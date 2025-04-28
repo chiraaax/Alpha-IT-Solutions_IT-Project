@@ -160,11 +160,21 @@ const AddProduct = () => {
       const response = await axios.post("http://localhost:5000/api/products", productData);
       if (response.status === 201) {
         toast.success("Product added successfully!");
-        // Delay navigation to allow the user to see the success notification
         setTimeout(() => {
-          navigate("/dashboard/manage-products");
-          window.scrollTo(0, document.body.scrollHeight);
-        }, 3000); // 3 seconds delay
+          // Clear all form fields
+          setSelectedProductType("");
+          setProduct({
+            price: "",
+            availability: "",
+            state: "",
+            description: "",
+            additionalSpecs: [],
+          });
+          setNewSpec({ key: "", value: "" });
+          setImage("");
+          setErrors({});
+          setConfigData(null);
+        }, 1500); // enough delay for smooth reset
       }
     } catch (error) {
       console.error("❌ Error adding product:", error);
@@ -172,6 +182,7 @@ const AddProduct = () => {
     } finally {
       setIsLoading(false);
     }
+    
   };
 
   const inputClass =
@@ -221,10 +232,32 @@ const AddProduct = () => {
                     name="price"
                     type="number"
                     placeholder={`Min: ${configData.priceRange.min} - Max: ${configData.priceRange.max}`}
-                    value={product.price}
-                    onChange={handleChange}
+                    value={product.price !== undefined ? product.price : ''}
+                    onChange={(e) => {
+                      let value = e.target.value;
+                      // Remove leading zeros
+                      if (value.length > 1 && value.startsWith('0')) {
+                        value = value.replace(/^0+/, '');
+                        if (value === '') value = '0'; // if only zeros were there
+                      }
+                      const numericValue = Number(value);
+                      if ((numericValue >= 0 && !isNaN(numericValue)) || value === '') {
+                        setProduct((prev) => ({
+                          ...prev,
+                          price: value === '' ? '' : numericValue
+                        }));
+                        setErrors((prev) => ({ ...prev, price: "" })); // Clear price error on typing
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === '-' || e.key === 'e' || e.key === '+') {
+                        e.preventDefault(); // block minus, exponential, plus
+                      }
+                    }}
                     className={inputClass}
                   />
+
+
                   {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
                 </div>
                 <div className="space-y-2">

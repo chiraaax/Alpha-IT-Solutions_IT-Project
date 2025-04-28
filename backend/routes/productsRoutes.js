@@ -167,20 +167,29 @@ router.patch('/:productId', async (req, res) => {
 });
 
 // PATCH /api/products/:productId/inventory - Update a product's inventory
+// PATCH /api/products/:productId/inventory
 router.patch("/:productId/inventory", async (req, res) => {
   try {
-    const { displayedStock, discount, discountPrice, threshold } = req.body;
+    const {
+      displayedStock,
+      availability,
+      discount,
+      discountPrice,
+      threshold
+    } = req.body;
+
     if (displayedStock === undefined) {
       return res.status(400).json({ message: "displayedStock is required." });
     }
 
-    // Build update doc
+    // Build the update document
     const updateFields = { displayedStock };
-    if (discount     !== undefined) updateFields.discount     = discount;
-    if (discountPrice!== undefined) updateFields.discountPrice= discountPrice;
-    if (threshold    !== undefined) updateFields.threshold    = threshold;
+    if (availability   !== undefined) updateFields.availability   = availability;
+    if (discount       !== undefined) updateFields.discount       = discount;
+    if (discountPrice  !== undefined) updateFields.discountPrice  = discountPrice;
+    if (threshold      !== undefined) updateFields.threshold      = threshold;
 
-    // Persist
+    // Persist to the DB
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.productId,
       { $set: updateFields },
@@ -190,7 +199,7 @@ router.patch("/:productId/inventory", async (req, res) => {
       return res.status(404).json({ message: "Product not found." });
     }
 
-    // If it hit or fell below its threshold, send the admin an email
+    // Optional: send low-stock alert if below threshold
     if (updatedProduct.displayedStock <= updatedProduct.threshold) {
       sendLowStockAlert(updatedProduct)
         .catch(err => console.error("Failed to send low-stock email:", err));
@@ -199,9 +208,12 @@ router.patch("/:productId/inventory", async (req, res) => {
     return res.status(200).json(updatedProduct);
   } catch (err) {
     console.error("Error updating inventory:", err);
-    return res.status(500).json({ message: "Internal server error", error: err.message });
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: err.message });
   }
 });
+
 
 
 // DELETE /api/products/:id - Delete a product
