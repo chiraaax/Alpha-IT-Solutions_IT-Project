@@ -99,7 +99,7 @@ const OrderList = () => {
 
   const handleGenerateFullReport = () => {
     const reportWindow = window.open("", "_blank");
-  
+
     const tableRows = filteredOrders.map((order, index) => {
       return `
         <tr>
@@ -111,7 +111,7 @@ const OrderList = () => {
         </tr>
       `;
     }).join("");
-  
+
     const htmlContent = `
       <html>
         <head>
@@ -120,6 +120,8 @@ const OrderList = () => {
             body {
               font-family: Arial, sans-serif;
               padding: 20px;
+              background-color: #121212;
+              color: #eee;
             }
             h2 {
               text-align: center;
@@ -128,14 +130,15 @@ const OrderList = () => {
             table {
               width: 100%;
               border-collapse: collapse;
+              background-color: #1e1e1e;
             }
             th, td {
               padding: 10px;
-              border: 1px solid #ccc;
+              border: 1px solid #333;
               text-align: left;
             }
             th {
-              background-color: #f2f2f2;
+              background-color: #272727;
             }
           </style>
         </head>
@@ -158,23 +161,30 @@ const OrderList = () => {
         </body>
       </html>
     `;
-  
+
     reportWindow.document.write(htmlContent);
     reportWindow.document.close();
     reportWindow.print();
   };
-  
 
   return (
-    <div className="dashboard-container">
-      <div className="header">
-        <h1>Success Order Management</h1>
+    <div style={{ backgroundColor: "#121212", color: "#e0e0e0", minHeight: "100vh", padding: "20px", fontFamily: "'Poppins', sans-serif" }}>
+      <div style={{ marginBottom: "20px" }}>
+        <h1 style={{ textAlign: "center", color: "#90caf9" }}>Success Order Management</h1>
         <input
           type="text"
           placeholder="Search by status..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="search-bar"
+          style={{
+            width: "100%",
+            padding: "10px",
+            borderRadius: "8px",
+            border: "1px solid #333",
+            backgroundColor: "#1e1e1e",
+            color: "#e0e0e0",
+            marginTop: "10px",
+          }}
         />
       </div>
 
@@ -182,45 +192,52 @@ const OrderList = () => {
         <button
           onClick={handleGenerateFullReport}
           style={{
-            padding: "8px 16px",
-            marginTop: "10px",
-            backgroundColor: "#2196F3",
+            padding: "10px 20px",
+            backgroundColor: "#1976d2",
             color: "#fff",
             border: "none",
-            borderRadius: "5px",
-            cursor: "pointer"
+            borderRadius: "8px",
+            cursor: "pointer",
+            marginBottom: "20px",
+            display: "block",
+            marginLeft: "auto",
+            marginRight: "auto",
           }}
         >
           Generate Full Report
         </button>
       </div>
 
-      <div className="order-details">
-        <h2>Orders</h2>
-        <table>
+      <div style={{ overflowX: "auto" }}>
+        <h2 style={{ marginBottom: "10px" }}>Orders</h2>
+        <table style={{ width: "100%", borderCollapse: "collapse", backgroundColor: "#1e1e1e" }}>
           <thead>
-            <tr>
-              <th>ID</th>
-              <th>Customer ID</th>
-              <th>Total Amount</th>
-              <th>Status</th>
-              <th>Created At</th>
+            <tr style={{ backgroundColor: "#272727" }}>
+              <th style={{ padding: "12px", border: "1px solid #333" }}>ID</th>
+              <th style={{ padding: "12px", border: "1px solid #333" }}>Customer ID</th>
+              <th style={{ padding: "12px", border: "1px solid #333" }}>Total Amount</th>
+              <th style={{ padding: "12px", border: "1px solid #333" }}>Status</th>
+              <th style={{ padding: "12px", border: "1px solid #333" }}>Created At</th>
             </tr>
           </thead>
           <tbody>
             {filteredOrders.length > 0 ? (
               filteredOrders.map((order, index) => (
-                <tr key={order._id} onClick={() => handleRowClick(order)}>
-                  <td>{index + 1}</td>
-                  <td>{order.customerId}</td>
-                  <td>LKR {order.totalAmount.toFixed(2)}</td>
-                  <td>{order.status}</td>
-                  <td>{new Date(order.createdAt).toLocaleString()}</td>
+                <tr
+                  key={order._id}
+                  onClick={() => handleRowClick(order)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <td style={{ padding: "10px", border: "1px solid #333" }}>{index + 1}</td>
+                  <td style={{ padding: "10px", border: "1px solid #333" }}>{order.customerId}</td>
+                  <td style={{ padding: "10px", border: "1px solid #333" }}>LKR {order.totalAmount.toFixed(2)}</td>
+                  <td style={{ padding: "10px", border: "1px solid #333" }}>{order.status}</td>
+                  <td style={{ padding: "10px", border: "1px solid #333" }}>{new Date(order.createdAt).toLocaleString()}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="5" style={{ textAlign: "center" }}>
+                <td colSpan="5" style={{ textAlign: "center", padding: "20px" }}>
                   No orders found.
                 </td>
               </tr>
@@ -230,55 +247,69 @@ const OrderList = () => {
       </div>
 
       {isModalOpen && selectedOrder && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
+        <div style={{
+          position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
+          backgroundColor: "rgba(0,0,0,0.7)", display: "flex", justifyContent: "center", alignItems: "center",
+          zIndex: 1000
+        }}>
+          <div style={{ backgroundColor: "#1e1e1e", padding: "30px", borderRadius: "10px", width: "90%", maxWidth: "500px", color: "#e0e0e0" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <h2>Order Details</h2>
-              <button className="close-btn" onClick={() => setIsModalOpen(false)}>
-                &times;
-              </button>
+              <button onClick={() => setIsModalOpen(false)} style={{
+                background: "transparent",
+                border: "none",
+                fontSize: "24px",
+                color: "#f44336",
+                cursor: "pointer"
+              }}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div style={{ marginTop: "20px" }}>
               <p><strong>Customer ID:</strong> {selectedOrder.customerId}</p>
-              <p><strong>Total Amount:</strong> ${selectedOrder.totalAmount.toFixed(2)}</p>
+              <p><strong>Total Amount:</strong> LKR {selectedOrder.totalAmount.toFixed(2)}</p>
               <p><strong>Status:</strong> {selectedOrder.status}</p>
               <p><strong>Created At:</strong> {new Date(selectedOrder.createdAt).toLocaleString()}</p>
 
-              <div className="modal-actions" style={{ marginTop: "12px", display: "flex", gap: "10px" }}>
-              <button
-                className="btn approve-btn"
-                onClick={() => {
-                  if (window.confirm("Are you sure you want to approve this order?")) {
-                    updateOrderStatus("Approved");
-                  }
-                }}
-                disabled={isButtonDisabled}
-              style={{
-                backgroundColor: isButtonDisabled ? "#ccc" : "#4CAF50",
-                color: isButtonDisabled ? "#666" : "#fff",
-                cursor: isButtonDisabled ? "not-allowed" : "pointer",
-              }}
-            >
-              Approve
-            </button>
+              <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
+                <button
+                  onClick={() => {
+                    if (window.confirm("Are you sure you want to approve this order?")) {
+                      updateOrderStatus("Approved");
+                    }
+                  }}
+                  disabled={isButtonDisabled}
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    backgroundColor: isButtonDisabled ? "#555" : "#4caf50",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: isButtonDisabled ? "not-allowed" : "pointer",
+                  }}
+                >
+                  Approve
+                </button>
 
-            <button
-              className="btn disapprove-btn"
-              onClick={() => {
-                if (window.confirm("Are you sure you want to cancel this order?")) {
-                  updateOrderStatus("Cancelled");
-                }
-              }}
-              disabled={isButtonDisabled}
-              style={{
-                backgroundColor: isButtonDisabled ? "#ccc" : "#f44336",
-                color: isButtonDisabled ? "#666" : "#fff",
-                cursor: isButtonDisabled ? "not-allowed" : "pointer",
-              }}
-            >
-              Cancel
-            </button>
-            </div>
+                <button
+                  onClick={() => {
+                    if (window.confirm("Are you sure you want to cancel this order?")) {
+                      updateOrderStatus("Cancelled");
+                    }
+                  }}
+                  disabled={isButtonDisabled}
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    backgroundColor: isButtonDisabled ? "#555" : "#f44336",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: isButtonDisabled ? "not-allowed" : "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>
