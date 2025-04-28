@@ -348,7 +348,7 @@ const InvoicePage = () => {
                                     {invoice.items.map((item, idx) => (
                                         <div key={idx}>
                                             <span>{item.name}</span> - 
-                                            <span>Price: ${item.price}</span> - 
+                                            <span>Price: LKR {item.price}</span> - 
                                             <span>Qty: {item.quantity}</span>
                                         </div>
                                     ))}

@@ -1,13 +1,11 @@
 import express from "express";
 import Transaction from "../../models/Finance/Transaction.js";
 import suspiciousTransaction from "../../utils/suspiciousTransaction.js"
-
+const router = express.Router();
 // Fraud Detection Logic
 const AMOUNT_THRESHOLD = 1000000; // Flag transactions larger than 1000000
 const TRANSACTION_TIME_WINDOW = 60 * 60 * 1000; // 1 hour in milliseconds
 const MAX_TRANSACTIONS_PER_HOUR = 5;
-
-const router = express.Router();
 
 const detectFraud = async (transaction) => {
     let suspicious = false;
@@ -96,5 +94,20 @@ router.delete("/:id", async (req, res) => {
         res.status(500).json({ message: "Error deleting transaction", error });
     }
 });
+
+//for revenue
+router.get('/revenue', async (req, res) => {
+    try {
+        const revenue = await Transaction.find({
+            category: 'sales',
+            type: 'Income'
+        });
+        res.json(revenue);
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching revenue data' });
+    }
+});
+
+
 
 export default router;
