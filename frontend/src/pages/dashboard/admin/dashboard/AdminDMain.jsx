@@ -6,6 +6,7 @@ import OrderChart from "../../../../components/orderChart/orderChart";
 import OrderSuccessDashboard from "../../../../components/orderChart/OrderSuccessDashboard";
 import TransactionDashboard from "../charts/TransactionDashboard";
 import InventoryAnalytics from "../inventoryManagement/InventoryAnalytics";
+import PreBuildAnalytics from "../../../../components/CustomBuilds/PreBuildAnalytics";
 
 const Dashboard = () => {
   const [activeChart, setActiveChart] = useState(null);
@@ -32,6 +33,22 @@ const Dashboard = () => {
               <InventoryAnalytics />
             </div>
           )}
+
+        <button     
+            style={{
+              ...chartButton,
+              ...(activeChart === "prebuild" ? activeButtonStyle : {}),
+            }}
+            onClick={() => handleChartClick("prebuild")}
+          >
+            Pre-Builds Analytics
+          </button>
+          {activeChart === "prebuild" && (
+            <div style={chartContainer}>
+              <PreBuildAnalytics />
+            </div>
+          )}
+
           <button
             style={{
               ...chartButton,

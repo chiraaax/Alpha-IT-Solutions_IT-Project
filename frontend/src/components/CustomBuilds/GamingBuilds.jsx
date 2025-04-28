@@ -251,6 +251,7 @@ return (
       </div>
     </button>
 
+<div>
     {/* Enhanced Cyberpunk AI Build Suggestor Button */}
     <div className="relative group">
       {/* Expanded outer glow effect on hover */}
@@ -356,6 +357,7 @@ return (
           SYS:ON
         </div>
       </button>
+      </div>
     </div>
 
     {/* Add some custom CSS for special effects */}

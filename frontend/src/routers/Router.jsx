@@ -107,7 +107,9 @@ const router = createBrowserRouter([
       { path: 'search', element: <SearchPage /> },
       { path: 'gaming-builds', element: <GamingBuilds /> },
       { path: 'budget-builds', element: <BudgetBuilds /> },        
+      { path: 'budget-builds/:id', element: <ProtectedRoute><BudgetBuildDetail /></ProtectedRoute> }, 
       { path: 'gaming-builds/:id', element: <ProtectedRoute><GamingBuildDetail /></ProtectedRoute> },
+
       
       //order routes
       { path: 'ShoppingCart', element: <ProtectedRoute><ShoppingCart /></ProtectedRoute> },
@@ -115,8 +117,7 @@ const router = createBrowserRouter([
       { path: 'CheckoutForm', element: <ProtectedRoute><CheckoutForm /></ProtectedRoute> },
       { path: 'CheckoutForm/:email', element: <ProtectedRoute><CheckoutForm /></ProtectedRoute> },
       { path: 'PickupForm', element: <ProtectedRoute><PickupForm /></ProtectedRoute> },
-      { path: 'CodForm', element: <ProtectedRoute><CodForm /></ProtectedRoute> },
-      { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },  
+      { path: 'CodForm', element: <ProtectedRoute><CodForm /></ProtectedRoute> },       
       { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, 
        // Updated route for your custom dashboard
 
@@ -129,8 +130,9 @@ const router = createBrowserRouter([
       
 
       { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, // ✅ New Route
-      { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, // Updated route for your custom dashboard
-      { path: 'prebuild-analytics', element: <PreBuildAnalytics></PreBuildAnalytics>},
+      { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, // Updated route for your custom dashboard  
+      //Prebuilds analytics route
+      { path: 'prebuild-analytics', element: <ProtectedRoute allowedRoles={["admin"]}><PreBuildAnalytics /></ProtectedRoute> },
       //AI Build Suggestor Route
       { path: 'AI-build-suggestor', element: <ProtectedRoute allowedRoles={["user", "admin"]}><BuildSuggestor /></ProtectedRoute> }, 
     ]
