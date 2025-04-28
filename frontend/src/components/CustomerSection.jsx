@@ -124,6 +124,7 @@ const CustomerSection = () => {
         </div>
       </div>
     </section>
+    
   );
 };
 
