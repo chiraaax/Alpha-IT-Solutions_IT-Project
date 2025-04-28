@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useTheme } from "./ThemeContext";
@@ -29,6 +29,7 @@ const GamingBuilds = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedBuilds, setSelectedBuilds] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [productsLookup, setProductsLookup] = useState({});
   const [showScrollTop, setShowScrollTop] = useState(false);
   const navigate = useNavigate();
@@ -36,6 +37,7 @@ const GamingBuilds = () => {
   const [hoverAI, setHoverAI] = useState(false);
   const [glitchEffect, setGlitchEffect] = useState(false);
   const [glitchText, setGlitchText] = useState(false);
+  const [maxPrice, setMaxPrice] = useState("");
 
   useEffect(() => {
     let glitchInterval;
@@ -109,6 +111,32 @@ const GamingBuilds = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+  
+  const handleMaxPriceChange = (e) => {
+    setMaxPrice(e.target.value);
+  };
+  
+
+  const filteredBuilds = useMemo(() => {
+    return gamingBuilds.filter(build => {
+      // Text-based filtering (existing logic)
+      const matchesText = searchTerm === "" || 
+        build.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (productsLookup[build.processor]?.description || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (productsLookup[build.gpu]?.description || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (productsLookup[build.ram]?.description || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (productsLookup[build.storage]?.description || "").toLowerCase().includes(searchTerm.toLowerCase());
+      
+      // Price filtering - only max price
+      const matchesMaxPrice = maxPrice === "" || build.price <= Number(maxPrice);
+      
+      return matchesText && matchesMaxPrice;
+    });
+  }, [gamingBuilds, searchTerm, maxPrice, productsLookup]);
 
   // Handle the comparison button click
   const handleCompareClick = (build) => {
@@ -259,8 +287,7 @@ return (
         ${hoverAI ? 'opacity-100 -inset-3 blur-md' : 'opacity-75'} 
         ${glitchEffect ? 'scale-110' : ''} 
         animate-pulse`}
-      ></div>
-      
+      ></div>      
       {/* Extra outer glow ring that appears only on hover */}
       <div className={`absolute -inset-3 bg-gradient-to-r from-cyan-600 to-pink-600 rounded-lg blur-lg transition-all duration-500 
         ${hoverAI ? 'opacity-50' : 'opacity-0'}`}
@@ -427,10 +454,130 @@ return (
         box-shadow: 0 0 5px rgba(236, 72, 153, 0.7);
       }
     `}
-    </style>
+    </style>    
+    
         </div>
+
+        {/* Futuristic Search Bar */}
+<div className={`mx-auto max-w-2xl ${isDark ? "text-white" : "text-gray-900"}`}>
+  <div className={`p-6 rounded-3xl ${isDark 
+    ? "bg-gradient-to-br from-gray-900/90 to-gray-800/80 backdrop-blur-xl border border-gray-700/50" 
+    : "bg-gradient-to-br from-white/90 to-gray-50/80 backdrop-blur-xl border border-gray-200/50"} 
+    shadow-lg relative overflow-hidden`}>
+    
+    {/* Decorative Elements */}
+    <div className="absolute -top-24 -right-24 w-48 h-48 rounded-full bg-blue-500/20 blur-3xl"></div>
+    <div className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full bg-purple-500/20 blur-3xl"></div>
+    
+    {/* Text Search */}
+    <div className={`relative flex items-center rounded-xl overflow-hidden mb-6 
+      ${isDark 
+        ? "bg-gray-800/70 border border-gray-700/50" 
+        : "bg-white/70 border border-gray-200/50"} 
+      backdrop-blur-sm transition-all duration-300 hover:shadow-md group`}>
+      
+      <div className={`absolute inset-y-0 left-0 flex items-center pl-4 ${isDark ? "text-blue-400" : "text-blue-500"}`}>
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
       </div>
-    </div>    
+      
+      <input
+        type="text"
+        placeholder="Search builds by name, processor, GPU..."
+        value={searchTerm}
+        onChange={handleSearchChange}
+        className={`w-full py-4 pl-12 pr-4 outline-none transition-all duration-300
+          ${isDark 
+            ? "bg-transparent text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500/20" 
+            : "bg-transparent text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-400/20"}`}
+      />
+      
+      {searchTerm && (
+        <button 
+          onClick={() => setSearchTerm("")}
+          className={`px-4 h-full flex items-center ${isDark ? "text-gray-400 hover:text-white" : "text-gray-500 hover:text-gray-800"}`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+          </svg>
+        </button>
+      )}
+    </div>
+    
+    {/* Filter Controls */}
+    <div className="flex flex-col md:flex-row items-stretch gap-4">
+      {/* Max Price Filter */}
+      <div className={`flex-1 relative ${isDark 
+        ? "bg-gray-800/70 border border-gray-700/50" 
+        : "bg-white/70 border border-gray-200/50"} 
+        backdrop-blur-sm rounded-xl overflow-hidden`}>
+        
+        <label className={`absolute top-2 left-3 text-xs font-semibold ${isDark ? "text-blue-400" : "text-blue-600"}`}>
+          Maximum Price (LKR)
+        </label>
+        
+        <input
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          placeholder="Enter maximum price"
+          value={maxPrice}
+          onChange={(e) => {
+            // Only accept positive numbers
+            const value = e.target.value.replace(/[^0-9]/g, '');
+            handleMaxPriceChange({ target: { value } });
+          }}
+          className={`w-full pt-8 pb-3 px-3 outline-none
+            ${isDark 
+              ? "bg-transparent text-white placeholder-gray-500" 
+              : "bg-transparent text-gray-900 placeholder-gray-400"}
+            [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+        />
+        
+        {maxPrice && (
+          <div className={`absolute right-3 bottom-3 text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+            {formatPrice(Number(maxPrice))}
+          </div>
+        )}
+      </div>
+      
+      {/* Reset Filters Button */}
+      <button
+        onClick={() => {
+          setSearchTerm("");
+          setMaxPrice("");
+        }}
+        className={`py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2
+          ${isDark 
+            ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-600/30" 
+            : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-blue-500/20"}`}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+        </svg>
+        <span>Reset Filters</span>
+      </button>
+    </div>
+    
+    {/* Animated Pulse Indicator (Active when filtering) */}
+    {(searchTerm || maxPrice) && (
+      <div className="mt-4 flex items-center">
+        <div className="relative">
+          <div className={`w-2 h-2 rounded-full ${isDark ? "bg-blue-400" : "bg-blue-500"}`}></div>
+          <div className={`absolute inset-0 w-2 h-2 rounded-full ${isDark ? "bg-blue-400" : "bg-blue-500"} animate-ping opacity-75`}></div>
+        </div>
+        <span className={`ml-2 text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+          {`Filters active: ${[searchTerm ? 'Search term' : '', maxPrice ? 'Price limit' : ''].filter(Boolean).join(', ')}`}
+        </span>
+      </div>
+    )}
+  </div>
+</div>
+      </div>
+    </div>  
+    
+      
 
     {/* Theme Toggle Button */}
     <button
@@ -462,19 +609,24 @@ return (
           <p className="font-semibold">Error</p>
           <p>{error}</p>
         </div>
-      ) : gamingBuilds.length === 0 ? (
-        <div className="text-center p-10 bg-gray-100 rounded-lg">
-          <p className="text-xl font-semibold text-gray-600">No gaming builds available at the moment.</p>
-          <p className="mt-2 text-gray-500">Please check back later for new builds.</p>
-        </div>
-      ) : (
+        ) : gamingBuilds.length === 0 ? (
+          <div className="text-center p-10 bg-gray-500 rounded-lg">
+            <p className="text-xl font-semibold text-gray-600">No gaming builds available at the moment.</p>
+            <p className="mt-2 text-gray-500">Please check back later for new builds.</p>
+          </div>
+        ) : filteredBuilds.length === 0 ? (
+          <div className="text-center p-10 rounded-lg">
+            <p className="text-xl font-semibold text-gray-600">No matching builds found.</p>
+            <p className="mt-2 text-gray-500">Try adjusting your search terms.</p>
+          </div>
+        ) : (
         <motion.div 
           className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full mx-auto mb-10"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          {gamingBuilds.map((build) => (
+          {filteredBuilds.map((build) => (
             <motion.div
               key={build._id}
               variants={itemVariants}
