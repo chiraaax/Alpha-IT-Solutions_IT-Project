@@ -2,8 +2,6 @@ import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../context/authContext';
 import { toast } from "react-toastify";
-import {jsPDF} from "jspdf";
-import 'jspdf-autotable';
 
 const InquiryForm = () => {
     const { user } = useContext(AuthContext);
@@ -194,168 +192,6 @@ const InquiryForm = () => {
         }
     };
 
-    const handleDownloadInquiry = () => {
-        if (!submittedData) return;
-        
-        const doc = new jsPDF();
-        
-        const logoUrl = `${window.location.origin}/Logo.jpg`;
-        
-        new Promise((resolve) => {
-            const img = new Image();
-            img.crossOrigin = "Anonymous";
-            img.onload = () => {
-                const logoWidth = 35;
-                const logoHeight = logoWidth * (img.height / img.width);
-                doc.addImage(img, "JPEG", 15, 15, logoWidth, logoHeight);
-                resolve();
-            };
-            img.src = logoUrl;
-        }).then(() => {
-            // Colors
-            const primaryColor = "#2c3e50";  // Dark blue
-            const secondaryColor = "#7f8c8d"; // Gray
-            const accentColor = "#e74c3c";   // Red for status
-            const darkColor = "#1F2937";     // Dark gray
-            const lightColor = "#F9FAFB";    // Light gray
-            
-            // Set default font
-            doc.setFont("helvetica");
-            
-            // Company info (right-aligned)
-            doc.setFontSize(10);
-            doc.setTextColor(secondaryColor);
-            doc.text("Alpha IT Solutions", 180, 20, { align: "right" });
-            doc.text("26/C/3 Biyagama Road, Talwatta", 180, 25, { align: "right" });
-            doc.text("Gonawala, Kelaniya 11600", 180, 30, { align: "right" });
-            doc.text("Tel: 077 625 2822", 180, 35, { align: "right" });
-            
-            // Document title (centered below logo)
-            doc.setFontSize(16);
-            doc.setTextColor(primaryColor);
-            doc.setFont(undefined, "bold");
-            doc.text("INQUIRY RECEIPT", 105, 60, { align: "center" });
-            
-            // Document reference section
-            let yPos = 75;
-            
-            // Horizontal line
-            doc.setDrawColor(primaryColor);
-            doc.setLineWidth(0.3);
-            doc.line(15, yPos, 195, yPos);
-            yPos += 10;
-            
-            // Reference information
-            doc.setFontSize(10);
-            doc.setTextColor(secondaryColor);
-            doc.text("Reference Number:", 15, yPos);
-            doc.text("Date Submitted:", 15, yPos + 6);
-            
-            doc.setFontSize(11);
-            doc.setTextColor(primaryColor);
-            doc.text(submittedData._id, 50, yPos);
-            doc.text(new Date(submittedData.createdAt).toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            }), 50, yPos + 6);
-            
-            // Status badge (right-aligned)
-            doc.setFillColor("#ffeeee"); // Light red background
-            doc.setDrawColor(accentColor);
-            doc.roundedRect(160, yPos - 3, 30, 10, 2, 2, 'FD');
-            doc.setTextColor(accentColor);
-            doc.setFontSize(9);
-            doc.text("RECEIVED", 175, yPos + 3, { align: "center" });
-            yPos += 20;
-            
-            // Customer information section
-            doc.setFontSize(14);
-            doc.setTextColor(primaryColor);
-            doc.text("Customer Information", 15, yPos);
-            yPos += 8;
-            
-            // Customer details table
-            const customerFields = [
-                { label: "Full Name", value: submittedData.fullName },
-                { label: "Email", value: submittedData.email },
-                { label: "Contact Number", value: submittedData.contactNumber }
-            ];
-            
-            customerFields.forEach((field) => {
-                doc.setFontSize(10);
-                doc.setTextColor(secondaryColor);
-                doc.text(`${field.label}:`, 15, yPos);
-                
-                doc.setFontSize(11);
-                doc.setTextColor(darkColor);
-                doc.text(field.value, 50, yPos);
-                yPos += 7;
-            });
-            yPos += 10;
-            
-            // Inquiry details section
-            doc.setFontSize(14);
-            doc.setTextColor(primaryColor);
-            doc.text("Inquiry Details", 15, yPos);
-            yPos += 8;
-            
-            // Inquiry details table
-            const inquiryFields = [
-                { label: "Inquiry Type", value: submittedData.inquiryType },
-                { label: "Product Name", value: submittedData.productName || "Not specified" },
-                { label: "Subject", value: submittedData.inquirySubject }
-            ];
-            
-            inquiryFields.forEach((field) => {
-                doc.setFontSize(10);
-                doc.setTextColor(secondaryColor);
-                doc.text(`${field.label}:`, 15, yPos);
-                
-                doc.setFontSize(11);
-                doc.setTextColor(darkColor);
-                doc.text(field.value, 50, yPos);
-                yPos += 7;
-            });
-            yPos += 10;
-            
-            // Additional details section
-            doc.setFontSize(12);
-            doc.setTextColor(primaryColor);
-            doc.text("Additional Details:", 15, yPos);
-            yPos += 7;
-            
-            doc.setFontSize(10);
-            doc.setTextColor(darkColor);
-            const detailsLines = doc.splitTextToSize(submittedData.additionalDetails, 180);
-            detailsLines.forEach(line => {
-                doc.text(line, 15, yPos);
-                yPos += 6;
-            });
-            yPos += 15;
-            
-            // Footer
-            doc.setFontSize(8);
-            doc.setTextColor(secondaryColor);
-            doc.text("Thank you for contacting us. A representative will respond to your inquiry within 24-48 hours.", 
-                    105, yPos, { align: "center" });
-            yPos += 5;
-            doc.text("For urgent matters, please call our support line at 077 625 2822", 
-                    105, yPos, { align: "center" });
-            
-            // Page border
-            doc.setDrawColor(lightColor);
-            doc.setLineWidth(0.5);
-            doc.rect(5, 5, 200, 287);
-            
-            // Save the PDF
-            doc.save(`Inquiry_Receipt_${submittedData._id.slice(-8)}.pdf`);
-        }).catch((error) => {
-            console.error("Error generating PDF:", error);
-            toast.error("Failed to generate PDF. Please try again.");
-        });
-    };
-
     return (
         <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-900 via-gray-900 to-black p-6">
             {/* FAQ Search Section */}
@@ -501,15 +337,6 @@ const InquiryForm = () => {
                         🚀 Submit Inquiry
                     </button>
                 </form>
-
-                {submittedData && submittedData._id && (
-                    <button 
-                        onClick={handleDownloadInquiry} 
-                        className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 hover:shadow-lg transition duration-300 transform hover:scale-105 mt-3"
-                    >
-                        📄 Download Inquiry PDF
-                    </button>
-                )}
             </div>
         </div>
     );

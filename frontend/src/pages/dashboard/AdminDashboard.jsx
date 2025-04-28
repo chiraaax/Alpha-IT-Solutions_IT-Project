@@ -48,8 +48,8 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="admin-dashboard bg-sky-100 rounded-lg shadow-lg border border-sky-400 p-6 text-gray-800">
-      <div className="dashboard-header">
+    <div className="admin-dashboard bg-sky-100 rounded-lg shadow-lg border border-sky-400 p-6 text-gray-800 flex flex-col h-screen sticky top-0">
+      <div className="dashboard-header flex-1 overflow-y-auto">
         <div className="nav__logo mb-4">
           <Link to="/" className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-800 hover:from-indigo-600 hover:to-blue-700 transition-all duration-300">
             Alpha IT Solutions<span className="text-indigo-600">.</span>

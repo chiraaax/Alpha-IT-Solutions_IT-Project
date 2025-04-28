@@ -4,34 +4,24 @@ import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube } from 'react
 
 const Footer = () => {
   const footerLinks = {
-    product: {
-      title: 'Product',
-      links: [
-        { name: 'Features', href: '/features' },
-        { name: 'Design', href: '/design' },
-        { name: 'Interactions', href: '/interactions' },
-        { name: 'Page Building', href: '/page-building' },
-        { name: 'AI Assistant', href: '/ai' }
-      ]
-    },
     company: {
-      title: 'Company',
+      title: 'Services',
       links: [
         { name: 'About Us', href: '/about' },
-        { name: 'Careers', href: '/careers' },
-        { name: 'Press', href: '/press' },
-        { name: 'Blog', href: '/blog' },
-        { name: 'Contact', href: '/contact' }
+        { name: 'Services', href: '/appointment' },
+        { name: 'Custom Pre-Builds', href: '/custom-prebuilds' },
+        { name: 'Faq', href: '/faq' },
+        { name: 'Contact Us', href: '/ContactUs' }
       ]
     },
     resources: {
-      title: 'Resources',
+      title: 'AI Services',
       links: [
-        { name: 'Documentation', href: '/docs' },
-        { name: 'Tutorials', href: '/tutorials' },
-        { name: 'Community', href: '/community' },
-        { name: 'Support', href: '/support' },
-        { name: 'API', href: '/api' }
+        { name: 'Technova Support', href: '/ContactUs' },
+        { name: 'Smart Product Categorization', href: '/AI-Engine' },
+        { name: 'Build Compatibility Checker', href: '/AI-build-suggestor' },
+        { name: 'AI Computer Diagnosticians', href: '/AppointmenentAI' },
+        { name: 'Order & Finance Intelligence', href: '/OrderSupportChat' }
       ]
     }
   };
@@ -98,7 +88,7 @@ const Footer = () => {
             ))}
           </div>
           <div className="text-gray-400 text-sm">
-            © {new Date().getFullYear()} CodeTutor UI. All rights reserved.
+            © {new Date().getFullYear()} Alpha IT Solutions. All rights reserved.
           </div>
         </div>
       </div>

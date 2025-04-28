@@ -1,16 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useTheme } from "./ThemeContext";
 import { FaSun, FaMoon } from "react-icons/fa";
 import jsPDF from "jspdf";
 import { useDispatch, useSelector } from "react-redux";
+import { AuthContext } from '../../context/authContext';
+
+
 
 const GamingBuildDetail = () => {
   const { id } = useParams();
   const { isDark, toggleTheme } = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+
+
 
   // Cart items from Redux
   const cartItems = useSelector((state) => state.cart.cartItems) || [];
@@ -104,7 +110,7 @@ const GamingBuildDetail = () => {
     setIsEditModalOpen(false);
   };
 
-  // PDF download
+// PDF download
 const formatPrice = (price) =>
   price?.toLocaleString("en-US", { style: "currency", currency: "LKR" }) || "N/A";
 
@@ -157,21 +163,21 @@ const handleDownloadPdf = () => {
       doc.line(15, y, 195, y);
       y += 10;
 
-            // ─── Invoice Date (today) ────────────────────────────────────
-            y += 3;
-            const now        = new Date();
-            const dateString = now.toLocaleDateString("en-US", {
-              year:  "numeric",
-              month: "long",
-              day:   "numeric"
-            });
-            const timeString = now.toLocaleTimeString("en-US");
-      
-            doc.setFontSize(10).setTextColor(secondaryColor);
-            doc.text("Invoice Date:", 15, y);
-            doc.setFontSize(11).setTextColor(primaryColor);
-            doc.text(`${dateString} ${timeString}`, 50, y);
-            y += 15;      
+      // ─── Invoice Date (today) ────────────────────────────────────
+      y += 3;
+      const now        = new Date();
+      const dateString = now.toLocaleDateString("en-US", {
+        year:  "numeric",
+        month: "long",
+        day:   "numeric"
+      });
+      const timeString = now.toLocaleTimeString("en-US");
+
+      doc.setFontSize(10).setTextColor(secondaryColor);
+      doc.text("Invoice Date:", 15, y);
+      doc.setFontSize(11).setTextColor(primaryColor);
+      doc.text(`${dateString} ${timeString}`, 50, y);
+      y += 15;
 
       // Reference & Date
       doc.setFontSize(10);
@@ -191,6 +197,31 @@ const handleDownloadPdf = () => {
       doc.text(build.status?.toUpperCase() || "PENDING",
                175, y + 3, { align: "center" });
       y += 20;
+
+      // Customer Information section
+      doc.setFontSize(14);
+      doc.setTextColor(primaryColor);
+      doc.setFont(undefined, "normal");
+      doc.text("Customer Information", 15, y);
+      y += 8;
+
+      const customerFields = [
+        { label: "Full Name", value: user?.name || "Guest User" },
+        { label: "Email", value: user?.email || "Not available" },
+        { label: "Contact Number", value: user?.contactNumber || "Not available" },
+        { label: "Address", value: user?.address || "Not available" }
+      ];
+      
+      customerFields.forEach(f => {
+        doc.setFontSize(10);
+        doc.setTextColor(secondaryColor);
+        doc.text(`${f.label}:`, 15, y);
+        doc.setFontSize(11);
+        doc.setTextColor(primaryColor);
+        doc.text(f.value, 50, y);
+        y += 7;
+      });
+      y += 10;
 
       // Order Details section
       doc.setFontSize(14);
@@ -261,7 +292,6 @@ const handleDownloadPdf = () => {
       toast.error("Failed to download report. Please try again.");
     });
 };
-
 
   // Cart handlers
   const isGamingBuildInCart = () =>
