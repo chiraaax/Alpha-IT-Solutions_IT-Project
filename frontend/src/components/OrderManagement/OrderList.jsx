@@ -196,7 +196,7 @@ const OrderList = () => {
       ))}
       <div className="mt-6 text-center">
         <button
-          onClick={() => navigate("OrderSupportChat")}
+          onClick={() => navigate("/OrderSupportChat")}
           className="bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600"
         >
           Go to Order Chatbot
