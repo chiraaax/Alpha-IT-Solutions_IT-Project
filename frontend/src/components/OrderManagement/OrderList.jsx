@@ -100,7 +100,7 @@ const OrderList = () => {
             </span>
           </div>
 
-          <p className="text-lg font-semibold mb-2">Total: ₹{order.totalAmount}</p>
+          <p className="text-lg font-semibold mb-2">Total: LKR {order.totalAmount}</p>
 
           <div className="mt-3">
             <strong>Items:</strong>
@@ -194,6 +194,14 @@ const OrderList = () => {
           )}
         </div>
       ))}
+      <div className="mt-6 text-center">
+        <button
+          onClick={() => navigate("/OrderSupportChat")}
+          className="bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600"
+        >
+          Go to Order Chatbot
+        </button>
+      </div>
     </div>
   );
 };

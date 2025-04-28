@@ -201,7 +201,6 @@ const ManageProducts = () => {
             <table className="min-w-full border-collapse border border-gray-300">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="border p-2">Product ID</th>
                   <th className="border p-2">Image</th>
                   <th className="border p-2">Name of Product</th>
                   <th className="border p-2">Availability</th>
@@ -212,50 +211,50 @@ const ManageProducts = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredProducts.map((product) => (
-                  <tr key={product._id} className="hover:bg-gray-50">
-                    <td className="border p-2">{product._id}</td>
-                    <td className="border p-2">
-                      {product.image && (
-                        <img
-                          src={product.image}
-                          alt={product.description}
-                          className="h-16 w-16 object-cover rounded-md"
-                        />
-                      )}
-                    </td>
-                    <td className="border p-2">{product.description}</td>
-                    <td className="border p-2">{product.availability}</td>
-                    <td className="border p-2">{product.state}</td>
-                    <td className="border p-2">{renderSpecs(product.specs)}</td>
-                    <td className="border p-2">
-                      LKR {Number(product.price).toFixed(2)}
-                    </td>
-                    <td className="border p-2 flex flex-col space-y-2">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleEdit(product._id)}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => setDeleteProductId(product._id)}
-                          className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                      <button
-                        onClick={() => handleInventory(product._id)}
-                        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-500"
-                      >
-                        Manage Inventory
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+  {filteredProducts.map((product) => (
+    <tr key={product._id} className="hover:bg-gray-50">
+      <td className="border p-2">
+        {product.image && (
+          <img
+            src={product.image}
+            alt={product.description}
+            className="h-16 w-16 object-cover rounded-md"
+          />
+        )}
+      </td>
+      <td className="border p-2">{product.description}</td>
+      <td className="border p-2">{product.availability}</td>
+      <td className="border p-2">{product.state}</td>
+      <td className="border p-2">{renderSpecs(product.specs)}</td>
+      <td className="border p-2">
+        LKR {Number(product.price).toFixed(2)}
+      </td>
+      <td className="border p-2 flex flex-col space-y-2">
+        <div className="flex space-x-2">
+          <button
+            onClick={() => handleEdit(product._id)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => setDeleteProductId(product._id)}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500"
+          >
+            Delete
+          </button>
+        </div>
+        <button
+          onClick={() => handleInventory(product._id)}
+          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-500"
+        >
+          Manage Inventory
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
             </table>
           )}
         </div>

@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import EditCustomPreBuildModal from "./EditCustomPreBuild";
 import { motion, AnimatePresence } from "framer-motion";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+
+
 
 const PreBuildDashboard = () => {
   const [builds, setBuilds] = useState([]);
@@ -10,7 +14,168 @@ const PreBuildDashboard = () => {
   const [error, setError] = useState(null);
   const [selectedBuild, setSelectedBuild] = useState(null);
   const [filterCategory, setFilterCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
+  const handleGenerateCSV = () => {
+    const headers = ["Category", "Price", "GPU", "RAM", "Storage", "Power Supply", "Casings", "Description"];
+    const rows = filteredBuilds.map(build => [
+      build.category,
+      build.price,
+      productsLookup[build.gpu]?.description || build.gpu,
+      productsLookup[build.ram]?.description || build.ram,
+      productsLookup[build.storage]?.description || build.storage,
+      productsLookup[build.powerSupply]?.description || build.powerSupply,
+      productsLookup[build.casings]?.description || build.casings,
+      build.description,
+    ]);
+  
+    const title = ["Pre Builds Summary"];
+    const csvContent = "data:text/csv;charset=utf-8," + [title, headers, ...rows].map(e => e.join(",")).join("\n");
+  
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `prebuild_summary_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  
+  
+  const handleGeneratePDF = () => {
+    const doc = new jsPDF("p", "mm", "a4");
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const now = new Date();
+    const dateStr = now.toLocaleDateString();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  
+    const logoUrl = `${window.location.origin}/Logo.jpg`;
+  
+    new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = "Anonymous";
+      img.onload = () => {
+        const logoWidth = 35;
+        const logoHeight = logoWidth * (img.height / img.width);
+        doc.addImage(img, "JPEG", 15, 10, logoWidth, logoHeight);
+        resolve();
+      };
+      img.src = logoUrl;
+    }).then(() => {
+      // Theme
+      const primaryColor = "#2c3e50";
+      const secondaryColor = "#7f8c8d";
+      const accentColor = "#10b981";
+      const lightColor = "#F9FAFB";
+  
+      doc.setFont("helvetica");
+  
+      // Company Info
+      doc.setFontSize(10);
+      doc.setTextColor(secondaryColor);
+      doc.text("Alpha IT Solutions", 180, 15, { align: "right" });
+      doc.text("26/C/3 Biyagama Road, Talwatta", 180, 20, { align: "right" });
+      doc.text("Gonawala, Kelaniya 11600", 180, 25, { align: "right" });
+      doc.text("Tel: 077 625 2822", 180, 30, { align: "right" });
+  
+      // Title
+      doc.setFontSize(22);
+      doc.setTextColor(primaryColor);
+      doc.setFont(undefined, "bold");
+      doc.text("Prebuilds Summary Report", pageWidth / 2, 50, { align: "center" });
+  
+      // Date & Time
+      doc.setFontSize(12);
+      doc.setTextColor(secondaryColor);
+      doc.text(`Date: ${dateStr} | Time: ${timeStr}`, pageWidth / 2, 58, { align: "center" });
+  
+      // Filter Info (if any)
+      let filterText = "";
+      if (filterCategory !== "all") filterText += `Category: ${filterCategory} `;
+      if (searchQuery) filterText += `| Search: ${searchQuery}`;
+  
+      if (filterText) {
+        doc.setFontSize(10);
+        doc.setTextColor("#4b5563"); // Muted gray
+        doc.text(filterText.trim(), pageWidth / 2, 65, { align: "center" });
+      }
+  
+      // Line
+      const tableStartY = filterText ? 70 : 65;
+      doc.setDrawColor(primaryColor);
+      doc.setLineWidth(0.3);
+      doc.line(15, tableStartY, 195, tableStartY);
+  
+      // Table Data
+      const columns = ["Category", "Price", "GPU", "RAM", "Storage", "Power", "Casings", "Description"];
+      const rows = filteredBuilds.map(build => [
+        build.category,
+        `LKR ${build.price.toFixed(2)}`,
+        productsLookup[build.gpu]?.description || build.gpu,
+        productsLookup[build.ram]?.description || build.ram,
+        productsLookup[build.storage]?.description || build.storage,
+        productsLookup[build.powerSupply]?.description || build.powerSupply,
+        productsLookup[build.casings]?.description || build.casings,
+        build.description,
+      ]);
+  
+      doc.autoTable({
+        startY: tableStartY + 5,
+        head: [columns],
+        body: rows,
+        theme: "striped",
+        headStyles: { fillColor: accentColor, textColor: 255 },
+        styles: { fontSize: 8, cellPadding: 2 },
+        margin: { left: 10, right: 10 },
+        didDrawPage: (data) => {
+          // Header repeat if multipage
+          if (data.pageNumber > 1) {
+            doc.setFontSize(22);
+            doc.setTextColor(primaryColor);
+            doc.text("Prebuilds Summary Report", pageWidth / 2, 20, { align: "center" });
+  
+            doc.setFontSize(12);
+            doc.setTextColor(secondaryColor);
+            doc.text(`Date: ${dateStr} | Time: ${timeStr}`, pageWidth / 2, 28, { align: "center" });
+  
+            if (filterText) {
+              doc.setFontSize(10);
+              doc.setTextColor("#4b5563");
+              doc.text(filterText.trim(), pageWidth / 2, 34, { align: "center" });
+            }
+  
+            doc.setDrawColor(primaryColor);
+            doc.setLineWidth(0.3);
+            doc.line(15, filterText ? 40 : 35, 195, filterText ? 40 : 35);
+          }
+  
+          // Footer
+          const pageHeight = doc.internal.pageSize.height;
+          doc.setFontSize(8);
+          doc.setTextColor("#999999");
+          doc.text(
+            `Generated by Alpha IT Solutions - Page ${data.pageNumber}`,
+            pageWidth / 2,
+            pageHeight - 10,
+            { align: "center" }
+          );
+        }
+      });
+  
+      // Border
+      doc.setDrawColor(lightColor);
+      doc.setLineWidth(0.5);
+      doc.rect(5, 5, 200, 287);
+  
+      doc.save(`prebuild_summary_${now.toISOString().slice(0, 10)}.pdf`);
+    }).catch((error) => {
+      console.error("PDF Generation Error:", error);
+      alert("Failed to generate PDF. Please try again.");
+    });
+  };
+  
+  
+  
   // Fetch pre-builds and all products concurrently
   useEffect(() => {
     const fetchData = async () => {
@@ -62,18 +227,24 @@ const PreBuildDashboard = () => {
   // Get unique categories for filter
   const categories = ["all", ...new Set(builds.map(build => build.category))];
 
-  const filteredBuilds = filterCategory === "all" 
-    ? builds 
-    : builds.filter(build => build.category === filterCategory);
-
-    if (loading) return (
-      <div className="flex items-center justify-center h-screen bg-gray-900">
-        <div className="text-center">
-          <div className="w-16 h-16 border-t-4 border-r-4 border-blue-500 border-solid rounded-full animate-spin mb-4 mx-auto"></div>
-          <p className="text-cyan-400 text-xl font-bold">LOADING BUILDS...</p>
-        </div>
-      </div>
+  const filteredBuilds = builds.filter((build) => {
+    if (filterCategory !== "all" && build.category !== filterCategory) return false;
+  
+    const fieldsToSearch = [
+      build.category,
+      productsLookup[build.gpu]?.description || build.gpu,
+      productsLookup[build.ram]?.description || build.ram,
+      productsLookup[build.storage]?.description || build.storage,
+      productsLookup[build.powerSupply]?.description || build.powerSupply,
+      productsLookup[build.casings]?.description || build.casings,
+      build.description,
+    ];
+  
+    return fieldsToSearch.some(field =>
+      field?.toString().toLowerCase().includes(searchQuery.toLowerCase())
     );
+  });
+  
   
     if (error) return (
       <div className="flex items-center justify-center h-screen bg-gray-900">
@@ -139,6 +310,24 @@ const PreBuildDashboard = () => {
           ))}
         </div>
       </div>
+{/* Search and Export Section */}
+<div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+  <input
+    type="text"
+    placeholder="Search by Category, GPU, RAM, Storage, Power Supply, Casings, Description..."
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    className="w-full md:w-1/2 p-3 border rounded-lg bg-gray-800 text-gray-200 placeholder-gray-400"
+  />
+  <div className="flex gap-4">
+    <button onClick={handleGenerateCSV} className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold">
+      Export CSV
+    </button>
+    <button onClick={handleGeneratePDF} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold">
+      Export PDF
+    </button>
+  </div>
+</div>
 
       {/* Table with glass morphism effect */}
       <div className="overflow-x-auto rounded-lg shadow-2xl bg-gray-800/40 backdrop-blur-sm border border-gray-700/50">
