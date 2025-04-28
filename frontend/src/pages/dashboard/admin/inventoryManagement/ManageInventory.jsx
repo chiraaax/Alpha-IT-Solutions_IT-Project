@@ -3,6 +3,8 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import InventoryProductModal from "./InventoryManagement";
+import "jspdf-autotable";
+import { jsPDF } from "jspdf";
 
 // API base
 const API_URL = "http://localhost:5000/api";
@@ -202,8 +204,8 @@ const OrdersModal = ({ orders, onClose, onStatusChange }) => {
         <table className="min-w-full border border-gray-300">
           <thead className="bg-gray-100">
             <tr>
-              <th className="border p-2">Order ID</th>
-              <th className="border p-2">Customer ID</th>
+
+     
               <th className="border p-2">Created At</th>
               <th className="border p-2">Total Amount</th>
               <th className="border p-2">Quantity</th>
@@ -235,8 +237,7 @@ const OrdersModal = ({ orders, onClose, onStatusChange }) => {
                           : ""
                       }`}
                     >
-                      <td className="border p-2">{o._id}</td>
-                      <td className="border p-2">{o.customerId}</td>
+
                       <td className="border p-2">
                         {new Date(o.createdAt).toLocaleString()}
                       </td>
@@ -346,6 +347,155 @@ export default function InventoryTable() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  const handleGenerateCSV = () => {
+    const headers = ["Description", "Price", "Discount", "Discount Price", "Threshold", "Stock", "Availability"];
+    const rows = filtered.map(p => [
+
+      p.description,
+      p.price,
+      p.discount || 0,
+      p.discountPrice != null
+        ? p.discountPrice
+        : (p.price - (p.price * (p.discount || 0)) / 100).toFixed(2),
+      p.threshold,
+      p.displayedStock,
+      p.availability
+    ]);
+  
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers, ...rows].map(e => e.join(",")).join("\n");
+  
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `inventory_report_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  
+  const handleGeneratePDF = () => {
+    const doc = new jsPDF("p", "mm", "a4");
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const now = new Date();
+    const dateStr = now.toLocaleDateString();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  
+    const logoUrl = `${window.location.origin}/Logo.jpg`;
+  
+    new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = "Anonymous";
+      img.onload = () => {
+        const logoWidth = 35;
+        const logoHeight = logoWidth * (img.height / img.width);
+        doc.addImage(img, "JPEG", 15, 10, logoWidth, logoHeight);
+        resolve();
+      };
+      img.src = logoUrl;
+    }).then(() => {
+      // Theme colors
+      const primaryColor = "#2c3e50";  // Dark Blue
+      const secondaryColor = "#7f8c8d"; // Gray
+      const accentColor = "#10b981";    // Emerald Green
+      const lightColor = "#F9FAFB";     // Light background
+  
+      doc.setFont("helvetica");
+  
+      // Company Info
+      doc.setFontSize(10);
+      doc.setTextColor(secondaryColor);
+      doc.text("Alpha IT Solutions", 180, 15, { align: "right" });
+      doc.text("26/C/3 Biyagama Road, Talwatta", 180, 20, { align: "right" });
+      doc.text("Gonawala, Kelaniya 11600", 180, 25, { align: "right" });
+      doc.text("Tel: 077 625 2822", 180, 30, { align: "right" });
+  
+      // Main Topic
+      doc.setFontSize(22);
+      doc.setTextColor(primaryColor);
+      doc.setFont(undefined, "bold");
+      doc.text("Inventory & Sales Report", pageWidth / 2, 50, { align: "center" });
+  
+      // Subtext - Date and Time
+      doc.setFontSize(12);
+      doc.setTextColor(secondaryColor);
+      doc.text(`Date: ${dateStr} | Time: ${timeStr}`, pageWidth / 2, 58, { align: "center" });
+  
+      // Horizontal Line
+      doc.setDrawColor(primaryColor);
+      doc.setLineWidth(0.3);
+      doc.line(15, 63, 195, 63);
+  
+      // Table Data
+      const columns = [
+        "Description", "Price", "Discount %", "Discount Price", "Threshold", "Stock", "Availability"
+      ];
+      const rows = filtered.map((p) => [
+        p.description,
+        p.price,
+        p.discount || 0,
+        p.discountPrice != null
+          ? p.discountPrice
+          : (p.price - (p.price * (p.discount || 0)) / 100).toFixed(2),
+        p.threshold,
+        p.displayedStock,
+        p.availability,
+      ]);
+  
+      doc.autoTable({
+        startY: 70,
+        head: [columns],
+        body: rows,
+        theme: "striped",
+        headStyles: { fillColor: accentColor, textColor: 255 },
+        styles: { fontSize: 8, cellPadding: 2 },
+        margin: { left: 10, right: 10 },
+        didDrawPage: (data) => {
+          // Redraw header if multiple pages
+          if (data.pageNumber > 1) {
+            doc.setFontSize(22);
+            doc.setTextColor(primaryColor);
+            doc.setFont(undefined, "bold");
+            doc.text("Inventory & Sales Report", pageWidth / 2, 20, { align: "center" });
+  
+            doc.setFontSize(12);
+            doc.setTextColor(secondaryColor);
+            doc.setFont(undefined, "normal");
+            doc.text(`Date: ${dateStr} | Time: ${timeStr}`, pageWidth / 2, 28, { align: "center" });
+  
+            doc.setDrawColor(primaryColor);
+            doc.setLineWidth(0.3);
+            doc.line(15, 33, 195, 33);
+          }
+  
+          // Footer
+          const pageHeight = doc.internal.pageSize.height;
+          doc.setFontSize(8);
+          doc.setTextColor("#999999");
+          doc.text(
+            `Generated by Alpha IT Solutions - Page ${data.pageNumber}`,
+            pageWidth / 2,
+            pageHeight - 10,
+            { align: "center" }
+          );
+        }
+      });
+  
+      // Border
+      doc.setDrawColor(lightColor);
+      doc.setLineWidth(0.5);
+      doc.rect(5, 5, 200, 287);
+  
+      doc.save(`inventory_report_${now.toISOString().slice(0, 10)}.pdf`);
+    }).catch((error) => {
+      console.error("PDF Generation Failed:", error);
+      alert("Failed to generate PDF. Please try again.");
+    });
+  };
+  
+  
+  
   // Fetch products
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
@@ -532,14 +682,48 @@ export default function InventoryTable() {
         <OrdersModal orders={orders} onClose={() => setShowOrdersModal(false)} onStatusChange={handleStatusChange} />
       )}
 
-      {/* Search & Filter */}
-      <input
-        type="text"
-        placeholder="Search products…"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full mb-4 p-2 border rounded"
-      />
+     {/* Search & Filter Row */}
+<div className="flex justify-between items-center mb-4">
+  <input
+    type="text"
+    placeholder="Search products…"
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    className="w-1/2 p-2 border rounded"
+  />
+  <select
+    value={filterCategory}
+    onChange={(e) => setFilterCategory(e.target.value)}
+    className="w-1/4 p-2 border rounded"
+  >
+    <option value="">All Categories</option>
+    {[...new Set(products.map((p) => p.category))].map((cat) => (
+      <option key={cat} value={cat}>
+        {cat}
+      </option>
+    ))}
+  </select>
+</div>
+
+{/* CSV / PDF Button Row */}
+<div className="flex space-x-4 mb-6">
+  <button
+    onClick={handleGenerateCSV}
+    className="px-4 py-2 bg-green-600 text-white rounded"
+  >
+    Generate CSV
+  </button>
+
+  <button
+    onClick={handleGeneratePDF}
+    className="px-4 py-2 bg-blue-600 text-white rounded"
+  >
+    Generate PDF
+  </button>
+</div>
+
+
+
       <select
         value={filterCategory}
         onChange={(e) => setFilterCategory(e.target.value)}
@@ -560,7 +744,6 @@ export default function InventoryTable() {
         <table className="min-w-full border border-gray-300">
           <thead className="bg-gray-100">
             <tr>
-              <th className="p-2 border">ID</th>
               <th className="p-2 border">Description</th>
               <th className="p-2 border">Price</th>
               <th className="p-2 border">Discount %</th>
@@ -584,7 +767,6 @@ export default function InventoryTable() {
                     p.displayedStock <= p.threshold ? "bg-red-100" : ""
                   } ${p.displayedStock <= 0 ? "bg-yellow-300" : ""}`}
                 >
-                  <td className="p-2 border">{p._id}</td>
                   <td className="p-2 border">{p.description}</td>
                   <td className="p-2 border">{p.price}</td>
                   <td className="p-2 border">{p.discount || 0}</td>
