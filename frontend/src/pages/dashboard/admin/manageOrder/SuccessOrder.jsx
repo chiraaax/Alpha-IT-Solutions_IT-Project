@@ -118,7 +118,7 @@ const SuccessOrder = () => {
     reportWindow.document.write(`
       <html>
       <head>
-        <title>Order Report</title>
+        <title>Alpha IT Solutions - Order Report</title>
       </head>
       <body style="font-family: Arial, sans-serif; padding: 20px;">
         <h1 style="color: #00bcd4;">Order Report</h1>
@@ -137,9 +137,9 @@ const SuccessOrder = () => {
         <table style="width: 100%; border-collapse: collapse; background-color: #f9f9f9;">
           <thead>
             <tr style="background-color: #e0e0e0;">
-              <th style="border: 1px solid #333; padding: 10px;">Item Type</th>
-              <th style="border: 1px solid #333; padding: 10px;">Quantity</th>
-              <th style="border: 1px solid #333; padding: 10px;">Specifications</th>
+              <th style="border: 1px solid #000; padding: 10px;">Item Type</th>
+              <th style="border: 1px solid #000; padding: 10px;">Quantity</th>
+              <th style="border: 1px solid #000; padding: 10px;">Specifications</th>
             </tr>
           </thead>
           <tbody>
@@ -175,8 +175,8 @@ const SuccessOrder = () => {
 
       {/* Basic Order Details */}
       <div style={{ marginBottom: "30px", backgroundColor: "#1e1e1e", padding: "20px", borderRadius: "8px" }}>
-        <div><strong>Order ID:</strong> {order._id}</div>
-        <div><strong>Customer ID:</strong> {order.customerId?._id || order.customerId}</div>
+        {/* <div><strong>Order ID:</strong> {order._id}</div>
+        <div><strong>Customer ID:</strong> {order.customerId?._id || order.customerId}</div> */}
         <div><strong>Total Amount:</strong> LKR {order.totalAmount.toFixed(2)}</div>
         <div><strong>Status:</strong> {order.status}</div>
         <div><strong>Created At:</strong> {new Date(order.createdAt).toLocaleString()}</div>
@@ -266,7 +266,7 @@ const SuccessOrder = () => {
         <table style={{ width: "100%", borderCollapse: "collapse", backgroundColor: "#1e1e1e" }}>
           <thead>
             <tr>
-              <th style={{ border: "1px solid #333", padding: "10px", backgroundColor: "#2c2c2c" }}>Item ID</th>
+              {/* <th style={{ border: "1px solid #333", padding: "10px", backgroundColor: "#2c2c2c" }}>Item ID</th> */}
               <th style={{ border: "1px solid #333", padding: "10px", backgroundColor: "#2c2c2c" }}>Item Type</th>
               <th style={{ border: "1px solid #333", padding: "10px", backgroundColor: "#2c2c2c" }}>Quantity</th>
               <th style={{ border: "1px solid #333", padding: "10px", backgroundColor: "#2c2c2c" }}>Specifications</th>
@@ -275,7 +275,7 @@ const SuccessOrder = () => {
           <tbody>
             {order.items.map((item, index) => (
               <tr key={index}>
-                <td style={{ border: "1px solid #333", padding: "10px" }}>{item.itemId}</td>
+                {/* <td style={{ border: "1px solid #333", padding: "10px" }}>{item.itemId}</td> */}
                 <td style={{ border: "1px solid #333", padding: "10px" }}>{item.itemType}</td>
                 <td style={{ border: "1px solid #333", padding: "10px" }}>{item.quantity}</td>
                 <td style={{ border: "1px solid #333", padding: "10px" }}>

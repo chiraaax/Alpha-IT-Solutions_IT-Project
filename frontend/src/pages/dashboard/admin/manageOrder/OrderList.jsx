@@ -104,7 +104,6 @@ const OrderList = () => {
       return `
         <tr>
           <td>${index + 1}</td>
-          <td>${order.customerId}</td>
           <td>LKR${order.totalAmount.toFixed(2)}</td>
           <td>${order.status}</td>
           <td>${new Date(order.createdAt).toLocaleString()}</td>
@@ -115,6 +114,7 @@ const OrderList = () => {
     const htmlContent = `
       <html>
         <head>
+          <title>Alpha IT Solutions</title>
           <title>All Orders Report</title>
           <style>
             body {
@@ -130,7 +130,7 @@ const OrderList = () => {
             table {
               width: 100%;
               border-collapse: collapse;
-              background-color: #1e1e1e;
+              background-color:rgb(0, 0, 0);
             }
             th, td {
               padding: 10px;
@@ -214,7 +214,7 @@ const OrderList = () => {
           <thead>
             <tr style={{ backgroundColor: "#272727" }}>
               <th style={{ padding: "12px", border: "1px solid #333" }}>ID</th>
-              <th style={{ padding: "12px", border: "1px solid #333" }}>Customer ID</th>
+              {/* <th style={{ padding: "12px", border: "1px solid #333" }}>Customer ID</th> */}
               <th style={{ padding: "12px", border: "1px solid #333" }}>Total Amount</th>
               <th style={{ padding: "12px", border: "1px solid #333" }}>Status</th>
               <th style={{ padding: "12px", border: "1px solid #333" }}>Created At</th>
@@ -229,7 +229,7 @@ const OrderList = () => {
                   style={{ cursor: "pointer" }}
                 >
                   <td style={{ padding: "10px", border: "1px solid #333" }}>{index + 1}</td>
-                  <td style={{ padding: "10px", border: "1px solid #333" }}>{order.customerId}</td>
+                  {/* <td style={{ padding: "10px", border: "1px solid #333" }}>{order.customerId}</td> */}
                   <td style={{ padding: "10px", border: "1px solid #333" }}>LKR {order.totalAmount.toFixed(2)}</td>
                   <td style={{ padding: "10px", border: "1px solid #333" }}>{order.status}</td>
                   <td style={{ padding: "10px", border: "1px solid #333" }}>{new Date(order.createdAt).toLocaleString()}</td>
@@ -264,7 +264,7 @@ const OrderList = () => {
               }}>&times;</button>
             </div>
             <div style={{ marginTop: "20px" }}>
-              <p><strong>Customer ID:</strong> {selectedOrder.customerId}</p>
+              {/* <p><strong>Customer ID:</strong> {selectedOrder.customerId}</p> */}
               <p><strong>Total Amount:</strong> LKR {selectedOrder.totalAmount.toFixed(2)}</p>
               <p><strong>Status:</strong> {selectedOrder.status}</p>
               <p><strong>Created At:</strong> {new Date(selectedOrder.createdAt).toLocaleString()}</p>
