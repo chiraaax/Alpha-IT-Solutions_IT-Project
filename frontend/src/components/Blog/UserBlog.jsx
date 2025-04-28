@@ -33,7 +33,6 @@ function UserBlog() {
         setCurrentSlide((prev) => (prev === 0 ? blogs.length - 1 : prev - 1));
     };
 
-    // Auto-rotate slides every 5 seconds
     useEffect(() => {
         if (blogs.length > 1) {
             const timer = setInterval(() => {
@@ -61,7 +60,6 @@ function UserBlog() {
         </div>
     );
 
-    // Tech icons for different blog categories
     const getCategoryIcon = (title) => {
         const lowerTitle = title.toLowerCase();
         if (lowerTitle.includes('gaming') || lowerTitle.includes('game')) return <FaGamepad className="text-purple-400 mr-2" />;
@@ -70,8 +68,7 @@ function UserBlog() {
     };
 
     return (
-        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 to-gray-800 relative overflow-hidden shadow-xl rounded-lg mt-8">
-            {/* Subtle pattern overlay */}
+        <section className="pb-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 to-gray-800 relative overflow-hidden shadow-xl rounded-lg">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(45,55,72,0.6)_0%,rgba(0,0,0,0.9)_75%)] opacity-70 z-0"></div>
 
             <div className="max-w-5xl mx-auto relative z-10">
@@ -88,11 +85,9 @@ function UserBlog() {
                 </div>
 
                 <div className="relative group">
-                    {/* Subtle glowing border on hover */}
                     <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl blur-lg opacity-0 group-hover:opacity-80 transition duration-500 animate-pulse"></div>
 
-                    {/* Slider container with improved styling */}
-                    <div className="relative overflow-hidden rounded-xl bg-gray-800 bg-opacity-60 backdrop-blur-md border border-gray-700 shadow-lg h-[450px]"> {/* Increased height */}
+                    <div className="relative overflow-hidden rounded-xl bg-gray-800 bg-opacity-60 backdrop-blur-md border border-gray-700 shadow-lg h-[450px]">
                         <div
                             className="flex transition-transform duration-500 ease-out h-full"
                             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -115,7 +110,7 @@ function UserBlog() {
                                                     </span>
                                                 </div>
                                             </div>
-                                            <div className="md:w-3/5 p-6 flex flex-col justify-center bg-gray-900 bg-opacity-70"> {/* Changed justify-center to justify-start */}
+                                            <div className="md:w-3/5 p-6 flex flex-col justify-center bg-gray-900 bg-opacity-70">
                                                 <div className="flex items-center mb-3">
                                                     <span className="text-xs font-semibold px-3 py-1 bg-blue-800 text-blue-300 rounded-full shadow-sm">
                                                         {new Date(blog.createdAt).toLocaleDateString('en-US', {
@@ -125,10 +120,10 @@ function UserBlog() {
                                                         })}
                                                     </span>
                                                 </div>
-                                                <h3 className="text-xl font-bold text-white mb-2 hover:text-teal-300 transition duration-300"> {/* Reduced margin */}
+                                                <h3 className="text-xl font-bold text-white mb-2 hover:text-teal-300 transition duration-300">
                                                     {blog.title}
                                                 </h3>
-                                                <p className="text-gray-400 line-clamp-5 mb-0"> {/* Increased line-clamp and removed bottom margin */}
+                                                <p className="text-gray-400 line-clamp-5 mb-0">
                                                     {blog.content}
                                                 </p>
                                             </div>
@@ -139,7 +134,6 @@ function UserBlog() {
                         </div>
                     </div>
 
-                    {/* More prominent navigation arrows with better styling */}
                     <button
                         onClick={prevSlide}
                         className="absolute left-4 top-1/2 -translate-y-1/2 bg-gray-800 bg-opacity-70 p-3 rounded-full shadow-lg text-white hover:text-blue-300 focus:outline-none z-20 transition-all duration-300 hover:bg-gray-700"
@@ -155,7 +149,6 @@ function UserBlog() {
                         <FiChevronRight className="h-6 w-6" />
                     </button>
 
-                    {/* Modernized slide indicators */}
                     <div className="flex justify-center mt-6 space-x-3">
                         {blogs.map((_, index) => (
                             <button
