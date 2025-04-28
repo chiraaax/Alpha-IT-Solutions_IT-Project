@@ -79,6 +79,7 @@ import UserInventoryDashboard from '../components/shop/UserInventoryDashboard';
 
 import BuildSuggestor from '../components/CustomBuilds/CustomBuildsAI/BuildSuggestor';
 import AllInventoryRelated from '../pages/dashboard/admin/inventoryManagement/AllInventoryRelated';
+import PreBuildAnalytics from '../components/CustomBuilds/PreBuildAnalytics';
 
 
 const router = createBrowserRouter([
@@ -109,7 +110,9 @@ const router = createBrowserRouter([
       { path: 'search', element: <SearchPage /> },
       { path: 'gaming-builds', element: <GamingBuilds /> },
       { path: 'budget-builds', element: <BudgetBuilds /> },        
+      { path: 'budget-builds/:id', element: <ProtectedRoute><BudgetBuildDetail /></ProtectedRoute> }, 
       { path: 'gaming-builds/:id', element: <ProtectedRoute><GamingBuildDetail /></ProtectedRoute> },
+
       
       //order routes
       { path: 'ShoppingCart', element: <ProtectedRoute><ShoppingCart /></ProtectedRoute> },
@@ -134,8 +137,9 @@ const router = createBrowserRouter([
       
 
       { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, // ✅ New Route
-      { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, // Updated route for your custom dashboard
-
+      { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, // Updated route for your custom dashboard  
+      //Prebuilds analytics route
+      { path: 'prebuild-analytics', element: <ProtectedRoute allowedRoles={["admin"]}><PreBuildAnalytics /></ProtectedRoute> },
       //AI Build Suggestor Route
       { path: 'AI-build-suggestor', element: <ProtectedRoute allowedRoles={["user", "admin"]}><BuildSuggestor /></ProtectedRoute> }, 
     ]
