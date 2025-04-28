@@ -17,6 +17,7 @@ const navItems = [
   { path: '/dashboard/InvoicePage', label: 'Manage Invoice' },
   { path: '/dashboard/RevenuePage', label: 'Show Revenue' },
   { path: '/dashboard/ManageTaxes', label: 'Manage Taxes' },
+  { path: '/dashboard/PettyCash', label: 'Manage Petty Cash' },
   { path: '/dashboard/prebuild-dashboard', label: 'Manage Custom Prebuild' },
   { path: '/dashboard/InquiryManage', label: 'Inquiry Manage'},
   { path: '/dashboard/ReviewManage', label: 'Review Manage'},

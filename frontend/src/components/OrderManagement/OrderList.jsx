@@ -100,7 +100,7 @@ const OrderList = () => {
             </span>
           </div>
 
-          <p className="text-lg font-semibold mb-2">Total: ₹{order.totalAmount}</p>
+          <p className="text-lg font-semibold mb-2">Total: LKR {order.totalAmount}</p>
 
           <div className="mt-3">
             <strong>Items:</strong>
