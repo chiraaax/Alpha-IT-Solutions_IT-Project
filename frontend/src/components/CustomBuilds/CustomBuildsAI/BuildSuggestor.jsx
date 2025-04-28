@@ -90,12 +90,94 @@ const BuildSuggestor = () => {
   };
 
   const downloadHistory = () => {
-    const blob = new Blob([JSON.stringify(history, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `AI_Build_Description_History_${user?.id || "user"}.json`;
-    a.click();
+    if (history.length === 0) {
+      alert("No build history to download");
+      return;
+    }
+    
+    // Create a temporary div element with proper styling
+    const tempDiv = document.createElement("div");
+    tempDiv.style.padding = "20px";
+    tempDiv.style.fontFamily = "Arial, sans-serif";
+    tempDiv.style.color = "#333";
+    tempDiv.style.backgroundColor = "#fff";
+    
+    // Header content
+    let content = `
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h1 style="color: #2c3e50;">AI Build Description History</h1>
+        <p>User: ${user?._id || "Anonymous"}</p>
+        <p>Generated: ${new Date().toLocaleString()}</p>
+      </div>
+      <hr style="border: 1px solid #eee; margin: 20px 0;">
+    `;
+    
+    // Add each history item
+    history.forEach((item, index) => {
+      content += `
+        <div style="margin-bottom: 30px; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">
+          <h2 style="color: #3498db;">Build #${index + 1}</h2>
+          <p><strong>Date:</strong> ${item.time}</p>
+          <p><strong>Requirement:</strong> ${item.requirement}</p>
+      `;
+      
+      // Handle build data if available
+      if (item.build && item.build.components) {
+        content += `<h3>Components:</h3><ul>`;
+        
+        // Safely process components
+        try {
+          Object.entries(item.build.components).forEach(([key, component]) => {
+            const name = typeof component === 'object' ? (component.name || 'Unknown') : component;
+            const price = typeof component === 'object' ? (component.price || 'N/A') : 'N/A';
+            
+            content += `<li><strong>${key}:</strong> ${name} ${price !== 'N/A' ? '- $' + price : ''}</li>`;
+          });
+        } catch (e) {
+          content += `<li>Error processing components</li>`;
+        }
+        
+        content += `</ul>
+          <p><strong>Total Cost:</strong> $${item.build.totalCost || 'N/A'}</p>
+          <p><strong>Performance Notes:</strong> ${item.build.performanceNotes || 'N/A'}</p>
+        `;
+      } else {
+        content += `<p><em>No detailed build information available</em></p>`;
+      }
+      
+      content += `</div>`;
+    });
+    
+    // Set the HTML content
+    tempDiv.innerHTML = content;
+    
+    // Add to document temporarily
+    document.body.appendChild(tempDiv);
+    
+    // Use html2pdf with explicit width setting and wait for rendering
+    html2pdf().set({
+      margin: 10,
+      filename: `AI_Build_History_${user?._id || "user"}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { 
+        scale: 2,
+        logging: true, 
+        dpi: 192,
+        letterRendering: true
+      },
+      jsPDF: { 
+        unit: 'mm', 
+        format: 'a4', 
+        orientation: 'portrait'
+      }
+    }).from(tempDiv).save().then(() => {
+      // Clean up
+      document.body.removeChild(tempDiv);
+      console.log("PDF generation completed");
+    }).catch(err => {
+      console.error("PDF generation failed:", err);
+      document.body.removeChild(tempDiv);
+    });
   };
 
   const clearHistory = () => {

@@ -511,11 +511,24 @@ const CheckoutForm = () => {
               </button>
             </div>
             <button
-  className="cart-button"
-  onClick={() => navigate("/shoppingcart")}
->
-  Go to Shopping Cart
-</button>
+              className="cart-button"
+              onClick={() => navigate("/shoppingcart")}
+              style={{
+                backgroundColor: "#3498db",
+                color: "white",
+                padding: "10px 20px",
+                marginTop: "10px",
+                border: "none",
+                borderRadius: "8px",
+                fontSize: "16px",
+                cursor: "pointer",
+                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                transition: "background-color 0.3s"
+              }}
+            >
+              Go to Shopping Cart
+            </button>
+
           </div>
         </div>
       )}

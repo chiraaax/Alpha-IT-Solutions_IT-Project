@@ -155,7 +155,7 @@ const About = () => {
                 Experience effortless product discovery powered by AI.
               </p>
               <a
-                href="/ContactUs"
+                href="/AI-Engine"
                 className="inline-flex items-center text-white hover:text-gray-300 text-lg font-medium transition-colors"
               >
                 Browse Smarter
@@ -215,7 +215,7 @@ const About = () => {
                 Smarter, safer, and faster — powered by intelligent automation.
               </p>
               <a
-                href="/ContactUs"
+                href="/OrderSupportChat"
                 className="inline-flex items-center text-white hover:text-gray-300 text-lg font-medium transition-colors"
               >
                 Launch Finance AI

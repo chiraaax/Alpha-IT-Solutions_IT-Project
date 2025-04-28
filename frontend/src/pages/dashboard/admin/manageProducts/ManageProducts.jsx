@@ -170,23 +170,7 @@ const ManageProducts = () => {
       )}
 
       <div className="min-h-screen bg-gray-50 py-12 px-6">
-        {/* Navigation Buttons */}
-        <div className="flex justify-end mb-6 space-x-4">
-          <button
-            onClick={() => navigate("/dashboard/add-new-product")}
-            className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-500"
-          >
-            <FaPlus className="mr-2" />
-            Add New Product
-          </button>
-          <button
-            onClick={() => navigate("/dashboard/manage-inventory")}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500"
-          >
-            <FaBoxes className="mr-2" />
-            Manage Inventory
-          </button>
-        </div>
+
 
         <h2 className="text-4xl font-bold text-center text-blue-800 mb-10">
           Manage Products

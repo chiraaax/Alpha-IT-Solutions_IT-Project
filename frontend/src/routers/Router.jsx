@@ -30,6 +30,8 @@ import ManageOrder from "../pages/dashboard/admin/manageOrder/OrderList";
 import CustomerOrder from "../pages/dashboard/admin/manageOrder/CustomerOrderList";
 import SuccessOrder from '../pages/dashboard/admin/manageOrder/SuccessOrder';
 import InvoicePage from "../pages/dashboard/Finance/InvoicePage";
+import RevenuePage from "../pages/dashboard/Finance/RevenuePage";
+import ManageTaxes from '../pages/dashboard/Finance/ManageTaxes';
 import UserAppointment from "../pages/dashboard/appointment/user-profile_appointment"
 
 import Profile from '../components/Register/Profile';
@@ -60,7 +62,7 @@ import BudgetBuildDetail from '../components/CustomBuilds/BudgetBuildDetail';
 import CreateCustomBuild from '../components/CustomBuilds/CreateCustomPreBuild';
 import PreBuildDashboard from "../components/CustomBuilds/PreBuildDashboard";
 import EditCustomPreBuild from '../components/CustomBuilds/EditCustomPreBuild';
-import AdminFiltersPage from '../pages/dashboard/admin/filterProducts/AdminFiltersPage';
+
 
 
 //order management
@@ -68,14 +70,16 @@ import ShoppingCart from '../pages/OrderManagement/ShoppingCart';
 import CheckoutForm from '../components/OrderManagement/CheckoutForm';
 import PickupForm from '../components/OrderManagement/pickupForm';
 import CodForm from '../components/OrderManagement/CodForm';
+import OrderSupportChat from '../components/OrderManagement/OrderSupportChat';
 import CatalogReportInline from '../pages/dashboard/user/shop/report/CatalogReportInline ';
 import OrderList from '../components/OrderManagement/OrderList';
 import TransactionPage from '../pages/dashboard/Finance/TransactionPage';
 import ImageUploader from '../components/shop/ai/ImageUploader';
 import UserInventoryDashboard from '../components/shop/UserInventoryDashboard';
 
-import PreBuild from '../../../backend/models/PreBuild';
 import BuildSuggestor from '../components/CustomBuilds/CustomBuildsAI/BuildSuggestor';
+import AllInventoryRelated from '../pages/dashboard/admin/inventoryManagement/AllInventoryRelated';
+import PreBuildAnalytics from '../components/CustomBuilds/PreBuildAnalytics';
 
 
 const router = createBrowserRouter([
@@ -106,7 +110,9 @@ const router = createBrowserRouter([
       { path: 'search', element: <SearchPage /> },
       { path: 'gaming-builds', element: <GamingBuilds /> },
       { path: 'budget-builds', element: <BudgetBuilds /> },        
+      { path: 'budget-builds/:id', element: <ProtectedRoute><BudgetBuildDetail /></ProtectedRoute> }, 
       { path: 'gaming-builds/:id', element: <ProtectedRoute><GamingBuildDetail /></ProtectedRoute> },
+
       
       //order routes
       { path: 'ShoppingCart', element: <ProtectedRoute><ShoppingCart /></ProtectedRoute> },
@@ -115,6 +121,9 @@ const router = createBrowserRouter([
       { path: 'CheckoutForm/:email', element: <ProtectedRoute><CheckoutForm /></ProtectedRoute> },
       { path: 'PickupForm', element: <ProtectedRoute><PickupForm /></ProtectedRoute> },
       { path: 'CodForm', element: <ProtectedRoute><CodForm /></ProtectedRoute> },
+      { path: 'orderAI', element: <ProtectedRoute><orderAI /></ProtectedRoute> },
+      { path: 'OrderSupportChat', element: <ProtectedRoute><OrderSupportChat /></ProtectedRoute> },
+
       { path: 'budget-builds/:id', element: <BudgetBuildDetail /> },  
       { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, 
        // Updated route for your custom dashboard
@@ -128,8 +137,9 @@ const router = createBrowserRouter([
       
 
       { path: 'edit-custom-pre-build/:id', element: <EditCustomPreBuild /> }, // ✅ New Route
-      { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, // Updated route for your custom dashboard
-
+      { path: 'prebuild-dashboard', element: <ProtectedRoute><PreBuildDashboard /></ProtectedRoute>  }, // Updated route for your custom dashboard  
+      //Prebuilds analytics route
+      { path: 'prebuild-analytics', element: <ProtectedRoute allowedRoles={["admin"]}><PreBuildAnalytics /></ProtectedRoute> },
       //AI Build Suggestor Route
       { path: 'AI-build-suggestor', element: <ProtectedRoute allowedRoles={["user", "admin"]}><BuildSuggestor /></ProtectedRoute> }, 
     ]
@@ -156,12 +166,9 @@ const router = createBrowserRouter([
 
       // Admin routes
       { path: 'admin', element: <ProtectedRoute allowedRoles={["admin"]}><div><AdminPanel/></div></ProtectedRoute> },
-      { path: 'add-new-product', element: <ProtectedRoute allowedRoles={["admin"]}><AddProduct /></ProtectedRoute> },
-      { path: 'manage-products', element: <ProtectedRoute allowedRoles={["admin"]}><ManageProducts /></ProtectedRoute> },
-      { path: 'manage-inventory', element: <ProtectedRoute allowedRoles={["admin"]}><ManageInventory /></ProtectedRoute> },
+      { path: 'add-new-product', element: <ProtectedRoute allowedRoles={["admin"]}><AllInventoryRelated /></ProtectedRoute> },
       { path: 'UserManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><UserManage/></div></ProtectedRoute> },
       { path: 'manage-appointments', element: <ProtectedRoute allowedRoles={["admin"]}><ManageAppointments /></ProtectedRoute> },
-      { path: 'filters', element: <ProtectedRoute allowedRoles={["admin"]}>< AdminFiltersPage/></ProtectedRoute> },
       { path: 'create-custom-prebuild', element: <ProtectedRoute allowedRoles={["admin"]}><CreateCustomBuild /></ProtectedRoute> },
       { path: 'prebuild-dashboard', element: <ProtectedRoute allowedRoles={["admin"]}><PreBuildDashboard /></ProtectedRoute>  },
       { path: 'manageOrder', element: <ProtectedRoute allowedRoles={["admin"]}><ManageOrder /></ProtectedRoute>  },
@@ -170,6 +177,8 @@ const router = createBrowserRouter([
       { path: 'invoicePage', element: <ProtectedRoute allowedRoles={["admin"]}><InvoicePage /></ProtectedRoute>  },
       { path: 'TransactionPage', element: <ProtectedRoute allowedRoles={["admin"]}><TransactionPage /></ProtectedRoute>  },
       { path: 'InvoicePage', element: <ProtectedRoute allowedRoles={["admin"]}><InvoicePage /></ProtectedRoute>  },
+      { path: 'RevenuePage', element: <ProtectedRoute allowedRoles={["admin"]}><RevenuePage /></ProtectedRoute>  },
+      { path: 'ManageTaxes', element: <ProtectedRoute allowedRoles={["admin"]}><ManageTaxes /></ProtectedRoute>  },
       { path: 'prebuild-dashboard', element: <ProtectedRoute allowedRoles={["admin"]}><PreBuildDashboard /></ProtectedRoute>  },
       { path: 'ReviewManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><ReviewManage/></div></ProtectedRoute> },
       { path: 'InquiryManage', element: <ProtectedRoute allowedRoles={["admin"]}><div><InquiryManage/></div></ProtectedRoute>},

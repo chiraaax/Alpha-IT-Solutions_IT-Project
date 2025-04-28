@@ -189,7 +189,7 @@ const DesignSection = () => {
                 <Link 
   to="/custom-prebuilds" 
   onClick={handleCustomPreBuildsClick} 
-  className="relative bg-gradient-to-r from-gray-900 via-blue-500 to-blue-1000 min-w-90 text-gray-100 flex flex-col items-center p-4 text-lg rounded-lg shadow-lg cursor-pointer transition-all duration-300 overflow-hidden group hover:shadow-xl hover:shadow-blue-500/30 hover:scale-105"
+  className="relative bg-gradient-to-r from-gray-900 via-blue-500 to-blue-1000 min-w-84 text-gray-100 flex flex-col items-center p-4 text-lg rounded-lg shadow-lg cursor-pointer transition-all duration-300 overflow-hidden group hover:shadow-xl hover:shadow-blue-500/30 hover:scale-105"
 >
   {/* Sliding glow effect when idle */}
   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-400/20 to-transparent -translate-x-full animate-shimmer"></div>
@@ -242,7 +242,7 @@ const DesignSection = () => {
         onMouseEnter={() => setHoverAI(true)}
         onMouseLeave={() => setHoverAI(false)}
         onClick={() => navigate('/AI-build-suggestor')}
-        className={`relative bg-black text-cyan-400 font-mono font-bold px-20 py-9 rounded-md border transform transition-all duration-300 overflow-hidden
+        className={`relative bg-black text-cyan-400 font-mono font-bold px-19 py-9 rounded-md border transform transition-all duration-300 overflow-hidden
           ${hoverAI ? 'border-pink-500 shadow-lg shadow-pink-500/50 scale-105' : 'border-cyan-500'} 
           ${glitchEffect ? '-translate-x-px translate-y-px' : ''}`}
       >

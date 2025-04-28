@@ -17,8 +17,8 @@ const Summary = ({ cart }) => {
     const total = subtotal + tax;
 
     const formatCurrency = (amount) =>
-        new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
-
+        new Intl.NumberFormat("en-US", { style: "currency", currency: "LKR" }).format(amount);
+    
     const handleCheckout = async () => {
         try {
             if (!total || isNaN(total)) {
@@ -73,6 +73,26 @@ const Summary = ({ cart }) => {
             });
             console.log("SuccessOrder saved:", response.data);
 
+            const successOrderId = response.data.order._id; // Get the order ID from the response
+
+            // Send the tax data separately
+            const taxData = {
+                successOrderId: successOrderId,
+                totalAmount: total,
+                taxAmount: tax
+            };
+
+            console.log("Tax Data: ", taxData);
+
+            // Create tax record
+            const taxres = await axios.post("http://localhost:5000/api/taxes/create", taxData, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+    
+            console.log("Order and tax information saved successfully!", taxres.data);
+    
             dispatch(addOrder());
             localStorage.removeItem("successOrder");
             localStorage.removeItem("orderPlaced");
