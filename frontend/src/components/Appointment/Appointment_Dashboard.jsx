@@ -208,7 +208,7 @@ const AppointmentDashboard = () => {
         
         // Add logo
         const logoWidth = 30; // Smaller logo
-        const logoHeight = 15;
+        const logoHeight = 30;
         doc.addImage(logo, "JPEG", 15, 10, logoWidth, logoHeight);
             
         // Company info
