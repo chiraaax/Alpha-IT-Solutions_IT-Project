@@ -13,6 +13,7 @@ dist-ssr
 *.local
 chatbot.cpython-312.pyc
 venv
+.env
 
 # Editor directories and files
 .vscode/*
