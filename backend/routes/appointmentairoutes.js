@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const router = express.Router();
 
 // Initialize Google Generative AI
-const genAI = new GoogleGenerativeAI("AIzaSyC5UAGbLKZqWCIl9wHYFYyh8k-RBjUMdQs");
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 // POST route to handle AI prompts
